@@ -1,0 +1,139 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 390 844" width="390" height="844">
+  <defs>
+    <!-- Background gradient -->
+    <linearGradient id="bg-pl" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"   stop-color="#f8faff"/>
+      <stop offset="55%"  stop-color="#eef2ff"/>
+      <stop offset="100%" stop-color="#f5f7ff"/>
+    </linearGradient>
+    <!-- Top center glow -->
+    <radialGradient id="glow-top-l" cx="50%" cy="15%" r="60%">
+      <stop offset="0%"   stop-color="#6366f1" stop-opacity="0.10"/>
+      <stop offset="100%" stop-color="#6366f1" stop-opacity="0"/>
+    </radialGradient>
+    <!-- Bottom right glow -->
+    <radialGradient id="glow-br-l" cx="85%" cy="75%" r="40%">
+      <stop offset="0%"   stop-color="#8b5cf6" stop-opacity="0.07"/>
+      <stop offset="100%" stop-color="#8b5cf6" stop-opacity="0"/>
+    </radialGradient>
+    <!-- Bottom left glow -->
+    <radialGradient id="glow-bl-l" cx="15%" cy="80%" r="35%">
+      <stop offset="0%"   stop-color="#3b82f6" stop-opacity="0.06"/>
+      <stop offset="100%" stop-color="#3b82f6" stop-opacity="0"/>
+    </radialGradient>
+    <!-- Hex tile pattern — light mode -->
+    <pattern id="hex-pattern-l" x="0" y="0" width="54" height="62" patternUnits="userSpaceOnUse">
+      <polygon points="27,1 53,16 53,46 27,61 1,46 1,16"
+               fill="none" stroke="rgba(60,60,180,0.07)" stroke-width="0.5"/>
+    </pattern>
+  </defs>
+
+  <!-- Background layers -->
+  <rect width="390" height="844" fill="url(#bg-pl)"/>
+  <rect width="390" height="844" fill="url(#glow-top-l)"/>
+  <rect width="390" height="844" fill="url(#glow-br-l)"/>
+  <rect width="390" height="844" fill="url(#glow-bl-l)"/>
+
+  <!-- Hexagonal tessellation -->
+  <rect width="390" height="844" fill="url(#hex-pattern-l)"/>
+
+  <!-- Subtle divider lines -->
+  <line x1="0" y1="238" x2="390" y2="238" stroke="rgba(0,0,0,0.04)" stroke-width="1"/>
+  <line x1="0" y1="605" x2="390" y2="605" stroke="rgba(0,0,0,0.04)" stroke-width="1"/>
+
+  <!-- === Shield === -->
+  <path d="M195,250 L312,295 L312,450 Q312,545 195,595 Q78,545 78,450 L78,295 Z"
+        fill="rgba(99,102,241,0.04)" stroke="rgba(99,102,241,0.3)" stroke-width="1.5"/>
+  <path d="M195,265 L295,305 L295,445 Q295,530 195,575 Q95,530 95,445 L95,305 Z"
+        fill="rgba(99,102,241,0.025)" stroke="rgba(99,102,241,0.18)" stroke-width="0.8"/>
+
+  <!-- === Eye (center y=420) === -->
+  <ellipse cx="195" cy="420" rx="60" ry="30"
+           stroke="rgba(99,102,241,0.5)" stroke-width="1.2" fill="rgba(99,102,241,0.06)"/>
+  <!-- Eye lid curves -->
+  <path d="M135,420 Q165,395 195,393 Q225,395 255,420" fill="none" stroke="rgba(99,102,241,0.18)" stroke-width="0.6"/>
+  <path d="M135,420 Q165,445 195,447 Q225,445 255,420" fill="none" stroke="rgba(99,102,241,0.18)" stroke-width="0.6"/>
+  <!-- Iris -->
+  <circle cx="195" cy="420" r="19"
+          stroke="rgba(99,102,241,0.6)" stroke-width="1" fill="rgba(99,102,241,0.08)"/>
+  <!-- Pupil -->
+  <circle cx="195" cy="420" r="9"
+          stroke="rgba(79,80,200,0.65)" stroke-width="0.8" fill="rgba(99,102,241,0.12)"/>
+  <!-- Center dot -->
+  <circle cx="195" cy="420" r="3" fill="rgba(67,56,202,0.5)"/>
+  <!-- Highlight -->
+  <circle cx="200" cy="416" r="2" fill="rgba(255,255,255,0.9)"/>
+
+  <!-- Dashed connectors -->
+  <line x1="135" y1="420" x2="95" y2="420"
+        stroke="rgba(99,102,241,0.25)" stroke-dasharray="3,5" stroke-width="0.8"/>
+  <line x1="255" y1="420" x2="295" y2="420"
+        stroke="rgba(99,102,241,0.25)" stroke-dasharray="3,5" stroke-width="0.8"/>
+
+  <!-- === Corner circuit decorations === -->
+  <g stroke="rgba(99,102,241,0.18)" stroke-width="0.8" fill="none">
+    <circle cx="55" cy="145" r="4" fill="rgba(99,102,241,0.08)"/>
+    <circle cx="55" cy="145" r="8"/>
+    <line x1="55" y1="137" x2="55" y2="115"/>
+    <line x1="55" y1="115" x2="90" y2="115"/>
+    <line x1="63" y1="145" x2="90" y2="145"/>
+    <line x1="90" y1="145" x2="90" y2="125"/>
+    <circle cx="90" cy="145" r="2" fill="rgba(99,102,241,0.14)"/>
+    <circle cx="90" cy="115" r="2" fill="rgba(99,102,241,0.14)"/>
+    <circle cx="55" cy="115" r="2" fill="rgba(99,102,241,0.14)"/>
+  </g>
+  <g stroke="rgba(99,102,241,0.18)" stroke-width="0.8" fill="none">
+    <circle cx="335" cy="145" r="4" fill="rgba(99,102,241,0.08)"/>
+    <circle cx="335" cy="145" r="8"/>
+    <line x1="335" y1="137" x2="335" y2="115"/>
+    <line x1="335" y1="115" x2="300" y2="115"/>
+    <line x1="327" y1="145" x2="300" y2="145"/>
+    <line x1="300" y1="145" x2="300" y2="125"/>
+    <circle cx="300" cy="145" r="2" fill="rgba(99,102,241,0.14)"/>
+    <circle cx="300" cy="115" r="2" fill="rgba(99,102,241,0.14)"/>
+    <circle cx="335" cy="115" r="2" fill="rgba(99,102,241,0.14)"/>
+  </g>
+
+  <!-- === Bottom circuit traces === -->
+  <g stroke="rgba(99,102,241,0.12)" stroke-width="0.8" fill="none">
+    <line x1="15"  y1="660" x2="110" y2="660"/>
+    <line x1="110" y1="660" x2="110" y2="685"/>
+    <line x1="110" y1="685" x2="195" y2="685"/>
+    <line x1="195" y1="685" x2="195" y2="670"/>
+    <line x1="195" y1="670" x2="280" y2="670"/>
+    <line x1="280" y1="670" x2="280" y2="700"/>
+    <line x1="280" y1="700" x2="375" y2="700"/>
+    <line x1="50"  y1="660" x2="50"  y2="720"/>
+    <line x1="50"  y1="720" x2="155" y2="720"/>
+    <line x1="155" y1="720" x2="155" y2="740"/>
+    <line x1="155" y1="740" x2="235" y2="740"/>
+    <line x1="235" y1="740" x2="235" y2="700"/>
+    <line x1="235" y1="700" x2="280" y2="700"/>
+    <line x1="20"  y1="760" x2="370" y2="760"/>
+    <line x1="370" y1="760" x2="370" y2="730"/>
+    <line x1="20"  y1="760" x2="20"  y2="740"/>
+  </g>
+  <g fill="rgba(99,102,241,0.18)">
+    <circle cx="110" cy="660" r="2.5"/>
+    <circle cx="110" cy="685" r="2.5"/>
+    <circle cx="195" cy="685" r="2.5"/>
+    <circle cx="195" cy="670" r="2.5"/>
+    <circle cx="280" cy="670" r="2.5"/>
+    <circle cx="280" cy="700" r="2.5"/>
+    <circle cx="50"  cy="660" r="2.5"/>
+    <circle cx="50"  cy="720" r="2.5"/>
+    <circle cx="155" cy="720" r="2.5"/>
+    <circle cx="155" cy="740" r="2.5"/>
+    <circle cx="235" cy="740" r="2.5"/>
+    <circle cx="235" cy="700" r="2.5"/>
+    <circle cx="370" cy="760" r="2.5"/>
+    <circle cx="20"  cy="760" r="2.5"/>
+  </g>
+
+  <!-- === Monospace text decorations === -->
+  <text x="18"  y="175" font-family="monospace" font-size="8" fill="rgba(99,102,241,0.12)" letter-spacing="1">0x4e41564f</text>
+  <text x="230" y="175" font-family="monospace" font-size="8" fill="rgba(99,102,241,0.10)" letter-spacing="1">sha256</text>
+  <text x="60"  y="760" font-family="monospace" font-size="8" fill="rgba(99,102,241,0.12)" letter-spacing="1">encrypt</text>
+  <text x="240" y="760" font-family="monospace" font-size="8" fill="rgba(99,102,241,0.10)" letter-spacing="1">0xb912</text>
+  <text x="130" y="790" font-family="monospace" font-size="8" fill="rgba(99,102,241,0.08)" letter-spacing="1">privacy</text>
+</svg>

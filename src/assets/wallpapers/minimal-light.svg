@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 390 844" width="390" height="844">
+  <defs>
+    <!-- Background gradient -->
+    <linearGradient id="bg-ml" x1="0.1" y1="0" x2="0.9" y2="1">
+      <stop offset="0%"   stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#f0f4f8"/>
+    </linearGradient>
+    <!-- Center radial glow -->
+    <radialGradient id="center-glow-l" cx="50%" cy="45%" r="40%">
+      <stop offset="0%"   stop-color="rgba(0,0,0,0.03)"/>
+      <stop offset="100%" stop-color="rgba(0,0,0,0)"/>
+    </radialGradient>
+    <!-- Subtle grid pattern -->
+    <pattern id="grid-l" x="0" y="0" width="40" height="40" patternUnits="userSpaceOnUse">
+      <line x1="0" y1="0" x2="0" y2="40" stroke="rgba(0,0,0,0.03)" stroke-width="0.5"/>
+      <line x1="0" y1="0" x2="40" y2="0" stroke="rgba(0,0,0,0.03)" stroke-width="0.5"/>
+    </pattern>
+  </defs>
+
+  <!-- Background -->
+  <rect width="390" height="844" fill="url(#bg-ml)"/>
+
+  <!-- Subtle grid overlay -->
+  <rect width="390" height="844" fill="url(#grid-l)"/>
+
+  <!-- Center radial glow -->
+  <rect width="390" height="844" fill="url(#center-glow-l)"/>
+
+  <!-- === Concentric circles centered at (195, 380) === -->
+  <circle cx="195" cy="380" r="280" fill="none" stroke="rgba(0,0,0,0.05)" stroke-width="1"/>
+  <circle cx="195" cy="380" r="220" fill="none" stroke="rgba(0,0,0,0.05)" stroke-width="0.8"/>
+  <circle cx="195" cy="380" r="160" fill="none" stroke="rgba(0,0,0,0.06)" stroke-width="0.8"/>
+  <circle cx="195" cy="380" r="100" fill="none" stroke="rgba(0,0,0,0.07)" stroke-width="1"/>
+  <circle cx="195" cy="380" r="55"  fill="none" stroke="rgba(0,0,0,0.07)" stroke-width="1"/>
+  <circle cx="195" cy="380" r="20"  fill="none" stroke="rgba(0,0,0,0.08)" stroke-width="1.2"/>
+
+  <!-- === Diagonal lines === -->
+  <line x1="-50" y1="200" x2="450" y2="650"
+        stroke="rgba(0,0,0,0.04)" stroke-width="0.8"/>
+  <line x1="-50" y1="450" x2="450" y2="150"
+        stroke="rgba(0,0,0,0.04)" stroke-width="0.8"/>
+
+  <!-- === Small dot cluster at center (45° offsets, distance 30) === -->
+  <circle cx="216" cy="359" r="1.5" fill="rgba(0,0,0,0.2)"/>
+  <circle cx="174" cy="359" r="1.5" fill="rgba(0,0,0,0.2)"/>
+  <circle cx="174" cy="401" r="1.5" fill="rgba(0,0,0,0.2)"/>
+  <circle cx="216" cy="401" r="1.5" fill="rgba(0,0,0,0.2)"/>
+
+  <!-- Center dot -->
+  <circle cx="195" cy="380" r="3" fill="rgba(0,0,0,0.15)"/>
+</svg>
