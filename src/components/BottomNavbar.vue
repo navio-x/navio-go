@@ -9,7 +9,7 @@
            bg-gradient-to-t from-[rgba(255,255,255,0.98)] to-[rgba(255,255,255,0.95)]
            dark:bg-gradient-to-t dark:from-[rgba(30,35,41,0.98)] dark:to-[rgba(30,35,41,0.95)]
            border-black/10 dark:border-white/5"
-    style="padding-bottom: 0.75rem"
+    :style="{ paddingBottom: isIos ? 'calc(0.75rem + env(safe-area-inset-bottom))' : '0.75rem' }"
   >
     <!-- Sliding pill -->
     <div
@@ -39,6 +39,9 @@
 import { ref, computed, watch, onMounted, nextTick } from 'vue'
 import { useRoute } from 'vue-router'
 import { Wallet, Download, Upload, Repeat, Settings } from 'lucide-vue-next'
+import { Capacitor } from '@capacitor/core'
+
+const isIos = Capacitor.getPlatform() === 'ios'
 
 const route = useRoute()
 const navRef = ref(null)

@@ -5,7 +5,13 @@ import router from "./router";
 import i18n from "./i18n";
 import './style.css'
 import { Buffer } from "buffer";
+import { Capacitor } from '@capacitor/core';
+import { StatusBar } from '@capacitor/status-bar';
 console.log("Navio Go");
+
+if (Capacitor.getPlatform() === 'ios') {
+  StatusBar.setOverlaysWebView({ overlay: true });
+}
 sessionStorage.clear();
 const app = createApp(App);
 app.use(createPinia());

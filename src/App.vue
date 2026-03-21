@@ -6,8 +6,8 @@
   >
     <div
       ref="scrollContainer"
-      class="overflow-y-auto"
-      style="height: 100dvh"
+      class="overflow-y-auto overflow-x-hidden"
+      :style="{ height: '100dvh', paddingBottom: (isIos && showNavbar) ? 'calc(4.5rem + env(safe-area-inset-bottom))' : '0' }"
     >
       <router-view />
     </div>
@@ -56,8 +56,11 @@
 import { computed, onMounted, onUnmounted, ref, watch, nextTick } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { App as CapApp } from '@capacitor/app'
+import { Capacitor } from '@capacitor/core'
 import { settings, applyTheme } from './stores/settings'
 import BottomNavbar from './components/BottomNavbar.vue'
+
+const isIos = Capacitor.getPlatform() === 'ios'
 
 const route = useRoute()
 const router = useRouter()
@@ -113,6 +116,10 @@ html, body {
   height: 100%;
   overflow-x: hidden;
   background-color: #ffffff;
+}
+
+.ios #app {
+  padding-top: env(safe-area-inset-top);
 }
 
 html.dark, html.dark body {
