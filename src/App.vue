@@ -3,6 +3,7 @@
   <div
     id="app"
     class="bg-white dark:bg-gh-900 transition-colors duration-300"
+    :style="isIos ? { paddingTop: 'env(safe-area-inset-top)' } : {}"
   >
     <div
       ref="scrollContainer"
@@ -121,9 +122,6 @@ html, body {
   background-color: #ffffff;
 }
 
-.ios #app {
-  padding-top: env(safe-area-inset-top);
-}
 
 
 html.dark, html.dark body {
