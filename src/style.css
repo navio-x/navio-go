@@ -1,13 +1,28 @@
 @import "tailwindcss";
 @variant dark (&:where(.dark, .dark *));
 
-/* iOS-specific: double-tap zoom'u ve input auto-zoom'u engelle */
+/* iOS-specific */
 @supports (-webkit-touch-callout: none) {
+  /* Double-tap zoom ve input auto-zoom engeli */
   html {
     touch-action: manipulation;
   }
   input, textarea, select {
     font-size: 16px !important;
+  }
+
+  /* min-h-screen'i safe-area-top kadar küçült:
+     scroll container tam olarak bu kadar yüksek,
+     view'lar taşmaz → gereksiz scroll olmaz */
+  .min-h-screen {
+    min-height: calc(100dvh - env(safe-area-inset-top));
+  }
+
+  /* Navbar olan sayfalarda view'ların altına navbar boşluğu ekle.
+     paddingBottom scroll container'da değil view içinde olunca
+     scroll alanı yaratmaz, sadece içerik için alan ayırır. */
+  .has-navbar .min-h-screen {
+    padding-bottom: calc(4.5rem + env(safe-area-inset-bottom));
   }
 }
 

@@ -3,6 +3,7 @@
   <div
     id="app"
     class="bg-white dark:bg-gh-900 transition-colors duration-300"
+    :class="{ 'has-navbar': showNavbar }"
     :style="isIos ? { paddingTop: 'env(safe-area-inset-top)' } : {}"
   >
     <div
@@ -10,7 +11,6 @@
       class="overflow-y-auto overflow-x-hidden"
       :style="{
         height: isIos ? 'calc(100dvh - env(safe-area-inset-top))' : '100dvh',
-        paddingBottom: (isIos && showNavbar) ? 'calc(4.5rem + env(safe-area-inset-bottom))' : '0'
       }"
     >
       <router-view />
