@@ -8,8 +8,7 @@
       ref="scrollContainer"
       class="overflow-y-auto overflow-x-hidden"
       :style="{
-        height: '100dvh',
-        paddingTop: isIos ? 'env(safe-area-inset-top)' : '0',
+        height: isIos ? 'calc(100dvh - env(safe-area-inset-top))' : '100dvh',
         paddingBottom: (isIos && showNavbar) ? 'calc(4.5rem + env(safe-area-inset-bottom))' : '0'
       }"
     >
@@ -120,6 +119,10 @@ html, body {
   height: 100%;
   overflow-x: hidden;
   background-color: #ffffff;
+}
+
+.ios #app {
+  padding-top: env(safe-area-inset-top);
 }
 
 
