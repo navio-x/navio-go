@@ -1,6 +1,16 @@
 @import "tailwindcss";
 @variant dark (&:where(.dark, .dark *));
 
+/* iOS-specific: double-tap zoom'u ve input auto-zoom'u engelle */
+@supports (-webkit-touch-callout: none) {
+  html {
+    touch-action: manipulation;
+  }
+  input, textarea, select {
+    font-size: 16px !important;
+  }
+}
+
 @theme {
   --color-gh-950: #16191f;
   --color-gh-900: #1e2329;

@@ -7,7 +7,11 @@
     <div
       ref="scrollContainer"
       class="overflow-y-auto overflow-x-hidden"
-      :style="{ height: '100dvh', paddingBottom: (isIos && showNavbar) ? 'calc(4.5rem + env(safe-area-inset-bottom))' : '0' }"
+      :style="{
+        height: '100dvh',
+        paddingTop: isIos ? 'env(safe-area-inset-top)' : '0',
+        paddingBottom: (isIos && showNavbar) ? 'calc(4.5rem + env(safe-area-inset-bottom))' : '0'
+      }"
     >
       <router-view />
     </div>
@@ -118,9 +122,6 @@ html, body {
   background-color: #ffffff;
 }
 
-.ios #app {
-  padding-top: env(safe-area-inset-top);
-}
 
 html.dark, html.dark body {
   background-color: #1e2329;
