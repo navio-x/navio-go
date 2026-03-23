@@ -182,7 +182,7 @@
     "deleteConfirm": "Are you sure you want to delete \"{name}\"? This cannot be undone.",
     "cancel": "Cancel",
     "deleteConfirmBtn": "Delete",
-    "loading":"Loading",
+    "loading": "Loading",
     "connectionErrorTitle": "Error",
     "connectionErrorDesc": "Something went wrong while loading the wallet.",
     "retry": "Retry",
@@ -236,5 +236,13 @@
     "revealSeed": "Show Master Seed",
     "copySeed": "Copy Seed",
     "hideSeed": "Hide Seed"
+  },
+  "pwa": {
+    "installTitle": "Install Navio Go",
+    "installDesc": "Add to your home screen for a better experience",
+    "installButton": "Install App",
+    "iosStep1": "Tap the Share button",
+    "iosStep2": "then select Add to Home Screen",
+    "browserStep": "Open browser menu (⋮) and select Add to Home Screen"
   }
 }

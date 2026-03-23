@@ -40,7 +40,7 @@
     "backupWallet": "Резервная копия кошелька",
     "fiat": "Фиат",
     "wallpaper": "Wallpaper",
-        "networkStatus": "Статус сети",
+    "networkStatus": "Статус сети",
     "netPriceUsd": "Цена (USD)",
     "netPriceEur": "Price (EUR)",
     "net24h": "Изм. за 24ч",
@@ -236,5 +236,13 @@
     "revealSeed": "Показать мастер-ключ",
     "copySeed": "Копировать ключ",
     "hideSeed": "Скрыть ключ"
+  },
+  "pwa": {
+    "installTitle": "Установить Navio Go",
+    "installDesc": "Добавьте на главный экран",
+    "installButton": "Установить",
+    "iosStep1": "Нажмите кнопку Поделиться",
+    "iosStep2": "затем выберите На экран Домой",
+    "browserStep": "Откройте меню браузера (⋮) и выберите На главный экран"
   }
 }

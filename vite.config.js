@@ -5,6 +5,7 @@ import { resolve } from "path";
 import wasm from "vite-plugin-wasm";
 import topLevelAwait from "vite-plugin-top-level-await";
 import { nodePolyfills } from "vite-plugin-node-polyfills";
+import { VitePWA } from "vite-plugin-pwa";
 import { createRequire } from "module";
 
 const require = createRequire(import.meta.url);
@@ -25,6 +26,28 @@ export default defineConfig({
         process: true,
       },
     }),
+    ...(process.env.VITE_BUILD_TARGET === "web" ? [
+      VitePWA({
+        registerType: "autoUpdate",
+        injectRegister: "auto",
+        manifest: false,
+        workbox: {
+          globPatterns: ["**/*.{js,css,html,ico,png,svg,webp}"],
+          globIgnores: ["**/*.wasm"],
+          navigateFallback: "/wallet/index.html",
+          navigateFallbackDenylist: [/^\/wallet\/api/],
+          runtimeCaching: [
+            {
+              urlPattern: /\.wasm$/,
+              handler: "NetworkFirst",
+              options: {
+                cacheName: "wasm-cache",
+              },
+            },
+          ],
+        },
+      }),
+    ] : []),
   ],
   resolve: {
     alias: [

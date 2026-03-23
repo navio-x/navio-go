@@ -236,5 +236,13 @@
     "revealSeed": "Ana Seed'i Göster",
     "copySeed": "Seed'i Kopyala",
     "hideSeed": "Seed'i Gizle"
+  },
+  "pwa": {
+    "installTitle": "Navio Go'yu Yükle",
+    "installDesc": "Daha iyi deneyim için ana ekrana ekleyin",
+    "installButton": "Uygulama Yükle",
+    "iosStep1": "Paylaş butonuna dokunun",
+    "iosStep2": "ardından Ana Ekrana Ekle seçeneğini seçin",
+    "browserStep": "Tarayıcı menüsünü (⋮) açın ve Ana Ekrana Ekle'yi seçin"
   }
 }

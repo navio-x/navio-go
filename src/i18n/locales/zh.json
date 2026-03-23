@@ -40,7 +40,7 @@
     "backupWallet": "备份钱包",
     "fiat": "法币",
     "wallpaper": "Wallpaper",
-        "networkStatus": "网络状态",
+    "networkStatus": "网络状态",
     "netPriceUsd": "价格 (USD)",
     "netPriceEur": "Price (EUR)",
     "net24h": "24h涨跌幅",
@@ -236,5 +236,13 @@
     "revealSeed": "显示主种子",
     "copySeed": "复制种子",
     "hideSeed": "隐藏种子"
+  },
+  "pwa": {
+    "installTitle": "安装 Navio Go",
+    "installDesc": "添加到主屏幕",
+    "installButton": "安装应用",
+    "iosStep1": "点击分享按钮",
+    "iosStep2": "然后选择「添加到主屏幕」",
+    "browserStep": "打开浏览器菜单（⋮），选择「添加到主屏幕」"
   }
 }

@@ -2,20 +2,18 @@
 <template>
   <div
     id="app"
-    class="bg-white dark:bg-gh-900 transition-colors duration-300"
+    class="flex flex-col bg-white dark:bg-gh-900 transition-colors duration-300"
     :class="{ 'has-navbar': showNavbar }"
-    :style="isIos ? { paddingTop: 'env(safe-area-inset-top)' } : {}"
+    :style="{ height: '100dvh', paddingTop: isIos ? 'env(safe-area-inset-top)' : '' }"
   >
     <div
       ref="scrollContainer"
-      class="overflow-y-auto overflow-x-hidden"
-      :style="{
-        height: isIos ? 'calc(100dvh - env(safe-area-inset-top))' : '100dvh',
-      }"
+      class="flex-1 overflow-y-auto overflow-x-hidden"
     >
       <router-view />
     </div>
     <BottomNavbar v-if="showNavbar" />
+    <PwaInstallPrompt />
 
     <!-- Android back button exit confirmation -->
     <div
@@ -63,8 +61,11 @@ import { App as CapApp } from '@capacitor/app'
 import { Capacitor } from '@capacitor/core'
 import { settings, applyTheme } from './stores/settings'
 import BottomNavbar from './components/BottomNavbar.vue'
+import PwaInstallPrompt from './components/PwaInstallPrompt.vue'
 
-const isIos = Capacitor.getPlatform() === 'ios'
+const isIosNative = Capacitor.getPlatform() === 'ios'
+const isIosPwa = /iphone|ipad|ipod/i.test(navigator.userAgent) && !window.MSStream && window.navigator.standalone === true
+const isIos = isIosNative || isIosPwa
 
 const route = useRoute()
 const router = useRouter()

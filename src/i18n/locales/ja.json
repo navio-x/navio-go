@@ -40,7 +40,7 @@
     "backupWallet": "ウォレットのバックアップ",
     "fiat": "法定通貨",
     "wallpaper": "Wallpaper",
-        "networkStatus": "ネットワーク状態",
+    "networkStatus": "ネットワーク状態",
     "netPriceUsd": "価格 (USD)",
     "netPriceEur": "Price (EUR)",
     "net24h": "24時間変動",
@@ -236,5 +236,13 @@
     "revealSeed": "マスターシードを表示",
     "copySeed": "シードをコピー",
     "hideSeed": "シードを非表示"
+  },
+  "pwa": {
+    "installTitle": "Navio Goをインストール",
+    "installDesc": "ホーム画面に追加してより快適に使用できます",
+    "installButton": "アプリをインストール",
+    "iosStep1": "共有ボタンをタップ",
+    "iosStep2": "「ホーム画面に追加」を選択してください",
+    "browserStep": "ブラウザメニュー（⋮）を開き、「ホーム画面に追加」を選択してください"
   }
 }

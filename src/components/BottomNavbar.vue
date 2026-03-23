@@ -1,7 +1,7 @@
 <template>
   <nav
     ref="navRef"
-    class="fixed bottom-0 left-0 right-0 z-[100]
+    class="w-full z-[100]
            flex justify-around items-center
            px-0 pt-3
            backdrop-blur-lg border-t
@@ -9,7 +9,7 @@
            bg-gradient-to-t from-[rgba(255,255,255,0.98)] to-[rgba(255,255,255,0.95)]
            dark:bg-gradient-to-t dark:from-[rgba(30,35,41,0.98)] dark:to-[rgba(30,35,41,0.95)]
            border-black/10 dark:border-white/5"
-    :style="{ paddingBottom: isIos ? 'calc(0.75rem + env(safe-area-inset-bottom))' : '0.75rem' }"
+    :style="{ paddingBottom: isIos ? 'env(safe-area-inset-bottom)' : '0.75rem' }"
   >
     <!-- Sliding pill -->
     <div
@@ -41,7 +41,9 @@ import { useRoute } from 'vue-router'
 import { Wallet, Download, Upload, Repeat, Settings } from 'lucide-vue-next'
 import { Capacitor } from '@capacitor/core'
 
-const isIos = Capacitor.getPlatform() === 'ios'
+const isIosNative = Capacitor.getPlatform() === 'ios'
+const isIosPwa = /iphone|ipad|ipod/i.test(navigator.userAgent) && !window.MSStream && window.navigator.standalone === true
+const isIos = isIosNative || isIosPwa
 
 const route = useRoute()
 const navRef = ref(null)

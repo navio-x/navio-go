@@ -40,7 +40,7 @@
     "backupWallet": "Copia de seguridad",
     "fiat": "Fiat",
     "wallpaper": "Wallpaper",
-        "networkStatus": "Estado de la red",
+    "networkStatus": "Estado de la red",
     "netPriceUsd": "Precio (USD)",
     "netPriceEur": "Price (EUR)",
     "net24h": "Cambio 24h",
@@ -236,5 +236,13 @@
     "revealSeed": "Mostrar semilla maestra",
     "copySeed": "Copiar semilla",
     "hideSeed": "Ocultar semilla"
+  },
+  "pwa": {
+    "installTitle": "Instalar Navio Go",
+    "installDesc": "Agregar a la pantalla de inicio",
+    "installButton": "Instalar App",
+    "iosStep1": "Toca el boton Compartir",
+    "iosStep2": "luego selecciona Agregar a pantalla de inicio",
+    "browserStep": "Abre el menu del navegador (⋮) y selecciona Agregar a pantalla de inicio"
   }
 }

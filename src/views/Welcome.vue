@@ -1,6 +1,7 @@
+<!-- Welcome.vue -->
 <template>
   <div
-    class="min-h-screen flex items-center justify-center
+    class="relative min-h-screen flex items-center justify-center
            bg-white text-gray-900
            dark:bg-gh-900 dark:text-white
            transition-colors duration-300"
