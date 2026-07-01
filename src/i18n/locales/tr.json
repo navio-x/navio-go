@@ -40,6 +40,7 @@
     "backupWallet": "Cüzdanı Yedekle",
     "fiat": "Fiat",
     "wallpaper": "Arka Plan",
+    "showFiatValue": "Fiat Değerini Göster",
     "showBlockNumber": "Blok Numarasını Göster",
     "networkStatus": "Ağ Durumu",
     "netPriceUsd": "Fiyat (USD)",
@@ -106,6 +107,7 @@
     "transactionHistory": "İşlem Geçmişi",
     "loadingTransactions": "İşlemler yükleniyor...",
     "noTransactionsYet": "Henüz işlem yok",
+    "noTransactionsDesc": "NAV gönderdiğinizde veya aldığınızda işlemleriniz burada görünecek",
     "unconfirmed": "Onaylanmamış",
     "block": "Blok",
     "outputs": "çıktı",
@@ -114,6 +116,9 @@
     "sendNav": "NAV Gönder",
     "navAddress": "NAV Adresi",
     "memo": "Not",
+    "memoLabel": "Alıcı için Not",
+    "memoPlaceholder": "İsteğe bağlı not...",
+    "memoInfo": "Alıcı bu notu kendi işlem geçmişinde görecektir.",
     "sendingTransaction": "İşlem gönderiliyor...",
     "recipient": "Alıcı",
     "transactionSuccessful": "İşlem Başarılı!",
@@ -121,7 +126,10 @@
     "receiveNav": "NAV Al",
     "addressCopied": "Adres kopyalandı!",
     "txs": "işlem",
-    "synced": "SENKRONİZE"
+    "synced": "SENKRONİZE",
+    "useAll": "Tümünü Kullan",
+    "subtractFeeFromAmount": "Ücreti miktardan düş",
+    "subtractFeeFromAmountDesc": "Ağ ücreti gönderdiğiniz miktardan düşülecek"
   },
   "wizard": {
     "walletName": "Cüzdan Adı",
@@ -235,7 +243,13 @@
     "seedDescription": "Gelişmiş: onaltılık formatta ana seed anahtarınız.",
     "revealSeed": "Ana Seed'i Göster",
     "copySeed": "Seed'i Kopyala",
-    "hideSeed": "Seed'i Gizle"
+    "hideSeed": "Seed'i Gizle",
+    "securityModal": {
+      "title": "Güvenlik Uyarısı",
+      "message": "Gözetlenmediğinizden emin olun. Bu bilgileri asla kimseyle paylaşmayın — paylaşırsanız fonlarınız kalıcı olarak kaybolabilir.",
+      "confirm": "Anladım, Yine de Göster",
+      "cancel": "İptal"
+    }
   },
   "pwa": {
     "installTitle": "Navio Go'yu Yükle",

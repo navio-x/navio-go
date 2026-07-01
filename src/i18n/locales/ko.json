@@ -57,6 +57,7 @@
     "netMaxSupply": "Max Supply",
     "netBurned": "Burned",
     "netBlockReward": "Block Reward",
+    "showFiatValue": "법정화폐 가치 표시",
     "showBlockNumber": "블록 번호 표시",
     "clearStorage": "모든 데이터 삭제",
     "clearStorageDesc": "이 기기의 모든 설정 및 지갑 데이터가 영구적으로 삭제됩니다.",
@@ -106,6 +107,7 @@
     "transactionHistory": "거래 내역",
     "loadingTransactions": "거래 내역 로딩 중...",
     "noTransactionsYet": "아직 거래 내역이 없습니다",
+    "noTransactionsDesc": "NAV를 보내거나 받으면 여기에 거래 내역이 표시됩니다",
     "unconfirmed": "미확인",
     "block": "블록",
     "outputs": "출력",
@@ -114,6 +116,9 @@
     "sendNav": "NAV 보내기",
     "navAddress": "NAV 주소",
     "memo": "메모",
+    "memoLabel": "수신자에게 남기는 메모",
+    "memoPlaceholder": "선택적 메모...",
+    "memoInfo": "수신자는 이 메모를 자신의 거래 내역에서 확인할 수 있습니다.",
     "sendingTransaction": "거래 전송 중...",
     "recipient": "수신자",
     "transactionSuccessful": "거래 성공!",
@@ -121,7 +126,10 @@
     "receiveNav": "NAV 받기",
     "addressCopied": "주소가 복사되었습니다!",
     "txs": "건",
-    "synced": "동기화됨"
+    "synced": "동기화됨",
+    "useAll": "전액 사용",
+    "subtractFeeFromAmount": "수수료를 금액에서 차감",
+    "subtractFeeFromAmountDesc": "네트워크 수수료가 전송 금액에서 차감됩니다"
   },
   "wizard": {
     "walletName": "지갑 이름",
@@ -235,7 +243,13 @@
     "seedDescription": "고급: 16진수 형식의 마스터 시드 키.",
     "revealSeed": "마스터 시드 표시",
     "copySeed": "시드 복사",
-    "hideSeed": "시드 숨기기"
+    "hideSeed": "시드 숨기기",
+    "securityModal": {
+      "title": "보안 경고",
+      "message": "아무도 보고 있지 않은지 확인하세요. 이 정보를 절대 누구와도 공유하지 마세요 — 공유하면 자금이 영구적으로 손실될 수 있습니다.",
+      "confirm": "이해합니다, 표시하기",
+      "cancel": "취소"
+    }
   },
   "pwa": {
     "installTitle": "Navio Go 설치",

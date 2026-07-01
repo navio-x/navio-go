@@ -57,6 +57,7 @@
     "netMaxSupply": "Max Supply",
     "netBurned": "Burned",
     "netBlockReward": "Block Reward",
+    "showFiatValue": "法定通貨の価値を表示",
     "showBlockNumber": "ブロック番号を表示",
     "clearStorage": "すべてのデータを削除",
     "clearStorageDesc": "このデバイスのすべての設定とウォレットデータが完全に削除されます。",
@@ -106,6 +107,7 @@
     "transactionHistory": "取引履歴",
     "loadingTransactions": "取引を読み込み中...",
     "noTransactionsYet": "まだ取引はありません",
+    "noTransactionsDesc": "NAVを送受信すると、ここに取引が表示されます",
     "unconfirmed": "未確認",
     "block": "ブロック",
     "outputs": "出力",
@@ -114,6 +116,9 @@
     "sendNav": "NAV を送る",
     "navAddress": "NAV アドレス",
     "memo": "メモ",
+    "memoLabel": "受取人へのメモ",
+    "memoPlaceholder": "任意のメモ...",
+    "memoInfo": "受取人はこのメモを自分のトランザクション履歴で確認できます。",
     "sendingTransaction": "取引を送信中...",
     "recipient": "受取人",
     "transactionSuccessful": "取引が成功しました！",
@@ -121,7 +126,10 @@
     "receiveNav": "NAV を受け取る",
     "addressCopied": "アドレスをコピーしました！",
     "txs": "件",
-    "synced": "同期済み"
+    "synced": "同期済み",
+    "useAll": "全額使用",
+    "subtractFeeFromAmount": "手数料を金額から差し引く",
+    "subtractFeeFromAmountDesc": "ネットワーク手数料は送金額から差し引かれます"
   },
   "wizard": {
     "walletName": "ウォレット名",
@@ -235,7 +243,13 @@
     "seedDescription": "上級者向け：16進数形式のマスターシードキー。",
     "revealSeed": "マスターシードを表示",
     "copySeed": "シードをコピー",
-    "hideSeed": "シードを非表示"
+    "hideSeed": "シードを非表示",
+    "securityModal": {
+      "title": "セキュリティ警告",
+      "message": "誰にも見られていないことを確認してください。この情報を絶対に誰とも共有しないでください — 共有すると資金が永久に失われる可能性があります。",
+      "confirm": "理解しました、表示する",
+      "cancel": "キャンセル"
+    }
   },
   "pwa": {
     "installTitle": "Navio Goをインストール",

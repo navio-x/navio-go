@@ -57,6 +57,7 @@
     "netMaxSupply": "Max Supply",
     "netBurned": "Burned",
     "netBlockReward": "Block Reward",
+    "showFiatValue": "Mostrar valor fiat",
     "showBlockNumber": "Mostrar número de bloque",
     "clearStorage": "Borrar todos los datos",
     "clearStorageDesc": "Esto eliminará permanentemente todas las configuraciones y datos de la cartera de este dispositivo.",
@@ -106,6 +107,7 @@
     "transactionHistory": "Historial de transacciones",
     "loadingTransactions": "Cargando transacciones...",
     "noTransactionsYet": "Aún no hay transacciones",
+    "noTransactionsDesc": "Tus transacciones aparecerán aquí cuando envíes o recibas NAV",
     "unconfirmed": "Sin confirmar",
     "block": "Bloque",
     "outputs": "salidas",
@@ -114,6 +116,9 @@
     "sendNav": "Enviar NAV",
     "navAddress": "Dirección NAV",
     "memo": "Memo",
+    "memoLabel": "Nota para el destinatario",
+    "memoPlaceholder": "Nota opcional...",
+    "memoInfo": "El destinatario verá esta nota en su historial de transacciones.",
     "sendingTransaction": "Enviando transacción...",
     "recipient": "Destinatario",
     "transactionSuccessful": "¡Transacción exitosa!",
@@ -121,7 +126,10 @@
     "receiveNav": "Recibir NAV",
     "addressCopied": "¡Dirección copiada!",
     "txs": "txs",
-    "synced": "SINCRONIZADO"
+    "synced": "SINCRONIZADO",
+    "useAll": "Usar todo",
+    "subtractFeeFromAmount": "Deducir comisión del monto",
+    "subtractFeeFromAmountDesc": "La comisión de red se deducirá del monto enviado"
   },
   "wizard": {
     "walletName": "Nombre de la billetera",
@@ -235,7 +243,13 @@
     "seedDescription": "Avanzado: tu clave semilla maestra en formato hexadecimal.",
     "revealSeed": "Mostrar semilla maestra",
     "copySeed": "Copiar semilla",
-    "hideSeed": "Ocultar semilla"
+    "hideSeed": "Ocultar semilla",
+    "securityModal": {
+      "title": "Advertencia de seguridad",
+      "message": "Asegúrate de que nadie te esté observando. Nunca compartas esta información con nadie — si lo haces, tus fondos podrían perderse permanentemente.",
+      "confirm": "Entiendo, mostrar de todos modos",
+      "cancel": "Cancelar"
+    }
   },
   "pwa": {
     "installTitle": "Instalar Navio Go",

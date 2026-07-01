@@ -57,6 +57,7 @@
     "netMaxSupply": "Max Supply",
     "netBurned": "Burned",
     "netBlockReward": "Block Reward",
+    "showFiatValue": "Mostrar valor em moeda fiduciária",
     "showBlockNumber": "Mostrar número do bloco",
     "clearStorage": "Apagar Todos os Dados",
     "clearStorageDesc": "Isso removerá permanentemente todas as configurações e dados da carteira deste dispositivo.",
@@ -106,6 +107,7 @@
     "transactionHistory": "Histórico de transações",
     "loadingTransactions": "Carregando transações...",
     "noTransactionsYet": "Nenhuma transação ainda",
+    "noTransactionsDesc": "Suas transações aparecerão aqui quando você enviar ou receber NAV",
     "unconfirmed": "Não confirmada",
     "block": "Bloco",
     "outputs": "saídas",
@@ -114,6 +116,9 @@
     "sendNav": "Enviar NAV",
     "navAddress": "Endereço NAV",
     "memo": "Memo",
+    "memoLabel": "Nota para o destinatário",
+    "memoPlaceholder": "Nota opcional...",
+    "memoInfo": "O destinatário verá esta nota no seu histórico de transações.",
     "sendingTransaction": "Enviando transação...",
     "recipient": "Destinatário",
     "transactionSuccessful": "Transação bem-sucedida!",
@@ -121,7 +126,10 @@
     "receiveNav": "Receber NAV",
     "addressCopied": "Endereço copiado!",
     "txs": "txs",
-    "synced": "SINCRONIZADO"
+    "synced": "SINCRONIZADO",
+    "useAll": "Usar tudo",
+    "subtractFeeFromAmount": "Deduzir taxa do valor",
+    "subtractFeeFromAmountDesc": "A taxa de rede será deduzida do valor enviado"
   },
   "wizard": {
     "walletName": "Nome da carteira",
@@ -235,7 +243,13 @@
     "seedDescription": "Avançado: sua chave semente mestre em formato hexadecimal.",
     "revealSeed": "Mostrar semente mestre",
     "copySeed": "Copiar semente",
-    "hideSeed": "Ocultar semente"
+    "hideSeed": "Ocultar semente",
+    "securityModal": {
+      "title": "Aviso de segurança",
+      "message": "Certifique-se de que ninguém está te observando. Nunca compartilhe essas informações com ninguém — se fizer isso, seus fundos poderão ser perdidos permanentemente.",
+      "confirm": "Entendo, mostrar mesmo assim",
+      "cancel": "Cancelar"
+    }
   },
   "pwa": {
     "installTitle": "Instalar Navio Go",

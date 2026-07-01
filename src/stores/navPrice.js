@@ -34,21 +34,23 @@ export async function fetchNavPrice() {
   navPrice.error = false
 
   try {
-    const [priceRes, fxRes] = await Promise.all([
-      fetch('https://blocks.nav.io/api/price'),
-      fetch(`https://api.frankfurter.app/latest?from=USD&to=${FX_TARGETS}`),
-    ])
+    const priceRes  = await fetch('https://blocks.nav.io/api/price')
     const priceData = await priceRes.json()
-    const fxData    = await fxRes.json()
-
     navPrice.usd       = priceData.price_usd      ?? null
     navPrice.change24h = priceData.change_24h_pct ?? null
-    navPrice.rates     = { USD: 1, ...(fxData.rates ?? {}) }
   } catch {
     navPrice.error = true
-  } finally {
-    navPrice.loading = false
   }
+
+  try {
+    const fxRes  = await fetch(`https://api.frankfurter.dev/v1/latest?from=USD&to=${FX_TARGETS}`)
+    const fxData = await fxRes.json()
+    navPrice.rates = { USD: 1, ...(fxData.rates ?? {}) }
+  } catch {
+    navPrice.rates = { USD: 1 }
+  }
+
+  navPrice.loading = false
 }
 
 export function getPriceIn(currency) {

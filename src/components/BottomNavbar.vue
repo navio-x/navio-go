@@ -38,7 +38,7 @@
 <script setup>
 import { ref, computed, watch, onMounted, nextTick } from 'vue'
 import { useRoute } from 'vue-router'
-import { Wallet, Download, Upload, Repeat, Settings } from 'lucide-vue-next'
+import { Wallet, Download, SendHorizontal, History, Settings } from 'lucide-vue-next'
 import { Capacitor } from '@capacitor/core'
 
 const isIosNative = Capacitor.getPlatform() === 'ios'
@@ -52,8 +52,8 @@ const buttonRefs = ref([])
 const navItems = [
   { name: 'wallet',   path: '/wallet/balance', icon: Wallet },
   { name: 'receive',  path: '/wallet/receive',  icon: Download },
-  { name: 'send',     path: '/wallet/send',     icon: Upload },
-  { name: 'swap',     path: '/wallet/history',  icon: Repeat },
+  { name: 'send',     path: '/wallet/send',     icon: SendHorizontal },
+  { name: 'swap',     path: '/wallet/history',  icon: History },
   { name: 'settings', path: '/settings',        icon: Settings },
 ]
 

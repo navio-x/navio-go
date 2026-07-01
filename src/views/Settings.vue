@@ -1,6 +1,6 @@
 <template>
-  <div class="p-5 space-y-5 bg-white text-gray-900 dark:bg-gh-900 dark:text-white min-h-screen pb-24 transition-colors duration-300">
-    <h2 class="text-xl font-bold tracking-tight">{{ $t('settings.title') }}</h2>
+  <div class="p-5 bg-gray-50 dark:bg-gh-900 pb-6 transition-colors duration-300">
+    <h1 class="text-xl font-bold text-gray-900 dark:text-white mb-5">{{ $t('settings.title') }}</h1>
     <SettingsPanel />
   </div>
 </template>

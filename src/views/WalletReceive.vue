@@ -31,15 +31,16 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="min-h-screen bg-gray-50 dark:bg-gh-900 p-5 pb-24 transition-colors duration-300">
+  <div class="bg-gray-50 dark:bg-gh-900 p-5 pb-6 transition-colors duration-300">
 
-    <h1 class="text-xl font-bold text-gray-900 dark:text-white mb-4">{{ $t('wallet.receiveNav') }}</h1>
+    <h1 class="text-xl font-bold text-gray-900 dark:text-white mb-5">{{ $t('wallet.receiveNav') }}</h1>
 
     <div v-if="loading" class="rounded-2xl border border-gray-200 dark:border-gh-700 bg-white dark:bg-gh-800 p-8 flex items-center justify-center">
       <div class="animate-pulse h-52 w-52 bg-gray-200 dark:bg-gh-700 rounded-xl" />
     </div>
 
-    <div v-else class="w-full max-w-sm flex flex-col gap-4">
+    <div v-else class="flex justify-center">
+    <div class="w-full max-w-sm flex flex-col gap-4">
 
       <!-- QR Card -->
       <div class="rounded-2xl border border-gray-200 dark:border-gh-700 bg-white dark:bg-gh-800 p-6 flex flex-col items-center gap-4">
@@ -68,6 +69,7 @@ onMounted(async () => {
         </button>
       </div>
 
+    </div>
     </div>
   </div>
 </template>

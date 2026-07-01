@@ -57,6 +57,7 @@
     "netMaxSupply": "Max Supply",
     "netBurned": "Burned",
     "netBlockReward": "Block Reward",
+    "showFiatValue": "Показывать стоимость в фиате",
     "showBlockNumber": "Показывать номер блока",
     "clearStorage": "Удалить все данные",
     "clearStorageDesc": "Все настройки и данные кошелька на этом устройстве будут безвозвратно удалены.",
@@ -106,6 +107,7 @@
     "transactionHistory": "История транзакций",
     "loadingTransactions": "Загрузка транзакций...",
     "noTransactionsYet": "Транзакций пока нет",
+    "noTransactionsDesc": "Ваши транзакции появятся здесь после отправки или получения NAV",
     "unconfirmed": "Неподтверждённая",
     "block": "Блок",
     "outputs": "выходов",
@@ -114,6 +116,9 @@
     "sendNav": "Отправить NAV",
     "navAddress": "Адрес NAV",
     "memo": "Заметка",
+    "memoLabel": "Заметка для получателя",
+    "memoPlaceholder": "Необязательная заметка...",
+    "memoInfo": "Получатель увидит эту заметку в своей истории транзакций.",
     "sendingTransaction": "Отправка транзакции...",
     "recipient": "Получатель",
     "transactionSuccessful": "Транзакция выполнена!",
@@ -121,7 +126,10 @@
     "receiveNav": "Получить NAV",
     "addressCopied": "Адрес скопирован!",
     "txs": "тр.",
-    "synced": "СИНХРОНИЗИРОВАНО"
+    "synced": "СИНХРОНИЗИРОВАНО",
+    "useAll": "Использовать всё",
+    "subtractFeeFromAmount": "Вычесть комиссию из суммы",
+    "subtractFeeFromAmountDesc": "Комиссия сети будет вычтена из отправляемой суммы"
   },
   "wizard": {
     "walletName": "Название кошелька",
@@ -235,7 +243,13 @@
     "seedDescription": "Расширенные настройки: ваш мастер-ключ в шестнадцатеричном формате.",
     "revealSeed": "Показать мастер-ключ",
     "copySeed": "Копировать ключ",
-    "hideSeed": "Скрыть ключ"
+    "hideSeed": "Скрыть ключ",
+    "securityModal": {
+      "title": "Предупреждение безопасности",
+      "message": "Убедитесь, что за вами никто не наблюдает. Никогда не делитесь этой информацией ни с кем — иначе ваши средства могут быть безвозвратно утеряны.",
+      "confirm": "Понимаю, показать всё равно",
+      "cancel": "Отмена"
+    }
   },
   "pwa": {
     "installTitle": "Установить Navio Go",

@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg text-white flex flex-col items-center justify-between px-6" :style="bgStyle">
+  <div class="min-h-full bg text-white flex flex-col items-center justify-between px-6" :style="bgStyle">
     <!-- CENTER CONTENT -->
     <div class="flex flex-col items-center mt-20 space-y-4">
 
@@ -15,15 +15,23 @@
 
 
   <!-- WALLET NAME -->
-  <div class="text-sm font-medium text-gray-500 dark:text-gray-400 tracking-wide">{{ walletName }}</div>
+  <div class="flex flex-col items-center gap-1.5">
+    <div class="text-sm font-medium text-gray-500 dark:text-gray-400 tracking-wide">{{ walletName }}</div>
+    <span
+      v-if="network === 'testnet'"
+      class="text-xs font-semibold px-2 py-0.5 rounded-full bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400"
+    >
+      testnet
+    </span>
+  </div>
 
   <!-- BALANCE -->
-  <div class="text-5xl font-bold tracking-tight text-gray-900 dark:text-white">
-    {{ balance }} <span class="text-2xl font-medium text-gray-500 dark:text-gray-400">NAV</span>
+  <div :class="balanceFontClass" class="font-bold tracking-tight text-gray-900 dark:text-white">
+    {{ formattedBalance }} <span class="text-2xl font-medium text-gray-500 dark:text-gray-400">NAV</span>
   </div>
 
   <!-- FIAT + 24h -->
-  <div class="min-h-[1.5rem] flex items-center gap-2">
+  <div v-if="settings.showFiatValue" class="min-h-[1.5rem] flex items-center gap-2">
     <span v-if="fiatValue != null" class="text-base text-gray-600 dark:text-gray-300">
       ≈ {{ fiatValue }}
     </span>
@@ -60,12 +68,14 @@
 </div>
 </template>
 <script setup>
-  import { onMounted, onUnmounted, computed } from "vue";
+  import { onMounted, onUnmounted, computed, ref } from "vue";
   import { settings } from "@/stores/settings";
   import { wallpapers } from "@/assets/wallpapers";
   import { percent, balance, walletName, walletHeight, chainTip } from "@/stores/navio";
   import { navPrice, getPriceIn, startPricePolling, stopPricePolling } from "@/stores/navPrice";
   import CircularProgress from '@/components/CircularProgress.vue'
+
+  const network = sessionStorage.getItem('network') ?? 'mainnet'
 
   const isDark = computed(() => {
     if (settings.theme === 'dark') return true
@@ -77,6 +87,20 @@
     const wp = wallpapers.find(w => w.id === settings.wallpaper) ?? wallpapers[0]
     if (!wp.dark && !wp.light) return {}
     return { backgroundImage: isDark.value ? wp.dark : wp.light, backgroundSize: 'cover', backgroundPosition: 'center', backgroundRepeat: 'no-repeat' }
+  })
+
+  const formattedBalance = computed(() => {
+    const nav = Number(balance.value)
+    if (!nav || isNaN(nav)) return '0'
+    return nav.toLocaleString(undefined, { maximumFractionDigits: 8 })
+  })
+
+  const balanceFontClass = computed(() => {
+    const len = formattedBalance.value.length
+    if (len <= 7)  return 'text-5xl'
+    if (len <= 11) return 'text-4xl'
+    if (len <= 15) return 'text-3xl'
+    return 'text-2xl'
   })
 
   const fiatValue = computed(() => {

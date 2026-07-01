@@ -1,8 +1,9 @@
 <template>
-  <div class="min-h-screen bg-gray-50 dark:bg-gh-900 p-5 pb-24 transition-colors duration-300">
-    <div class="w-full max-w-md mx-auto flex flex-col gap-4">
+  <div class="bg-gray-50 dark:bg-gh-900 p-5 pb-6 transition-colors duration-300">
 
-      <h1 class="text-xl font-bold text-gray-900 dark:text-white">{{ $t('wallet.sendNav') }}</h1>
+    <h1 class="text-xl font-bold text-gray-900 dark:text-white mb-5">{{ $t('wallet.sendNav') }}</h1>
+
+    <div class="w-full max-w-md mx-auto flex flex-col gap-4">
 
       <!-- Form Card -->
       <div class="rounded-2xl border border-gray-200 dark:border-gh-700 bg-white dark:bg-gh-800 overflow-hidden">
@@ -40,9 +41,22 @@
         </div>
 
         <div class="border-t border-gray-100 dark:border-gh-700 px-4 py-3">
-          <label class="block text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500 mb-1.5">
-            {{ $t('wallet.amount') }}
-          </label>
+          <div class="flex items-center justify-between mb-1.5">
+            <label class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">
+              {{ $t('wallet.amount') }}
+            </label>
+            <button
+              v-if="availableBalance > 0"
+              @click="useAll"
+              class="flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-medium transition
+                     text-blue-600 dark:text-blue-400
+                     hover:bg-blue-50 dark:hover:bg-blue-900/20"
+            >
+              <span class="text-gray-400 dark:text-gray-500">{{ formattedBalance }} NAV</span>
+              <span class="mx-0.5 text-gray-300 dark:text-gray-600">·</span>
+              {{ $t('wallet.useAll') }}
+            </button>
+          </div>
           <input
             v-model.number="amount"
             type="number"
@@ -58,12 +72,41 @@
         </div>
 
         <div class="border-t border-gray-100 dark:border-gh-700 px-4 py-3">
-          <label class="block text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500 mb-1.5">
-            {{ $t('wallet.memo') }}
-          </label>
+          <div class="flex items-center gap-1.5 mb-1.5">
+            <label class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">
+              {{ $t('wallet.memoLabel') }}
+            </label>
+            <button
+              type="button"
+              @click="showMemoInfo = !showMemoInfo"
+              class="text-gray-400 dark:text-gray-500 transition-colors"
+              :class="showMemoInfo ? 'text-blue-500 dark:text-blue-400' : 'hover:text-blue-500 dark:hover:text-blue-400'"
+            >
+              <Info class="w-3.5 h-3.5" />
+            </button>
+          </div>
+
+          <Transition
+            enter-active-class="transition-all duration-200 ease-out"
+            enter-from-class="opacity-0 -translate-y-1"
+            enter-to-class="opacity-100 translate-y-0"
+            leave-active-class="transition-all duration-150 ease-in"
+            leave-from-class="opacity-100 translate-y-0"
+            leave-to-class="opacity-0 -translate-y-1"
+          >
+            <div
+              v-if="showMemoInfo"
+              class="mb-2.5 px-3 py-2.5 rounded-xl bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800/30 flex items-start gap-2"
+            >
+              <Info class="w-3.5 h-3.5 text-blue-500 dark:text-blue-400 mt-0.5 shrink-0" />
+              <p class="text-xs text-blue-700 dark:text-blue-300 leading-relaxed">{{ $t('wallet.memoInfo') }}</p>
+            </div>
+          </Transition>
+
           <input
             v-model="memo"
             type="text"
+            :placeholder="$t('wallet.memoPlaceholder')"
             class="w-full rounded-xl px-3 py-2.5 text-sm outline-none transition-colors
                    bg-gray-50 dark:bg-gh-700
                    border border-gray-200 dark:border-gh-600
@@ -71,6 +114,32 @@
                    placeholder-gray-400 dark:placeholder-gray-500
                    focus:border-blue-400 dark:focus:border-blue-500"
           />
+        </div>
+
+        <!-- Subtract fee toggle -->
+        <div class="border-t border-gray-100 dark:border-gh-700 px-4 py-3 flex items-center justify-between gap-3">
+          <div class="min-w-0">
+            <p class="text-sm font-medium text-gray-700 dark:text-gray-300 truncate">
+              {{ $t('wallet.subtractFeeFromAmount') }}
+            </p>
+            <p class="text-xs text-gray-400 dark:text-gray-500 mt-0.5 leading-snug">
+              {{ $t('wallet.subtractFeeFromAmountDesc') }}
+            </p>
+          </div>
+          <button
+            @click="subtractFeeFromAmount = !subtractFeeFromAmount"
+            :class="subtractFeeFromAmount
+              ? 'bg-blue-600'
+              : 'bg-gray-200 dark:bg-gh-600'"
+            class="relative shrink-0 w-11 h-6 rounded-full transition-colors duration-200 focus:outline-none"
+            role="switch"
+            :aria-checked="subtractFeeFromAmount"
+          >
+            <span
+              :class="subtractFeeFromAmount ? 'translate-x-5' : 'translate-x-0'"
+              class="absolute top-1 left-1 w-4 h-4 bg-white rounded-full shadow transition-transform duration-200"
+            />
+          </button>
         </div>
 
         <div class="border-t border-gray-100 dark:border-gh-700 px-4 py-4">
@@ -178,13 +247,16 @@
 
 <script setup>
 import { ref, computed } from "vue";
-import { getNavioClient } from "@/stores/navio";
+import { getNavioClient, balance } from "@/stores/navio";
 import { BarcodeScanner, BarcodeFormat } from "@capacitor-mlkit/barcode-scanning";
-import { QrCode, Loader2, Check } from "lucide-vue-next";
+import { QrCode, Loader2, Check, Info } from "lucide-vue-next";
 
 const recipient = ref("");
 const amount = ref(null);
 const memo = ref("");
+const showMemoInfo = ref(false);
+
+const subtractFeeFromAmount = ref(false)
 
 const showConfirm = ref(false);
 const showResult = ref(false);
@@ -192,6 +264,14 @@ const resultSuccess = ref(false);
 const isLoading = ref(false);
 const isScanning = ref(false);
 const errorMessage = ref('');
+
+const availableBalance = computed(() => Number(balance.value) || 0)
+
+const formattedBalance = computed(() =>
+  availableBalance.value.toLocaleString(undefined, { maximumFractionDigits: 8 })
+)
+
+const useAll = () => { amount.value = availableBalance.value }
 
 const canSend = computed(() => recipient.value && amount.value > 0);
 
@@ -223,7 +303,7 @@ const sendTransaction = () => {
   isLoading.value = true;
   errorMessage.value = '';
 
-  client.sendTransaction({ address: recipient.value, amount: toSatoshi(amount.value), memo: memo.value })
+  client.sendTransaction({ address: recipient.value, amount: toSatoshi(amount.value), memo: memo.value, subtractFeeFromAmount: subtractFeeFromAmount.value })
     .then((result) => {
       console.log('Transaction ID:', result.txId);
       resultSuccess.value = true;
@@ -242,5 +322,7 @@ const closeResult = () => {
   recipient.value = "";
   amount.value = null;
   memo.value = "";
+  showMemoInfo.value = false;
+  subtractFeeFromAmount.value = false;
 };
 </script>

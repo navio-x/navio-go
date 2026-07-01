@@ -1,5 +1,5 @@
 <template>
-  <div class="p-5 space-y-5 bg-white text-gray-900 dark:bg-gh-900 dark:text-white min-h-screen transition-colors duration-300">
+  <div class="p-5 space-y-5 bg-white text-gray-900 dark:bg-gh-900 dark:text-white transition-colors duration-300">
 
     <!-- Header -->
     <div class="flex items-center justify-between">
@@ -21,19 +21,6 @@
           + {{ $t('walletList.createNew') }}
         </button>
       </div>
-    </div>
-
-    <!-- Network -->
-    <div v-if="wallets.length > 0">
-      <label class="block mb-2 text-sm font-semibold text-gray-600 dark:text-gray-400">{{ $t('wizard.network') }}</label>
-      <select
-        v-model="network"
-        class="border border-gray-200 dark:border-gh-700 rounded-lg p-2 w-full text-sm
-        bg-white text-gray-900 dark:bg-gh-900 dark:text-white transition-colors"
-      >
-        <option value="testnet">{{ $t('wizard.testnet') }}</option>
-        <option value="mainnet">{{ $t('wizard.mainnet') }}</option>
-      </select>
     </div>
 
     <!-- Empty state -->
@@ -91,6 +78,15 @@
             <p class="font-semibold truncate leading-tight">{{ wallet.name }}</p>
             <div class="flex items-center gap-2 mt-0.5">
               <span class="text-xs text-gray-400 dark:text-gray-500">{{ formatDate(wallet.createdAt) }}</span>
+              <span
+                v-if="wallet.network"
+                class="text-xs font-medium px-1.5 py-0.5 rounded"
+                :class="wallet.network === 'mainnet'
+                  ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
+                  : 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400'"
+              >
+                {{ wallet.network }}
+              </span>
               <span
                 v-if="wallet.encrypted"
                 class="inline-flex items-center gap-1 text-xs text-yellow-500 font-medium"
@@ -153,16 +149,26 @@
         <p class="text-sm text-gray-500 dark:text-gray-400">
           {{ $t('walletList.unlockDesc', { name: walletToUnlock.name }) }}
         </p>
-        <input
-          ref="passwordInputEl"
-          v-model="passwordInput"
-          type="password"
-          :placeholder="$t('walletList.unlockPlaceholder')"
-          @keyup.enter="doUnlock"
-          class="w-full border border-gray-200 dark:border-gh-700 rounded-xl p-2.5 text-sm
-          bg-white dark:bg-gh-800 text-gray-900 dark:text-white
-          focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
+        <div class="relative">
+          <input
+            ref="passwordInputEl"
+            v-model="passwordInput"
+            :type="showPassword ? 'text' : 'password'"
+            :placeholder="$t('walletList.unlockPlaceholder')"
+            @keyup.enter="doUnlock"
+            class="w-full border border-gray-200 dark:border-gh-700 rounded-xl p-2.5 pr-10 text-sm
+            bg-white dark:bg-gh-800 text-gray-900 dark:text-white
+            focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+          <button
+            type="button"
+            @click="showPassword = !showPassword"
+            class="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+          >
+            <EyeOff v-if="showPassword" class="w-4 h-4" />
+            <Eye v-else class="w-4 h-4" />
+          </button>
+        </div>
         <p v-if="passwordError" class="text-sm text-red-500 dark:text-red-400">
           {{ passwordError }}
         </p>
@@ -287,11 +293,11 @@
 import { ref, onMounted, watch, nextTick } from "vue";
 import { useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
+import { Eye, EyeOff } from "lucide-vue-next";
 import { getAllWallets, deleteWalletFull } from "@/stores/wallet_management";
 import { loadWallet } from "@/stores/navio";
 
 const { t: $t }        = useI18n();
-const network          = ref("testnet");
 const router           = useRouter();
 const wallets          = ref([]);
 const walletToDelete   = ref(null);
@@ -299,8 +305,10 @@ const walletToUnlock   = ref(null);
 const passwordInput    = ref("");
 const passwordError    = ref("");
 const passwordInputEl  = ref(null);
+const showPassword     = ref(false);
 
 watch(walletToUnlock, async (val) => {
+  if (!val) showPassword.value = false
   if (val) {
     await nextTick();
     passwordInputEl.value?.focus();
@@ -348,13 +356,15 @@ async function _doLoad(wallet, password) {
   try {
     loadingId.value = wallet.id;
     passwordError.value = "";
+    const walletNetwork = wallet.network ?? "testnet";
     await loadWallet({
       wallet_id: wallet.name,
-      network: network.value ?? "testnet",
+      network:   walletNetwork,
       password,
     });
     sessionStorage.setItem("walletId",   wallet.id);
     sessionStorage.setItem("walletName", wallet.name);
+    sessionStorage.setItem("network",    walletNetwork);
     walletToUnlock.value = null;
     router.push("/wallet/balance");
   } catch (err) {

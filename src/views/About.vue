@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-gray-50 dark:bg-gh-900 p-4 pb-24">
+  <div class="bg-gray-50 dark:bg-gh-900 p-4 pb-6">
 
     <!-- Header -->
     <div class="flex items-center gap-3 mb-6">
@@ -57,7 +57,7 @@
         <div class="w-px bg-gray-200 dark:bg-gh-700" />
 
         <a
-          href="https://github.com/nav-io/navio-go"
+          href="https://github.com/navio-x/navio-go"
           target="_blank"
           rel="noopener noreferrer"
           class="flex-1 flex items-center justify-center gap-2 py-3.5

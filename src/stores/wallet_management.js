@@ -30,6 +30,7 @@ const DEFAULT_ELECTRUM = {
  * @property {string}  id         - Benzersiz cüzdan kimliği (slugified isim)
  * @property {string}  name       - Kullanıcıya gösterilen isim
  * @property {boolean} encrypted  - Şifreli mi?
+ * @property {string}  network    - 'mainnet' | 'testnet'
  * @property {number}  createdAt  - Unix timestamp (ms)
  */
 

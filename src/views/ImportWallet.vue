@@ -22,8 +22,8 @@
         class="border border-gray-300 dark:border-gh-600 rounded p-2 w-full
         bg-white dark:bg-gh-800 transition-colors"
       >
-        <option value="testnet">{{ $t('wizard.testnet') }}</option>
         <option value="mainnet">{{ $t('wizard.mainnet') }}</option>
+        <option value="testnet">{{ $t('wizard.testnet') }}</option>
       </select>
     </div>
 
@@ -180,12 +180,12 @@ import { restoreWallet } from "@/stores/navio";
 
 const router = useRouter();
 
-const network        = ref("testnet");
+const network        = ref("mainnet");
 const walletName     = ref("");
-const mnemonic       = ref("armor belt spring tail piano wonder power neutral narrow lunar error acoustic much pepper pig guess raise salon close uniform ride busy cluster mango");
+const mnemonic       = ref("");
 const startHeight    = ref(0);
-const password       = ref("Aa123456.");
-const passwordVerify = ref("Aa123456.");
+const password       = ref("");
+const passwordVerify = ref("");
 const loading        = ref(false);
 const connectionError = ref(null);
 

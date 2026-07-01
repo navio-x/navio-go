@@ -40,6 +40,7 @@
     "backupWallet": "Backup Wallet",
     "fiat": "Fiat",
     "wallpaper": "Wallpaper",
+    "showFiatValue": "Show Fiat Value",
     "showBlockNumber": "Show Block Number",
     "networkStatus": "Network Status",
     "netPriceUsd": "Price (USD)",
@@ -106,6 +107,7 @@
     "transactionHistory": "Transaction History",
     "loadingTransactions": "Loading transactions...",
     "noTransactionsYet": "No transactions yet",
+    "noTransactionsDesc": "Your transactions will appear here once you send or receive NAV",
     "unconfirmed": "Unconfirmed",
     "block": "Block",
     "outputs": "outputs",
@@ -114,6 +116,9 @@
     "sendNav": "Send NAV",
     "navAddress": "NAV Address",
     "memo": "Memo",
+    "memoLabel": "Note for Recipient",
+    "memoPlaceholder": "Optional note...",
+    "memoInfo": "The recipient will see this note in their transaction history.",
     "sendingTransaction": "Sending transaction...",
     "recipient": "Recipient",
     "transactionSuccessful": "Transaction Successful!",
@@ -121,7 +126,10 @@
     "receiveNav": "Receive NAV",
     "addressCopied": "Address copied!",
     "txs": "txs",
-    "synced": "SYNCED"
+    "synced": "SYNCED",
+    "useAll": "Use All",
+    "subtractFeeFromAmount": "Subtract fee from amount",
+    "subtractFeeFromAmountDesc": "The network fee will be deducted from the amount you send"
   },
   "wizard": {
     "walletName": "Wallet Name",
@@ -235,7 +243,13 @@
     "seedDescription": "Advanced: your master seed key in hex format.",
     "revealSeed": "Show Master Seed",
     "copySeed": "Copy Seed",
-    "hideSeed": "Hide Seed"
+    "hideSeed": "Hide Seed",
+    "securityModal": {
+      "title": "Security Warning",
+      "message": "Make sure no one is watching you. Never share this information with anyone — if you do, your funds could be permanently lost.",
+      "confirm": "I Understand, Show Anyway",
+      "cancel": "Cancel"
+    }
   },
   "pwa": {
     "installTitle": "Install Navio Go",

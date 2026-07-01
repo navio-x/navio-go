@@ -3,12 +3,24 @@ import { Capacitor, registerPlugin } from '@capacitor/core'
 
 const SystemBars = registerPlugin('NavigationBar')
 
+const supportedLocales = ['tr', 'en', 'zh', 'ru', 'es', 'pt-BR', 'ko', 'de', 'fr', 'ja']
+
+const getInitialLanguage = () => {
+  const saved = localStorage.getItem('language')
+  if (saved) return saved
+  const lang = navigator.language
+  if (supportedLocales.includes(lang)) return lang
+  const short = lang.split('-')[0]
+  return supportedLocales.includes(short) ? short : 'en'
+}
+
 export const settings = reactive({
-  language:        localStorage.getItem('language')        || 'en',
+  language:        getInitialLanguage(),
   currency:        localStorage.getItem('currency')        || 'USD',
   theme:           localStorage.getItem('theme')           || 'device',
   wallpaper:       localStorage.getItem('wallpaper')       || 'default',
   showBlockNumber: localStorage.getItem('showBlockNumber') !== 'false',
+  showFiatValue:   localStorage.getItem('showFiatValue')   !== 'false',
 })
 
 // Settings değiştiğinde localStorage'a kaydet
@@ -26,6 +38,10 @@ watch(() => settings.wallpaper, (val) => {
 
 watch(() => settings.showBlockNumber, (val) => {
   localStorage.setItem('showBlockNumber', val)
+})
+
+watch(() => settings.showFiatValue, (val) => {
+  localStorage.setItem('showFiatValue', val)
 })
 
 watch(() => settings.theme, (val) => {

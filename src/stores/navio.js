@@ -11,6 +11,15 @@ import {
   loadElectrumConfig,
   deleteWalletFull,
 } from './wallet_management.js';
+const ELECTRUM_HOSTS = {
+  mainnet: "electrum.nav.io",
+  testnet: "testnet.nav.io",
+};
+
+function getHost(network) {
+  return ELECTRUM_HOSTS[network] ?? ELECTRUM_HOSTS.testnet;
+}
+
 const _navioClient = ref(null);
 const _mnemonicWords = ref([]);
 const _sdkInitialized = ref(false);
@@ -340,7 +349,7 @@ export async function createWallet({
     network,
     backend: "electrum",
     electrum: {
-      host: network === "mainnet" ? "mainnet.nav.io" : "testnet.nav.io",
+      host: getHost(network),
       port: getPort(),
       ssl: isSSL(),
     },
@@ -385,6 +394,7 @@ export async function createWallet({
     id: generateUniqueId(wallet_name),
     name: wallet_name,
     encrypted: !!password,
+    network,
     createdAt: Date.now(),
   });
 
@@ -412,7 +422,7 @@ export async function loadWallet({
     network,
     backend: "electrum",
     electrum: {
-      host: network === "mainnet" ? "mainnet.nav.io" : "testnet.nav.io",
+      host: getHost(network),
       port: getPort(),
       ssl: isSSL(),
     },
@@ -463,7 +473,7 @@ export async function restoreWallet({ wallet_name, network, mnemonic, startHeigh
     network,
     backend: "electrum",
     electrum: {
-      host: network === "mainnet" ? "mainnet.nav.io" : "testnet.nav.io",
+      host: getHost(network),
       port: getPort(),
       ssl: isSSL(),
     },
@@ -505,6 +515,7 @@ export async function restoreWallet({ wallet_name, network, mnemonic, startHeigh
     id: generateUniqueId(wallet_name),
     name: wallet_name,
     encrypted: !!password,
+    network,
     createdAt: Date.now(),
   });
 
@@ -524,7 +535,7 @@ export async function refreshHistory() {
 
   try {
     const outputs = await _navioClient.value.getAllOutputs();
-
+    console.log(outputs);
     if (outputs.length === 0) {
       txHistory.value = [];
       return;

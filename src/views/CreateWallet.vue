@@ -11,8 +11,8 @@
         v-model="network"
         class="border border-gray-300 dark:border-gh-600 rounded p-2 w-full bg-white text-gray-900 dark:bg-gh-800 dark:text-white transition-colors duration-300"
       >
-        <option value="testnet">{{ $t('wizard.testnet') }}</option>
         <option value="mainnet">{{ $t('wizard.mainnet') }}</option>
+        <option value="testnet">{{ $t('wizard.testnet') }}</option>
       </select>
     </div>
 
@@ -144,10 +144,10 @@ import WizardNav from "@/components/WizardNav.vue";
 
 const router = useRouter();
 
-const network         = ref("testnet");
+const network         = ref("mainnet");
 const walletName      = ref("");
-const password        = ref("Aa123456.");
-const passwordVerify  = ref("Aa123456.");
+const password        = ref("");
+const passwordVerify  = ref("");
 const isLoading       = ref(false);
 const connectionError = ref(null);
 

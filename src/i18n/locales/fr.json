@@ -57,6 +57,7 @@
     "netMaxSupply": "Max Supply",
     "netBurned": "Burned",
     "netBlockReward": "Block Reward",
+    "showFiatValue": "Afficher la valeur fiat",
     "showBlockNumber": "Afficher le numéro de bloc",
     "clearStorage": "Effacer toutes les données",
     "clearStorageDesc": "Cela supprimera définitivement tous les paramètres et données du portefeuille de cet appareil.",
@@ -106,6 +107,7 @@
     "transactionHistory": "Historique des transactions",
     "loadingTransactions": "Chargement des transactions...",
     "noTransactionsYet": "Aucune transaction pour l'instant",
+    "noTransactionsDesc": "Vos transactions apparaîtront ici lorsque vous enverrez ou recevrez des NAV",
     "unconfirmed": "Non confirmée",
     "block": "Bloc",
     "outputs": "sorties",
@@ -114,6 +116,9 @@
     "sendNav": "Envoyer NAV",
     "navAddress": "Adresse NAV",
     "memo": "Mémo",
+    "memoLabel": "Note pour le destinataire",
+    "memoPlaceholder": "Note facultative...",
+    "memoInfo": "Le destinataire verra cette note dans son historique de transactions.",
     "sendingTransaction": "Envoi de la transaction...",
     "recipient": "Destinataire",
     "transactionSuccessful": "Transaction réussie !",
@@ -121,7 +126,10 @@
     "receiveNav": "Recevoir NAV",
     "addressCopied": "Adresse copiée !",
     "txs": "txs",
-    "synced": "SYNCHRONISÉ"
+    "synced": "SYNCHRONISÉ",
+    "useAll": "Tout utiliser",
+    "subtractFeeFromAmount": "Déduire les frais du montant",
+    "subtractFeeFromAmountDesc": "Les frais de réseau seront déduits du montant envoyé"
   },
   "wizard": {
     "walletName": "Nom du portefeuille",
@@ -235,7 +243,13 @@
     "seedDescription": "Avancé : votre clé de graine maîtresse au format hexadécimal.",
     "revealSeed": "Afficher la graine maîtresse",
     "copySeed": "Copier la graine",
-    "hideSeed": "Masquer la graine"
+    "hideSeed": "Masquer la graine",
+    "securityModal": {
+      "title": "Avertissement de sécurité",
+      "message": "Assurez-vous que personne ne vous observe. Ne partagez jamais ces informations avec qui que ce soit — si vous le faites, vos fonds pourraient être perdus définitivement.",
+      "confirm": "Je comprends, afficher quand même",
+      "cancel": "Annuler"
+    }
   },
   "pwa": {
     "installTitle": "Installer Navio Go",

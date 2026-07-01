@@ -44,6 +44,20 @@
       </div>
 
       <div class="border-t border-gray-200 dark:border-gh-700 px-4 py-3 flex items-center justify-between">
+        <label class="text-sm text-gray-700 dark:text-gray-300">{{ $t('settings.showFiatValue') }}</label>
+        <button
+          @click="settings.showFiatValue = !settings.showFiatValue"
+          class="relative inline-flex h-6 w-11 items-center rounded-full transition-colors shrink-0"
+          :class="settings.showFiatValue ? 'bg-blue-500' : 'bg-gray-300 dark:bg-gh-600'"
+        >
+          <span
+            class="inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform"
+            :class="settings.showFiatValue ? 'translate-x-6' : 'translate-x-1'"
+          />
+        </button>
+      </div>
+
+      <div class="border-t border-gray-200 dark:border-gh-700 px-4 py-3 flex items-center justify-between">
         <label class="text-sm text-gray-700 dark:text-gray-300">{{ $t('settings.showBlockNumber') }}</label>
         <button
           @click="settings.showBlockNumber = !settings.showBlockNumber"
@@ -259,10 +273,7 @@ const changeLanguage = () => {
 }
 
 onMounted(() => {
-  if (settings.language && settings.language !== locale.value) {
-    currentLanguage.value = settings.language
-    locale.value = settings.language
-  }
+  currentLanguage.value = locale.value
 })
 
 const goToBackup = () => {

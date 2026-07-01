@@ -57,6 +57,7 @@
     "netMaxSupply": "Max Supply",
     "netBurned": "Burned",
     "netBlockReward": "Block Reward",
+    "showFiatValue": "Fiat-Wert anzeigen",
     "showBlockNumber": "Blocknummer anzeigen",
     "clearStorage": "Alle Daten löschen",
     "clearStorageDesc": "Dadurch werden alle Einstellungen und Wallet-Daten auf diesem Gerät dauerhaft entfernt.",
@@ -106,6 +107,7 @@
     "transactionHistory": "Transaktionsverlauf",
     "loadingTransactions": "Transaktionen werden geladen...",
     "noTransactionsYet": "Noch keine Transaktionen",
+    "noTransactionsDesc": "Deine Transaktionen erscheinen hier, sobald du NAV sendest oder empfängst",
     "unconfirmed": "Unbestätigt",
     "block": "Block",
     "outputs": "Ausgaben",
@@ -114,6 +116,9 @@
     "sendNav": "NAV senden",
     "navAddress": "NAV-Adresse",
     "memo": "Memo",
+    "memoLabel": "Notiz für Empfänger",
+    "memoPlaceholder": "Optionale Notiz...",
+    "memoInfo": "Der Empfänger sieht diese Notiz in seinem Transaktionsverlauf.",
     "sendingTransaction": "Transaktion wird gesendet...",
     "recipient": "Empfänger",
     "transactionSuccessful": "Transaktion erfolgreich!",
@@ -121,7 +126,10 @@
     "receiveNav": "NAV empfangen",
     "addressCopied": "Adresse kopiert!",
     "txs": "Txs",
-    "synced": "SYNCHRONISIERT"
+    "synced": "SYNCHRONISIERT",
+    "useAll": "Alles verwenden",
+    "subtractFeeFromAmount": "Gebühr vom Betrag abziehen",
+    "subtractFeeFromAmountDesc": "Die Netzwerkgebühr wird vom gesendeten Betrag abgezogen"
   },
   "wizard": {
     "walletName": "Wallet-Name",
@@ -235,7 +243,13 @@
     "seedDescription": "Erweitert: dein Master-Seed-Schlüssel im Hexadezimalformat.",
     "revealSeed": "Master-Seed anzeigen",
     "copySeed": "Seed kopieren",
-    "hideSeed": "Seed ausblenden"
+    "hideSeed": "Seed ausblenden",
+    "securityModal": {
+      "title": "Sicherheitswarnung",
+      "message": "Stelle sicher, dass dir niemand zuschaut. Teile diese Informationen niemals mit jemandem — sonst könnten deine Mittel dauerhaft verloren gehen.",
+      "confirm": "Ich verstehe, trotzdem anzeigen",
+      "cancel": "Abbrechen"
+    }
   },
   "pwa": {
     "installTitle": "Navio Go installieren",

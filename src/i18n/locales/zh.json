@@ -57,6 +57,7 @@
     "netMaxSupply": "Max Supply",
     "netBurned": "Burned",
     "netBlockReward": "Block Reward",
+    "showFiatValue": "显示法币价值",
     "showBlockNumber": "显示区块编号",
     "clearStorage": "清除所有数据",
     "clearStorageDesc": "这将永久删除此设备上的所有设置和钱包数据。",
@@ -106,6 +107,7 @@
     "transactionHistory": "交易记录",
     "loadingTransactions": "正在加载交易...",
     "noTransactionsYet": "暂无交易",
+    "noTransactionsDesc": "发送或接收 NAV 后，您的交易将显示在此处",
     "unconfirmed": "未确认",
     "block": "区块",
     "outputs": "输出",
@@ -114,6 +116,9 @@
     "sendNav": "发送 NAV",
     "navAddress": "NAV 地址",
     "memo": "备注",
+    "memoLabel": "给收款方的备注",
+    "memoPlaceholder": "可选备注...",
+    "memoInfo": "收款方将在其交易记录中看到此备注。",
     "sendingTransaction": "正在发送交易...",
     "recipient": "收款方",
     "transactionSuccessful": "交易成功！",
@@ -121,7 +126,10 @@
     "receiveNav": "接收 NAV",
     "addressCopied": "地址已复制！",
     "txs": "笔",
-    "synced": "已同步"
+    "synced": "已同步",
+    "useAll": "全部使用",
+    "subtractFeeFromAmount": "从金额中扣除手续费",
+    "subtractFeeFromAmountDesc": "网络手续费将从发送金额中扣除"
   },
   "wizard": {
     "walletName": "钱包名称",
@@ -235,7 +243,13 @@
     "seedDescription": "高级：十六进制格式的主种子密钥。",
     "revealSeed": "显示主种子",
     "copySeed": "复制种子",
-    "hideSeed": "隐藏种子"
+    "hideSeed": "隐藏种子",
+    "securityModal": {
+      "title": "安全警告",
+      "message": "请确保没有人在旁边观看。永远不要与任何人分享此信息 — 如果分享，您的资金可能会永久丢失。",
+      "confirm": "我明白，继续显示",
+      "cancel": "取消"
+    }
   },
   "pwa": {
     "installTitle": "安装 Navio Go",

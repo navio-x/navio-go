@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-gray-50 dark:bg-gh-900 p-5 space-y-5">
+  <div class="bg-gray-50 dark:bg-gh-900 p-5 space-y-5">
 
     <!-- Header -->
     <div class="flex items-center gap-3">
@@ -33,6 +33,17 @@
         <p class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">{{ $t('settings.netNetwork') }}</p>
       </div>
       <div class="divide-y divide-gray-100 dark:divide-gh-700">
+
+        <StatRow :label="$t('wizard.network')">
+          <span
+            class="px-2 py-0.5 rounded text-xs font-semibold"
+            :class="network === 'mainnet'
+              ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
+              : 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400'"
+          >
+            {{ network }}
+          </span>
+        </StatRow>
 
         <StatRow :label="$t('settings.netBlockHeight')">
           <template v-if="stats.height != null">#{{ stats.height.toLocaleString() }}</template>
@@ -121,7 +132,8 @@ import { ref, onMounted, onUnmounted, defineComponent, h } from 'vue'
 import { useRouter } from 'vue-router'
 import { ChevronLeft, RefreshCw } from 'lucide-vue-next'
 
-const router = useRouter()
+const router  = useRouter()
+const network = sessionStorage.getItem('network') ?? 'mainnet'
 
 // ── Inline helpers ──────────────────────────────────────────────────────────
 
@@ -150,14 +162,22 @@ const supply = ref({ total: null, max: null, burned: null, blockReward: null })
 
 // ── Fetch ───────────────────────────────────────────────────────────────────
 
+function apiBase() {
+  const network = sessionStorage.getItem('network') ?? 'mainnet'
+  return network === 'testnet'
+    ? 'https://blocks.nav.io/api/testnet'
+    : 'https://blocks.nav.io/api'
+}
+
 async function refresh() {
   if (loading.value) return
   loading.value = true
   error.value   = false
   try {
+    const base = apiBase()
     const [statsRes, supplyRes] = await Promise.all([
-      fetch('https://blocks.nav.io/api/stats'),
-      fetch('https://blocks.nav.io/api/supply'),
+      fetch(`${base}/stats`),
+      fetch(`${base}/supply`),
     ])
     const s  = await statsRes.json()
     const su = await supplyRes.json()

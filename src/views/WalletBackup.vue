@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-gray-50 dark:bg-gh-900 p-4 pb-24">
+  <div class="bg-gray-50 dark:bg-gh-900 p-4 pb-6">
 
     <!-- Header -->
     <div class="flex items-center gap-3 mb-6">
@@ -26,6 +26,67 @@
       </p>
     </div>
 
+    <!-- Security Warning Modal -->
+    <Teleport to="body">
+      <Transition name="modal-fade">
+        <div
+          v-if="showSecurityModal"
+          class="fixed inset-0 z-50 flex items-center justify-center p-6"
+        >
+          <!-- Backdrop -->
+          <div
+            class="absolute inset-0 bg-black/60 backdrop-blur-sm"
+            @click="cancelModal"
+          />
+
+          <!-- Modal panel -->
+          <div class="relative w-full max-w-sm bg-white dark:bg-gh-800 rounded-3xl shadow-2xl overflow-hidden">
+            <!-- Red top accent -->
+            <div class="h-1.5 w-full bg-gradient-to-r from-red-500 to-orange-500" />
+
+            <div class="p-6">
+              <!-- Icon + title -->
+              <div class="flex items-center gap-3 mb-4">
+                <div class="w-10 h-10 rounded-2xl bg-red-100 dark:bg-red-900/40 flex items-center justify-center shrink-0">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-red-600 dark:text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
+                  </svg>
+                </div>
+                <h2 class="text-base font-bold text-gray-900 dark:text-white">
+                  {{ $t('backup.securityModal.title') }}
+                </h2>
+              </div>
+
+              <!-- Message -->
+              <p class="text-sm text-gray-600 dark:text-gray-300 leading-relaxed mb-6">
+                {{ $t('backup.securityModal.message') }}
+              </p>
+
+              <!-- Actions -->
+              <div class="flex flex-col gap-2">
+                <button
+                  @click="confirmModal"
+                  class="w-full py-3 rounded-2xl text-sm font-semibold transition-colors
+                         bg-red-600 hover:bg-red-700 text-white"
+                >
+                  {{ $t('backup.securityModal.confirm') }}
+                </button>
+                <button
+                  @click="cancelModal"
+                  class="w-full py-3 rounded-2xl text-sm font-medium transition-colors
+                         bg-gray-100 dark:bg-gh-700
+                         text-gray-700 dark:text-gray-300
+                         hover:bg-gray-200 dark:hover:bg-gh-600"
+                >
+                  {{ $t('backup.securityModal.cancel') }}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </Transition>
+    </Teleport>
+
     <!-- Hidden state: action buttons -->
     <div v-if="!revealed && !revealedSeed" class="space-y-3">
       <p class="text-sm text-gray-500 dark:text-gray-400 px-1 mb-1">
@@ -34,7 +95,7 @@
 
       <div class="rounded-2xl border border-gray-200 dark:border-gh-700 bg-white dark:bg-gh-800 overflow-hidden">
         <button
-          @click="revealMnemonic"
+          @click="openModal('mnemonic')"
           class="w-full px-4 py-3.5 text-sm font-medium text-left
                  text-gray-700 dark:text-gray-300
                  hover:bg-gray-50 dark:hover:bg-gh-700
@@ -56,7 +117,7 @@
         <div class="border-t border-gray-200 dark:border-gh-700" />
 
         <button
-          @click="revealSeed"
+          @click="openModal('seed')"
           class="w-full px-4 py-3.5 text-sm font-medium text-left
                  text-gray-700 dark:text-gray-300
                  hover:bg-gray-50 dark:hover:bg-gh-700
@@ -167,9 +228,29 @@ const revealedSeed = ref(false)
 const masterSeed = ref('')
 const copiedSeed = ref(false)
 
+const showSecurityModal = ref(false)
+const pendingAction = ref(null)
+
 const mnemonicWords = computed(() =>
   mnemonic.value ? mnemonic.value.trim().split(' ') : []
 )
+
+const openModal = (action) => {
+  pendingAction.value = action
+  showSecurityModal.value = true
+}
+
+const cancelModal = () => {
+  showSecurityModal.value = false
+  pendingAction.value = null
+}
+
+const confirmModal = () => {
+  showSecurityModal.value = false
+  if (pendingAction.value === 'mnemonic') revealMnemonic()
+  else if (pendingAction.value === 'seed') revealSeed()
+  pendingAction.value = null
+}
 
 const revealMnemonic = () => {
   try {
@@ -213,3 +294,22 @@ const copySeed = async () => {
   }
 }
 </script>
+
+<style scoped>
+.modal-fade-enter-active,
+.modal-fade-leave-active {
+  transition: opacity 0.2s ease;
+}
+.modal-fade-enter-from,
+.modal-fade-leave-to {
+  opacity: 0;
+}
+.modal-fade-enter-active .relative,
+.modal-fade-leave-active .relative {
+  transition: transform 0.2s ease;
+}
+.modal-fade-enter-from .relative,
+.modal-fade-leave-to .relative {
+  transform: translateY(12px);
+}
+</style>
