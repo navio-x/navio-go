@@ -3,6 +3,9 @@ node_modules/
 
 # Build output
 dist/
+dist-extension/
+.wxt/
+.output/
 
 # Android keystore (sensitive!)
 *.jks

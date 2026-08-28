@@ -296,6 +296,7 @@ import { useI18n } from "vue-i18n";
 import { Eye, EyeOff } from "lucide-vue-next";
 import { getAllWallets, deleteWalletFull } from "@/stores/wallet_management";
 import { loadWallet } from "@/stores/navio";
+import { readWalletSession } from "@/lib/extensionSession";
 
 const { t: $t }        = useI18n();
 const router           = useRouter();
@@ -317,11 +318,27 @@ watch(walletToUnlock, async (val) => {
 const loadingId        = ref(null);
 const connectionError  = ref(null); // { message, wallet }
 
-onMounted(() => {
+onMounted(async () => {
   localStorage.setItem('user_agreement_accepted', true);
   console.log("Listing wallets...");
   wallets.value = getAllWallets();
   console.log(JSON.stringify(wallets.value, null, 2));
+
+  // In an extension popup, every open is a fresh page load, so the wallet
+  // is never actually still in memory here — but if it was unlocked
+  // elsewhere this browser session (extension only; no-op on mobile/web),
+  // reuse the cached credentials instead of asking again.
+  const session = await readWalletSession();
+  if (session?.walletName) {
+    const match = wallets.value.find((w) => w.name === session.walletName);
+    if (match) {
+      if (!match.encrypted) {
+        await _doLoad(match, undefined);
+      } else if (session.password) {
+        await _doLoad(match, session.password, { silent: true });
+      }
+    }
+  }
 });
 
 function formatDate(ts) {
@@ -351,7 +368,7 @@ function cancelUnlock() {
   passwordError.value  = "";
 }
 
-async function _doLoad(wallet, password) {
+async function _doLoad(wallet, password, { silent = false } = {}) {
   console.log("Trying to load wallet : " + wallet.name);
   try {
     loadingId.value = wallet.id;
@@ -369,10 +386,13 @@ async function _doLoad(wallet, password) {
     router.push("/wallet/balance");
   } catch (err) {
     if (err?.message === "wrong_password") {
-      passwordError.value = $t('walletList.wrongPassword');
+      // Cached password is stale (silent auto-unlock attempt) — just leave
+      // the wallet list showing so the user can unlock manually instead of
+      // surfacing an error they didn't cause.
+      if (!silent) passwordError.value = $t('walletList.wrongPassword');
     } else {
       console.error("Wallet Load failed:", err);
-      connectionError.value = { message: err?.message ?? String(err), wallet };
+      if (!silent) connectionError.value = { message: err?.message ?? String(err), wallet };
     }
   } finally {
     loadingId.value = null;

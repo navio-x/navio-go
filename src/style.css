@@ -34,3 +34,36 @@
   --color-gh-600: #3d4450;
   --color-gh-500: #4a5568;
 }
+
+/* Themed scrollbars (Firefox) */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #d1d5db transparent;
+}
+html.dark * {
+  scrollbar-color: var(--color-gh-600) transparent;
+}
+
+/* Themed scrollbars (Chrome/Edge/Safari) */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background-color: #d1d5db;
+  border-radius: 999px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+::-webkit-scrollbar-thumb:hover {
+  background-color: #9ca3af;
+}
+html.dark ::-webkit-scrollbar-thumb {
+  background-color: var(--color-gh-600);
+}
+html.dark ::-webkit-scrollbar-thumb:hover {
+  background-color: var(--color-gh-500);
+}

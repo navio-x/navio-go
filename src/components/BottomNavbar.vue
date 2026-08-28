@@ -2,7 +2,7 @@
   <nav
     ref="navRef"
     class="w-full z-[100]
-           flex justify-around items-center
+           flex items-center
            px-0 pt-3
            backdrop-blur-lg border-t
            transition-all duration-300
@@ -18,53 +18,133 @@
     />
 
     <router-link
-      v-for="(item, index) in navItems"
+      v-for="(item, index) in fixedNavItems"
       :key="item.name"
       :to="item.path"
       :ref="el => { buttonRefs[index] = el }"
-      class="flex items-center justify-center px-5 py-3 rounded-xl relative"
+      class="flex-1 flex items-center justify-center py-3 rounded-xl relative min-w-0"
     >
       <component
         :is="item.icon"
         class="w-6 h-6 transition-colors duration-300"
-        :class="isActive(item.path)
+        :class="route.path === item.path
           ? 'text-[#00cc6a] dark:text-[#00ff88]'
           : 'text-black/50 dark:text-white/50'"
       />
     </router-link>
+
+    <button
+      type="button"
+      :ref="el => { buttonRefs[fixedNavItems.length] = el }"
+      class="flex-1 flex items-center justify-center py-3 rounded-xl relative min-w-0"
+      :aria-label="$t('nav.more')"
+      @click="showMore = true"
+    >
+      <MoreHorizontal
+        class="w-6 h-6 transition-colors duration-300"
+        :class="isMoreActive
+          ? 'text-[#00cc6a] dark:text-[#00ff88]'
+          : 'text-black/50 dark:text-white/50'"
+      />
+    </button>
   </nav>
+
+  <!-- More overflow sheet -->
+  <div
+    v-if="showMore"
+    class="fixed inset-0 z-[200] flex items-end justify-center bg-black/60 backdrop-blur-sm"
+    @click.self="showMore = false"
+  >
+    <div
+      class="bg-white dark:bg-gh-900 border-t border-gray-100 dark:border-gh-800 rounded-t-2xl p-3 w-full max-w-md shadow-2xl"
+      :style="{ paddingBottom: isIos ? 'calc(env(safe-area-inset-bottom) + 0.75rem)' : '0.75rem' }"
+    >
+      <div class="w-10 h-1 rounded-full bg-gray-300 dark:bg-gh-700 mx-auto mb-2" />
+      <button
+        v-for="item in overflowItems"
+        :key="item.name"
+        type="button"
+        class="w-full flex items-center gap-3 px-3 py-3.5 rounded-xl text-left
+               hover:bg-gray-50 dark:hover:bg-gh-800 transition-colors"
+        @click="goTo(item.path)"
+      >
+        <component
+          :is="item.icon"
+          class="w-5 h-5 shrink-0"
+          :class="isOverflowItemActive(item)
+            ? 'text-[#00cc6a] dark:text-[#00ff88]'
+            : 'text-black/60 dark:text-white/60'"
+        />
+        <span
+          class="text-sm font-medium"
+          :class="isOverflowItemActive(item)
+            ? 'text-[#00cc6a] dark:text-[#00ff88]'
+            : 'text-gray-700 dark:text-gray-300'"
+        >
+          {{ $t(item.labelKey) }}
+        </span>
+      </button>
+    </div>
+  </div>
 </template>
 
 <script setup>
 import { ref, computed, watch, onMounted, nextTick } from 'vue'
-import { useRoute } from 'vue-router'
-import { Wallet, Download, SendHorizontal, History, Settings } from 'lucide-vue-next'
+import { useRoute, useRouter } from 'vue-router'
+import { Wallet, Download, SendHorizontal, Layers, History, Settings, Briefcase, Store, MoreHorizontal } from 'lucide-vue-next'
 import { Capacitor } from '@capacitor/core'
+import { settings } from '@/stores/settings'
 
 const isIosNative = Capacitor.getPlatform() === 'ios'
 const isIosPwa = /iphone|ipad|ipod/i.test(navigator.userAgent) && !window.MSStream && window.navigator.standalone === true
 const isIos = isIosNative || isIosPwa
 
 const route = useRoute()
+const router = useRouter()
 const navRef = ref(null)
 const buttonRefs = ref([])
+const showMore = ref(false)
 
-const navItems = [
-  { name: 'wallet',   path: '/wallet/balance', icon: Wallet },
-  { name: 'receive',  path: '/wallet/receive',  icon: Download },
-  { name: 'send',     path: '/wallet/send',     icon: SendHorizontal },
-  { name: 'swap',     path: '/wallet/history',  icon: History },
-  { name: 'settings', path: '/settings',        icon: Settings },
+// The bar itself is capped at 5 slots: 4 fixed high-frequency actions plus
+// one "More" slot. Everything else — including future optional modes —
+// lives in the More sheet below, in a fixed manifest order that never
+// depends on which toggle was turned on first.
+const fixedNavItems = [
+  { name: 'wallet',  path: '/wallet/balance', icon: Wallet },
+  { name: 'receive', path: '/wallet/receive', icon: Download },
+  { name: 'send',    path: '/wallet/send',    icon: SendHorizontal },
+  { name: 'history', path: '/wallet/history', icon: History },
 ]
 
-const isActive = (path) => route.path === path
+const overflowManifest = [
+  { name: 'assets',   path: '/wallet/assets', icon: Layers,    labelKey: 'assets.title' },
+  { name: 'payroll',  path: '/payroll',       icon: Briefcase, labelKey: 'payroll.title',  enabled: () => settings.employerMode },
+  { name: 'pos',      path: '/pos',           icon: Store,     labelKey: 'pos.title',      enabled: () => settings.merchantMode },
+  { name: 'settings', path: '/settings',      icon: Settings,  labelKey: 'settings.title' },
+]
+
+const overflowItems = computed(() => overflowManifest.filter(item => !item.enabled || item.enabled()))
+
+const isOverflowItemActive = (item) =>
+  route.path === item.path || route.path.startsWith(item.path + '/')
+
+const isMoreActive = computed(() => overflowItems.value.some(isOverflowItemActive))
+
+const goTo = (path) => {
+  showMore.value = false
+  router.push(path)
+}
 
 const pillStyle = ref({ opacity: 0 })
 
 const updatePill = async () => {
   await nextTick()
-  const activeIdx = navItems.findIndex(item => route.path === item.path)
-  if (activeIdx === -1) return
+  let activeIdx = fixedNavItems.findIndex(item => route.path === item.path)
+  if (activeIdx === -1 && isMoreActive.value) activeIdx = fixedNavItems.length
+  if (activeIdx === -1) {
+    pillStyle.value = { ...pillStyle.value, opacity: 0 }
+    return
+  }
 
   const el = buttonRefs.value[activeIdx]
   const btn = el?.$el ?? el
@@ -85,5 +165,7 @@ const updatePill = async () => {
 }
 
 watch(() => route.path, updatePill)
+watch(() => settings.employerMode, updatePill)
+watch(() => settings.merchantMode, updatePill)
 onMounted(updatePill)
 </script>

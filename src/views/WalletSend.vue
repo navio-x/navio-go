@@ -166,6 +166,115 @@
       <p class="text-white text-base font-semibold">{{ $t('wallet.sendingTransaction') }}</p>
     </div>
 
+    <!-- POS payment request review (scanned navio: URI) -->
+    <div
+      v-if="posReview"
+      class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-6"
+    >
+      <div class="bg-white dark:bg-gh-900 border border-gray-100 dark:border-gh-800 rounded-2xl p-6 w-full max-w-sm space-y-4 shadow-2xl max-h-[85vh] overflow-y-auto">
+
+        <template v-if="posReview.status === 'expired'">
+          <div class="flex items-center justify-center w-12 h-12 rounded-full bg-amber-100 dark:bg-amber-900/30 mx-auto">
+            <Clock class="w-6 h-6 text-amber-500" />
+          </div>
+          <div class="text-center space-y-1">
+            <h3 class="text-base font-bold text-gray-900 dark:text-white">{{ $t('scanRequest.expiredTitle') }}</h3>
+            <p class="text-sm text-gray-500 dark:text-gray-400">{{ $t('scanRequest.expiredDesc') }}</p>
+          </div>
+          <button
+            @click="onPosReject"
+            class="w-full py-2.5 rounded-xl text-sm font-semibold transition-colors
+                   bg-gray-100 hover:bg-gray-200 text-gray-700
+                   dark:bg-gh-800 dark:hover:bg-gh-700 dark:text-gray-300"
+          >
+            {{ $t('common.close') }}
+          </button>
+        </template>
+
+        <template v-else-if="posReview.status === 'invalid_signature'">
+          <div class="flex items-center justify-center w-12 h-12 rounded-full bg-red-100 dark:bg-red-900/30 mx-auto">
+            <ShieldAlert class="w-6 h-6 text-red-500" />
+          </div>
+          <div class="text-center space-y-1">
+            <h3 class="text-base font-bold text-gray-900 dark:text-white">{{ $t('scanRequest.invalidSignatureTitle') }}</h3>
+            <p class="text-sm text-gray-500 dark:text-gray-400">{{ $t('scanRequest.invalidSignatureDesc') }}</p>
+          </div>
+          <button
+            @click="onPosReject"
+            class="w-full py-2.5 rounded-xl text-sm font-semibold transition-colors
+                   bg-gray-100 hover:bg-gray-200 text-gray-700
+                   dark:bg-gh-800 dark:hover:bg-gh-700 dark:text-gray-300"
+          >
+            {{ $t('common.close') }}
+          </button>
+        </template>
+
+        <template v-else-if="posReview.status === 'ok'">
+          <h2 class="text-base font-bold text-gray-900 dark:text-white text-center">{{ $t('scanRequest.title') }}</h2>
+
+          <div class="text-center space-y-1">
+            <p class="text-lg font-semibold text-gray-900 dark:text-white break-words">{{ posReview.parsed.label }}</p>
+            <p class="text-2xl font-bold text-gray-900 dark:text-white tabular-nums">{{ posDisplayAmount(posReview.parsed.amount) }} NAV</p>
+            <p v-if="posFiatEquivalent" class="text-sm text-gray-400 dark:text-gray-500">
+              ≈ {{ posFiatEquivalent }} {{ settings.currency }}
+            </p>
+            <p
+              class="text-xs font-medium tabular-nums"
+              :class="posExpired ? 'text-amber-500' : 'text-gray-400 dark:text-gray-500'"
+            >
+              {{ posExpired ? $t('pos.expired') : $t('pos.expiresIn', { time: posCountdownLabel }) }}
+            </p>
+          </div>
+
+          <div v-if="!posReview.verified" class="rounded-xl px-3 py-2.5 bg-gray-50 dark:bg-gh-700/50">
+            <p class="text-xs text-gray-500 dark:text-gray-400 leading-relaxed">{{ $t('scanRequest.unverifiedNote') }}</p>
+          </div>
+          <div
+            v-else
+            class="rounded-xl px-3 py-2.5"
+            :class="posReview.trust?.status === 'key_changed'
+              ? 'bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800/50'
+              : 'bg-gray-50 dark:bg-gh-700/50'"
+          >
+            <p
+              class="text-xs leading-relaxed"
+              :class="posReview.trust?.status === 'key_changed' ? 'text-amber-700 dark:text-amber-300' : 'text-gray-500 dark:text-gray-400'"
+            >
+              <template v-if="posReview.trust?.status === 'trusted'">{{ $t('scanRequest.previouslyPaid') }}</template>
+              <template v-else-if="posReview.trust?.status === 'key_changed'">{{ $t('scanRequest.keyChangedWarning') }}</template>
+              <template v-else>{{ $t('scanRequest.newMerchant') }}</template>
+            </p>
+            <label v-if="posReview.trust?.status === 'key_changed'" class="mt-2 flex items-start gap-2 cursor-pointer">
+              <input type="checkbox" v-model="posKeyChangeAck" class="mt-0.5" />
+              <span class="text-xs text-amber-700 dark:text-amber-300">{{ $t('scanRequest.keyChangedConfirm') }}</span>
+            </label>
+            <p class="mt-2 text-[10px] font-mono text-gray-400 dark:text-gray-500 break-all">
+              {{ $t('scanRequest.fingerprintLabel') }}: {{ posReview.trust?.fingerprint }}
+            </p>
+          </div>
+
+          <div class="flex gap-2 pt-1">
+            <button
+              @click="onPosReject"
+              class="flex-1 py-2.5 rounded-xl text-sm font-medium transition-colors
+                     bg-gray-100 hover:bg-gray-200 text-gray-700
+                     dark:bg-gh-800 dark:hover:bg-gh-700 dark:text-gray-300"
+            >
+              {{ $t('common.cancel') }}
+            </button>
+            <button
+              @click="onPosApprove"
+              :disabled="!posCanPay"
+              class="flex-1 py-2.5 rounded-xl text-sm font-semibold transition-colors
+                     bg-blue-600 hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed text-white"
+            >
+              {{ $t('scanRequest.pay') }}
+            </button>
+          </div>
+        </template>
+      </div>
+    </div>
+
     <!-- Confirm Modal -->
     <div
       v-if="showConfirm"
@@ -246,10 +355,16 @@
 </template>
 
 <script setup>
-import { ref, computed } from "vue";
+import { ref, computed, onMounted, onUnmounted } from "vue";
 import { getNavioClient, balance } from "@/stores/navio";
 import { BarcodeScanner, BarcodeFormat } from "@capacitor-mlkit/barcode-scanning";
-import { QrCode, Loader2, Check, Info } from "lucide-vue-next";
+import { QrCode, Loader2, Check, Info, Clock, ShieldAlert } from "lucide-vue-next";
+import { settings } from "@/stores/settings";
+import { getPriceIn } from "@/stores/navPrice";
+// evaluateScannedRequest / trustMerchantKey are dynamically imported below
+// (not statically here) so this always-loaded screen never pulls POS
+// signing/storage code into the main bundle — only fetched the moment a
+// navio: QR is actually scanned/approved.
 
 const recipient = ref("");
 const amount = ref(null);
@@ -264,6 +379,77 @@ const resultSuccess = ref(false);
 const isLoading = ref(false);
 const isScanning = ref(false);
 const errorMessage = ref('');
+
+const posReview = ref(null); // evaluateScannedRequest() result for a scanned navio: URI
+const posKeyChangeAck = ref(false);
+const posNow = ref(Date.now());
+let posTickTimer = null;
+
+onMounted(() => {
+  posTickTimer = setInterval(() => { posNow.value = Date.now(); }, 1000);
+});
+onUnmounted(() => {
+  clearInterval(posTickTimer);
+});
+
+// The request's amount arrives as a canonical, always-8-decimal string (see
+// uriScheme.js's formatAmount) — that's the right form to sign/compare, but
+// "1337.00000000" reads oddly to a customer just confirming "1337 NAV".
+function posDisplayAmount(nav) {
+  const n = Number(nav || 0);
+  return n.toFixed(8).replace(/0+$/, "").replace(/\.$/, "");
+}
+
+const posFiatEquivalent = computed(() => {
+  if (posReview.value?.status !== 'ok' || !settings.showFiatValue) return null;
+  const price = getPriceIn(settings.currency);
+  if (price == null) return null;
+  return (Number(posReview.value.parsed.amount) * price).toFixed(2);
+});
+
+const posSecondsLeft = computed(() => {
+  if (posReview.value?.status !== 'ok') return 0;
+  return Math.max(0, posReview.value.parsed.exp - Math.floor(posNow.value / 1000));
+});
+const posExpired = computed(() => posReview.value?.status === 'ok' && posSecondsLeft.value <= 0);
+const posCountdownLabel = computed(() => {
+  const s = posSecondsLeft.value;
+  const m = Math.floor(s / 60).toString().padStart(2, "0");
+  const sec = (s % 60).toString().padStart(2, "0");
+  return `${m}:${sec}`;
+});
+
+const posCanPay = computed(() => {
+  if (posReview.value?.status !== 'ok' || posExpired.value) return false;
+  if (posReview.value.trust?.status === 'key_changed' && !posKeyChangeAck.value) return false;
+  return true;
+});
+
+function onPosReject() {
+  posReview.value = null;
+}
+
+async function onPosApprove() {
+  if (!posCanPay.value) return;
+  const { parsed, trust } = posReview.value;
+
+  if (trust && (trust.status === 'unknown' || trust.status === 'key_changed')) {
+    try {
+      const { trustMerchantKey } = await import('@/lib/pos/merchantKeys.js');
+      await trustMerchantKey({ label: parsed.label, publicKeyHex: parsed.publicKeyHex, userLabel: parsed.label });
+    } catch (e) {
+      // Non-blocking: a local trust-record write failing shouldn't stop an
+      // otherwise-valid, already-verified payment from proceeding.
+      console.error('Failed to store merchant trust:', e);
+    }
+  }
+
+  recipient.value = parsed.address;
+  amount.value = Number(parsed.amount);
+  memo.value = "";
+  posReview.value = null;
+  openConfirm();
+}
 
 const availableBalance = computed(() => Number(balance.value) || 0)
 
@@ -285,6 +471,12 @@ async function scanQR() {
     const { barcodes } = await BarcodeScanner.scan({ formats: [BarcodeFormat.QrCode] });
     if (barcodes.length > 0) {
       let raw = barcodes[0].rawValue ?? barcodes[0].displayValue ?? '';
+      if (raw.toLowerCase().startsWith('navio:')) {
+        posKeyChangeAck.value = false;
+        const { evaluateScannedRequest } = await import('@/lib/pos/scanRequest.js');
+        posReview.value = await evaluateScannedRequest(raw);
+        return;
+      }
       if (raw.toLowerCase().startsWith('nav:')) raw = raw.slice(4).split('?')[0].trim();
       recipient.value = raw;
     }

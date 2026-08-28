@@ -21,6 +21,28 @@ export const settings = reactive({
   wallpaper:       localStorage.getItem('wallpaper')       || 'default',
   showBlockNumber: localStorage.getItem('showBlockNumber') !== 'false',
   showFiatValue:   localStorage.getItem('showFiatValue')   !== 'false',
+  // Off by default: batch payroll/freelance payouts. Purely a UI/routing
+  // toggle — no payroll code is imported until this is true (see router).
+  employerMode:    localStorage.getItem('employerMode')    === 'true',
+  // Display label embedded in signed receipts and shown to recipients on
+  // the verification screen. Not secret, not payroll data — kept alongside
+  // the other plain settings rather than in the encrypted payroll store.
+  employerLabel:   localStorage.getItem('employerLabel')   || '',
+  // Off by default: QR point-of-sale for physical shops. Same pattern as
+  // employerMode — a UI/routing toggle only, no POS code is imported until
+  // this is true (see router). Turning it off never deletes merchant data.
+  merchantMode:    localStorage.getItem('merchantMode')    === 'true',
+  // Display label embedded in signed payment requests and shown to
+  // customers before they approve. Not secret — kept alongside the other
+  // plain settings rather than in the encrypted merchant store.
+  merchantLabel:   localStorage.getItem('merchantLabel')   || '',
+  // Confirmation policy for accepting a POS payment. Below this NAV amount,
+  // a payment is accepted as soon as it's seen on the network (faster
+  // checkout, small double-spend risk); at or above it, merchantRequiredConfirmations
+  // blocks are required first (slower, safer against a reorg). See
+  // settings.merchantZeroConfThresholdDesc for the trade-off shown to the user.
+  merchantZeroConfThreshold:    Number(localStorage.getItem('merchantZeroConfThreshold') ?? 5),
+  merchantRequiredConfirmations: Number(localStorage.getItem('merchantRequiredConfirmations') ?? 2),
 })
 
 // Settings değiştiğinde localStorage'a kaydet
@@ -42,6 +64,30 @@ watch(() => settings.showBlockNumber, (val) => {
 
 watch(() => settings.showFiatValue, (val) => {
   localStorage.setItem('showFiatValue', val)
+})
+
+watch(() => settings.employerMode, (val) => {
+  localStorage.setItem('employerMode', val)
+})
+
+watch(() => settings.employerLabel, (val) => {
+  localStorage.setItem('employerLabel', val)
+})
+
+watch(() => settings.merchantMode, (val) => {
+  localStorage.setItem('merchantMode', val)
+})
+
+watch(() => settings.merchantLabel, (val) => {
+  localStorage.setItem('merchantLabel', val)
+})
+
+watch(() => settings.merchantZeroConfThreshold, (val) => {
+  localStorage.setItem('merchantZeroConfThreshold', val)
+})
+
+watch(() => settings.merchantRequiredConfirmations, (val) => {
+  localStorage.setItem('merchantRequiredConfirmations', val)
 })
 
 watch(() => settings.theme, (val) => {

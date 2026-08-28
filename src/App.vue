@@ -13,7 +13,7 @@
       <router-view />
     </div>
     <BottomNavbar v-if="showNavbar" />
-    <PwaInstallPrompt />
+    <PwaInstallPrompt v-if="!isExtension" />
 
     <!-- Android back button exit confirmation -->
     <div
@@ -60,8 +60,14 @@ import { useRoute, useRouter } from 'vue-router'
 import { App as CapApp } from '@capacitor/app'
 import { Capacitor } from '@capacitor/core'
 import { settings, applyTheme } from './stores/settings'
+import { isExtensionContext } from './lib/extensionSession'
 import BottomNavbar from './components/BottomNavbar.vue'
 import PwaInstallPrompt from './components/PwaInstallPrompt.vue'
+
+// "Install as PWA" is meaningless from inside an already-installed browser
+// extension (toolbar popup or approval window) — and its fixed bottom
+// banner was sitting on top of the approval screen's buttons.
+const isExtension = isExtensionContext()
 
 const isIosNative = Capacitor.getPlatform() === 'ios'
 const isIosPwa = /iphone|ipad|ipod/i.test(navigator.userAgent) && !window.MSStream && window.navigator.standalone === true
@@ -80,6 +86,16 @@ watch(() => route.path, async () => {
   await nextTick()
   if (scrollContainer.value) {
     scrollContainer.value.scrollTop = 0
+  }
+})
+
+// Merchant mode can be switched off from Settings while a POS route is
+// still active (e.g. another tab, or navigated back to Settings without
+// leaving /pos first). The route guard only fires on navigation, so this
+// catches the "already there" case and pushes the user out immediately.
+watch(() => settings.merchantMode, (enabled) => {
+  if (!enabled && route.path.startsWith('/pos')) {
+    router.replace('/wallet/balance')
   }
 })
 

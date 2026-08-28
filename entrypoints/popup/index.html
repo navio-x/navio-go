@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Navio Go</title>
+    <style>
+      /* Fixed size for the toolbar bubble popup. App.vue's own global style
+         sets html,body to width/height:100%, which loses to percentages
+         with nothing to resolve against and collapses the popup to
+         Chrome's tiny default; !important forces this fixed size to win
+         regardless of CSS load order.
+
+         Approval windows (opened via browser.windows.create, landing on an
+         #/extension/... route) don't need an override here at all: their
+         content (ConnectRequest.vue / ApproveRequest.vue) uses
+         position:fixed; inset:0, which sizes itself directly off the real
+         OS window viewport and ignores html/body's box entirely — no
+         cascade fight needed. See those components for details. */
+      html, body {
+        /* Chrome clips extension popups above ~600px height regardless of
+           what we request, so this stays at the safe max instead of
+           iPhone-16-sized (393x852). */
+        width: 380px !important;
+        height: 600px !important;
+        margin: 0 !important;
+        overflow: hidden !important;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app"></div>
+    <script type="module" src="./main.js"></script>
+  </body>
+</html>

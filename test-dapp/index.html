@@ -1,0 +1,387 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Navio Go - Extension Test dApp</title>
+    <style>
+      :root {
+        color-scheme: light dark;
+        --bg: #f5f6f8;
+        --card: #ffffff;
+        --border: #e2e5ea;
+        --text: #1a1d24;
+        --muted: #6b7280;
+        --blue: #2563eb;
+        --green: #16a34a;
+        --red: #dc2626;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg: #14171c;
+          --card: #1e2329;
+          --border: #2d333b;
+          --text: #f0f2f5;
+          --muted: #9aa4b2;
+        }
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        background: var(--bg);
+        color: var(--text);
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        padding: 32px 16px;
+      }
+      main {
+        max-width: 560px;
+        margin: 0 auto;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+      }
+      h1 {
+        font-size: 20px;
+        margin: 0 0 4px;
+      }
+      p.subtitle {
+        margin: 0;
+        color: var(--muted);
+        font-size: 14px;
+      }
+      .card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 20px;
+      }
+      .status {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 14px;
+        font-weight: 600;
+      }
+      .dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 999px;
+        background: var(--red);
+      }
+      .dot.ok { background: var(--green); }
+      .row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 12px;
+      }
+      button {
+        border: none;
+        border-radius: 10px;
+        padding: 10px 16px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        background: var(--blue);
+        color: white;
+        transition: opacity 0.15s;
+      }
+      button:hover { opacity: 0.85; }
+      button:disabled { opacity: 0.4; cursor: not-allowed; }
+      button.secondary {
+        background: transparent;
+        color: var(--text);
+        border: 1px solid var(--border);
+      }
+      .account {
+        margin-top: 12px;
+        font-family: ui-monospace, SFMono-Regular, monospace;
+        font-size: 12px;
+        color: var(--muted);
+        word-break: break-all;
+        background: var(--bg);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 10px;
+      }
+      h2 {
+        font-size: 14px;
+        margin: 0 0 4px;
+      }
+      .log {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 16px;
+        font-family: ui-monospace, SFMono-Regular, monospace;
+        font-size: 12px;
+        max-height: 320px;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .log .entry {
+        border-left: 3px solid var(--border);
+        padding-left: 8px;
+        white-space: pre-wrap;
+        word-break: break-all;
+      }
+      .log .entry.ok { border-left-color: var(--green); }
+      .log .entry.err { border-left-color: var(--red); }
+      .log .meta {
+        color: var(--muted);
+      }
+      .empty {
+        color: var(--muted);
+        font-size: 13px;
+      }
+      label {
+        display: block;
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--muted);
+        margin: 10px 0 4px;
+      }
+      label:first-child { margin-top: 0; }
+      input {
+        width: 100%;
+        box-sizing: border-box;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 8px 10px;
+        font-size: 13px;
+        background: var(--bg);
+        color: var(--text);
+        font-family: ui-monospace, SFMono-Regular, monospace;
+      }
+      .fields {
+        display: flex;
+        flex-direction: column;
+      }
+      .checkbox-row {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        margin-top: 10px;
+        font-size: 13px;
+      }
+      .checkbox-row input { width: auto; }
+    </style>
+  </head>
+  <body>
+    <main>
+      <div>
+        <h1>Navio Go — Extension Test dApp</h1>
+        <p class="subtitle">A simple page for end-to-end testing of the window.navio provider.</p>
+      </div>
+
+      <div class="card">
+        <div class="status">
+          <span id="statusDot" class="dot"></span>
+          <span id="statusText">Looking for window.navio...</span>
+        </div>
+        <div class="row">
+          <button id="btnConnect">nav_requestAccounts</button>
+          <button id="btnClearLog" class="secondary">Clear Log</button>
+        </div>
+        <div id="account" class="account" style="display:none"></div>
+      </div>
+
+      <div class="card">
+        <h2>Balances</h2>
+        <div class="row">
+          <button id="btnAssetBalances" class="secondary">nav_getAssetBalances</button>
+          <button id="btnTokenBalances" class="secondary">nav_getTokenBalances</button>
+          <button id="btnNftBalances" class="secondary">nav_getNftBalances</button>
+        </div>
+        <div class="fields">
+          <label for="balanceTokenId">Token ID</label>
+          <input id="balanceTokenId" placeholder="80-hex token id" />
+        </div>
+        <div class="row">
+          <button id="btnTokenBalance">nav_getTokenBalance</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Create Collection</h2>
+        <div class="fields">
+          <label for="collectionTotalSupply">Total Supply</label>
+          <input id="collectionTotalSupply" placeholder="e.g. 1000" value="1000" />
+          <label for="collectionMetadata">Metadata (JSON, optional)</label>
+          <input id="collectionMetadata" placeholder='{"name":"My Collection"}' />
+        </div>
+        <div class="row">
+          <button id="btnCreateTokenCollection">nav_createTokenCollection</button>
+          <button id="btnCreateNftCollection" class="secondary">nav_createNftCollection</button>
+        </div>
+
+        <div class="fields">
+          <label for="mintOnCreateAddress">Mint To Address (leave empty to skip minting)</label>
+          <input id="mintOnCreateAddress" placeholder="tnv1..." />
+          <label for="mintOnCreateAmount">Mint Amount</label>
+          <input id="mintOnCreateAmount" placeholder="e.g. 123456" value="123456" />
+        </div>
+        <div class="row">
+          <button id="btnCreateAndMintToken">nav_createTokenCollectionAndMint</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Mint Token</h2>
+        <div class="fields">
+          <label for="mintAddress">Destination Address</label>
+          <input id="mintAddress" placeholder="tnv1..." />
+          <label for="mintCollectionTokenId">Collection Token ID</label>
+          <input id="mintCollectionTokenId" placeholder="64/80-hex collection token id" />
+          <label for="mintAmount">Amount</label>
+          <input id="mintAmount" placeholder="e.g. 100" value="100" />
+        </div>
+        <div class="row">
+          <button id="btnMintToken">nav_mintToken</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Send Token</h2>
+        <div class="fields">
+          <label for="sendAddress">Destination Address</label>
+          <input id="sendAddress" placeholder="tnv1..." />
+          <label for="sendTokenId">Token ID</label>
+          <input id="sendTokenId" placeholder="80-hex token id" />
+          <label for="sendAmount">Amount</label>
+          <input id="sendAmount" placeholder="e.g. 10" value="10" />
+          <label for="sendMemo">Memo (optional)</label>
+          <input id="sendMemo" placeholder="Payment memo" />
+          <div class="checkbox-row">
+            <input id="sendSubtractFee" type="checkbox" />
+            <label for="sendSubtractFee" style="margin:0;">Subtract fee from amount</label>
+          </div>
+        </div>
+        <div class="row">
+          <button id="btnSendToken">nav_sendToken</button>
+        </div>
+      </div>
+
+      <div>
+        <h2>Log</h2>
+        <div id="log" class="log">
+          <div class="empty">No requests yet.</div>
+        </div>
+      </div>
+    </main>
+
+    <script>
+      const statusDot = document.getElementById("statusDot");
+      const statusText = document.getElementById("statusText");
+      const accountBox = document.getElementById("account");
+      const logBox = document.getElementById("log");
+
+      function log(label, payload, ok) {
+        if (logBox.querySelector(".empty")) logBox.innerHTML = "";
+        const entry = document.createElement("div");
+        entry.className = "entry " + (ok ? "ok" : "err");
+        const time = new Date().toLocaleTimeString();
+        entry.innerHTML =
+          '<div class="meta">' + time + " — " + label + "</div>" +
+          JSON.stringify(payload, null, 2);
+        logBox.prepend(entry);
+      }
+
+      function updateStatus() {
+        const found = !!window.navio?.isNavio;
+        statusDot.classList.toggle("ok", found);
+        statusText.textContent = found
+          ? "window.navio found ✓"
+          : "window.navio not found — is the extension installed and the page refreshed?";
+      }
+
+      async function call(method, params) {
+        try {
+          const result = await window.navio.request({ method, params });
+          log(method, result, true);
+          if (method === "nav_requestAccounts" && result?.accounts?.[0]) {
+            accountBox.style.display = "block";
+            accountBox.textContent = result.accounts[0];
+          }
+        } catch (error) {
+          log(method, error, false);
+        }
+      }
+
+      function val(id) {
+        return document.getElementById(id).value.trim();
+      }
+
+      function parseMetadata(id) {
+        const raw = val(id);
+        if (!raw) return undefined;
+        try {
+          return JSON.parse(raw);
+        } catch {
+          return { note: raw };
+        }
+      }
+
+      document.getElementById("btnConnect").addEventListener("click", () => call("nav_requestAccounts"));
+
+      document.getElementById("btnAssetBalances").addEventListener("click", () => call("nav_getAssetBalances"));
+      document.getElementById("btnTokenBalances").addEventListener("click", () => call("nav_getTokenBalances"));
+      document.getElementById("btnNftBalances").addEventListener("click", () => call("nav_getNftBalances"));
+      document.getElementById("btnTokenBalance").addEventListener("click", () =>
+        call("nav_getTokenBalance", { tokenId: val("balanceTokenId") })
+      );
+
+      document.getElementById("btnCreateTokenCollection").addEventListener("click", () =>
+        call("nav_createTokenCollection", {
+          totalSupply: val("collectionTotalSupply"),
+          metadata: parseMetadata("collectionMetadata"),
+        })
+      );
+      document.getElementById("btnCreateNftCollection").addEventListener("click", () =>
+        call("nav_createNftCollection", {
+          totalSupply: val("collectionTotalSupply") || undefined,
+          metadata: parseMetadata("collectionMetadata"),
+        })
+      );
+      document.getElementById("btnCreateAndMintToken").addEventListener("click", () =>
+        call("nav_createTokenCollectionAndMint", {
+          totalSupply: val("collectionTotalSupply"),
+          metadata: parseMetadata("collectionMetadata"),
+          address: val("mintOnCreateAddress"),
+          amount: val("mintOnCreateAmount"),
+        })
+      );
+
+      document.getElementById("btnMintToken").addEventListener("click", () =>
+        call("nav_mintToken", {
+          address: val("mintAddress"),
+          collectionTokenId: val("mintCollectionTokenId"),
+          amount: val("mintAmount"),
+        })
+      );
+
+      document.getElementById("btnSendToken").addEventListener("click", () =>
+        call("nav_sendToken", {
+          address: val("sendAddress"),
+          tokenId: val("sendTokenId"),
+          amount: val("sendAmount"),
+          memo: val("sendMemo") || undefined,
+          subtractFeeFromAmount: document.getElementById("sendSubtractFee").checked,
+        })
+      );
+
+      document.getElementById("btnClearLog").addEventListener("click", () => {
+        logBox.innerHTML = '<div class="empty">No requests yet.</div>';
+        accountBox.style.display = "none";
+      });
+
+      // provider.content.js dispatches "navio#initialized" at document_start;
+      // if the page loaded afterwards, window.navio is already ready.
+      window.addEventListener("navio#initialized", updateStatus);
+      updateStatus();
+    </script>
+  </body>
+</html>

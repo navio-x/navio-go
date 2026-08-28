@@ -11,6 +11,7 @@ import {
   loadElectrumConfig,
   deleteWalletFull,
 } from './wallet_management.js';
+import { publishWalletSession, clearWalletSession } from "@/lib/extensionSession.js";
 const ELECTRUM_HOSTS = {
   mainnet: "electrum.nav.io",
   testnet: "testnet.nav.io",
@@ -32,6 +33,10 @@ const chainTip = ref(0);
 const balance = ref("0");
 const utxos = ref([]);
 const receiveAddress = ref("");
+// Last-known-good / last-failed timestamps for the background sync loop —
+// lets any screen (e.g. POS) show an "offline / may be stale" indicator
+// without adding a second sync mechanism of its own.
+const syncHealth = ref({ lastSuccessAt: null, lastErrorAt: null });
 
 export let NavioClient = null;
 export let blsctLib = null;
@@ -69,6 +74,10 @@ export function getSyncPercent() {
 
 export function getWalletHeight() {
   return walletHeight.value;
+}
+
+export function getSyncHealth() {
+  return syncHealth.value;
 }
 
 export function getChainTip() {
@@ -203,6 +212,14 @@ export async function initNavioSDK() {
   }
 
   window.$navio = { NavioClient, blsctLib, wasmModule };
+  // Live getter (not a snapshot) so window.$navio.client always reflects
+  // whichever wallet is currently loaded in this page — useful from devtools
+  // to call SDK methods directly (e.g. wait between createTokenCollection
+  // and mintToken instead of firing both back to back).
+  Object.defineProperty(window.$navio, "client", {
+    get: () => _navioClient.value,
+    configurable: true,
+  });
   _sdkInitialized.value = true;
 
   console.log("✅ Navio SDK READY");
@@ -242,9 +259,9 @@ async function updateWalletInfo() {
   });
 }
 
-function updateReceiveAddress(network) {
+function updateReceiveAddress(network, password) {
   if (!_navioClient.value) return;
-  
+
   const km = _navioClient.value.getKeyManager();
   if (km) {
     receiveAddress.value = km.getSubAddressBech32m(
@@ -252,6 +269,7 @@ function updateReceiveAddress(network) {
       network || sessionStorage.getItem("network")
       );
     console.log("Receive address updated:", receiveAddress.value);
+    publishWalletSession({ address: receiveAddress.value, walletName: walletName.value, password });
   }
 }
 
@@ -284,13 +302,14 @@ async function startSync() {
       onProgress: (currentHeight, tip, blocksProcessed) => {
         walletHeight.value = currentHeight;
         chainTip.value = tip;
-        
+        syncHealth.value = { ...syncHealth.value, lastSuccessAt: Date.now() };
+
         if (tip > 0) {
           percent.value = Number(((currentHeight / tip) * 100).toFixed(2));
         } else {
           percent.value = 0;
         }
-        
+
         console.log(
       `Syncing ${currentHeight}/${tip} (${percent.value}%) - ${blocksProcessed} blocks`
       );
@@ -308,7 +327,10 @@ async function startSync() {
         console.log("New balance is : " + formatNAV(newB));
       },
 
-      onError: (e) => console.error(`Sync error: ${e.message}`),
+      onError: (e) => {
+        console.error(`Sync error: ${e.message}`);
+        syncHealth.value = { ...syncHealth.value, lastErrorAt: Date.now() };
+      },
     });
   } catch (e) {
     syncing.value = false;
@@ -332,6 +354,7 @@ export async function disconnectWallet() {
   }
   _navioClient.value = null;
   syncing.value = false;
+  clearWalletSession();
 }
 
 export { stopSync };
@@ -400,7 +423,7 @@ export async function createWallet({
 
   sessionStorage.setItem("mnemonic", _mnemonicWords.value.join(" "));
 
-  updateReceiveAddress(network);
+  updateReceiveAddress(network, password);
   startSync();
 
   return {
@@ -454,7 +477,7 @@ export async function loadWallet({
   walletName.value=wallet_id;
 
   // Update receive address
-  updateReceiveAddress(network);
+  updateReceiveAddress(network, password);
 
   startSync();
 }
@@ -521,7 +544,7 @@ export async function restoreWallet({ wallet_name, network, mnemonic, startHeigh
 
   console.log("Wallet restored ✅");
 
-  updateReceiveAddress(network);
+  updateReceiveAddress(network, password);
   startSync();
 
   return {
@@ -529,6 +552,95 @@ export async function restoreWallet({ wallet_name, network, mnemonic, startHeigh
     mnemonic_words: mnemonic,
   };
 }
+export const tokenBalances = ref([]);
+export const nftBalances = ref([]);
+export async function refreshAssetBalances() {
+  if (!_navioClient.value) return;
+
+  try {
+    const [tokens, nfts] = await Promise.all([
+      _navioClient.value.getTokenBalances(),
+      _navioClient.value.getNftBalances(),
+    ]);
+    tokenBalances.value = tokens;
+    nftBalances.value = nfts;
+  } catch (e) {
+    console.error("refreshAssetBalances error:", e);
+  }
+}
+
+export const createdCollections = ref([]);
+export async function refreshCreatedCollections() {
+  if (!_navioClient.value) return;
+
+  try {
+    createdCollections.value = await _navioClient.value.listCreatedCollections();
+  } catch (e) {
+    console.error("refreshCreatedCollections error:", e);
+  }
+}
+
+export async function createCollection({ kind, metadata, totalSupply }) {
+  if (!_navioClient.value) throw new Error("Wallet not ready");
+  const options = {
+    metadata,
+    totalSupply: BigInt(totalSupply || 0),
+  };
+  const result =
+    kind === "nft"
+      ? await _navioClient.value.createNftCollection(options)
+      : await _navioClient.value.createTokenCollection(options);
+  await refreshCreatedCollections();
+  return result;
+}
+
+export async function mintTokenFromCollection({ address, collectionTokenId, amount }) {
+  if (!_navioClient.value) throw new Error("Wallet not ready");
+  const result = await _navioClient.value.mintToken({
+    address,
+    collectionTokenId,
+    amount: BigInt(amount),
+  });
+  await Promise.all([refreshAssetBalances(), refreshCreatedCollections()]);
+  return result;
+}
+
+export async function mintNftFromCollection({ address, collectionTokenId, nftId, metadata }) {
+  if (!_navioClient.value) throw new Error("Wallet not ready");
+  const result = await _navioClient.value.mintNft({
+    address,
+    collectionTokenId,
+    nftId: BigInt(nftId),
+    metadata,
+  });
+  await Promise.all([refreshAssetBalances(), refreshCreatedCollections()]);
+  return result;
+}
+
+export async function sendTokenAsset({ address, tokenId, amount, memo, subtractFeeFromAmount }) {
+  if (!_navioClient.value) throw new Error("Wallet not ready");
+  const result = await _navioClient.value.sendToken({
+    address,
+    tokenId,
+    amount: BigInt(amount),
+    memo: memo || undefined,
+    subtractFeeFromAmount: !!subtractFeeFromAmount,
+  });
+  await refreshAssetBalances();
+  return result;
+}
+
+export async function sendNftAsset({ address, tokenId, memo }) {
+  if (!_navioClient.value) throw new Error("Wallet not ready");
+  const result = await _navioClient.value.sendNft({
+    address,
+    tokenId,
+    memo: memo || undefined,
+  });
+  await refreshAssetBalances();
+  return result;
+}
+
 export const txHistory = ref([]);
 export async function refreshHistory() {
   if (!_navioClient.value) return;

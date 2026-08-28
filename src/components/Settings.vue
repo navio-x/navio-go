@@ -71,6 +71,117 @@
         </button>
       </div>
 
+      <div class="border-t border-gray-200 dark:border-gh-700 px-4 py-3 flex items-center justify-between gap-3">
+        <div class="min-w-0">
+          <p class="text-sm text-gray-700 dark:text-gray-300 truncate">{{ $t('settings.employerMode') }}</p>
+          <p class="text-xs text-gray-400 dark:text-gray-500 mt-0.5 leading-snug">{{ $t('settings.employerModeDesc') }}</p>
+        </div>
+        <button
+          @click="settings.employerMode = !settings.employerMode"
+          class="relative inline-flex h-6 w-11 items-center rounded-full transition-colors shrink-0"
+          :class="settings.employerMode ? 'bg-blue-500' : 'bg-gray-300 dark:bg-gh-600'"
+          role="switch"
+          :aria-checked="settings.employerMode"
+        >
+          <span
+            class="inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform"
+            :class="settings.employerMode ? 'translate-x-6' : 'translate-x-1'"
+          />
+        </button>
+      </div>
+
+      <div v-if="settings.employerMode" class="border-t border-gray-200 dark:border-gh-700 px-4 py-3">
+        <label class="block mb-1.5 text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">
+          {{ $t('settings.employerLabel') }}
+        </label>
+        <input
+          v-model="settings.employerLabel"
+          type="text"
+          :placeholder="$t('settings.employerLabelPlaceholder')"
+          class="w-full rounded-xl px-3 py-2.5 text-sm outline-none transition-colors
+                 bg-gray-50 dark:bg-gh-700
+                 text-gray-900 dark:text-white
+                 border border-gray-200 dark:border-gh-600
+                 focus:border-blue-400 dark:focus:border-blue-500"
+        />
+        <p class="text-xs text-gray-400 dark:text-gray-500 mt-1.5 leading-snug">{{ $t('settings.employerLabelDesc') }}</p>
+      </div>
+
+      <div class="border-t border-gray-200 dark:border-gh-700 px-4 py-3 flex items-center justify-between gap-3">
+        <div class="min-w-0">
+          <p class="text-sm text-gray-700 dark:text-gray-300 truncate">{{ $t('settings.merchantMode') }}</p>
+          <p class="text-xs text-gray-400 dark:text-gray-500 mt-0.5 leading-snug">{{ $t('settings.merchantModeDesc') }}</p>
+        </div>
+        <button
+          @click="toggleMerchantMode"
+          class="relative inline-flex h-6 w-11 items-center rounded-full transition-colors shrink-0"
+          :class="settings.merchantMode ? 'bg-blue-500' : 'bg-gray-300 dark:bg-gh-600'"
+          role="switch"
+          :aria-checked="settings.merchantMode"
+        >
+          <span
+            class="inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform"
+            :class="settings.merchantMode ? 'translate-x-6' : 'translate-x-1'"
+          />
+        </button>
+      </div>
+
+      <div v-if="settings.merchantMode" class="border-t border-gray-200 dark:border-gh-700 px-4 py-3">
+        <label class="block mb-1.5 text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">
+          {{ $t('settings.merchantLabel') }}
+        </label>
+        <input
+          v-model="settings.merchantLabel"
+          type="text"
+          :placeholder="$t('settings.merchantLabelPlaceholder')"
+          class="w-full rounded-xl px-3 py-2.5 text-sm outline-none transition-colors
+                 bg-gray-50 dark:bg-gh-700
+                 text-gray-900 dark:text-white
+                 border border-gray-200 dark:border-gh-600
+                 focus:border-blue-400 dark:focus:border-blue-500"
+        />
+        <p class="text-xs text-gray-400 dark:text-gray-500 mt-1.5 leading-snug">{{ $t('settings.merchantLabelDesc') }}</p>
+      </div>
+
+      <div v-if="settings.merchantMode" class="border-t border-gray-200 dark:border-gh-700 px-4 py-3">
+        <label class="block mb-1.5 text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">
+          {{ $t('settings.merchantZeroConfThreshold') }}
+        </label>
+        <div class="flex items-center gap-2">
+          <input
+            v-model.number="settings.merchantZeroConfThreshold"
+            type="number"
+            min="0"
+            step="any"
+            class="w-full rounded-xl px-3 py-2.5 text-sm outline-none transition-colors
+                   bg-gray-50 dark:bg-gh-700
+                   text-gray-900 dark:text-white
+                   border border-gray-200 dark:border-gh-600
+                   focus:border-blue-400 dark:focus:border-blue-500"
+          />
+          <span class="text-sm text-gray-400 dark:text-gray-500 shrink-0">NAV</span>
+        </div>
+        <p class="text-xs text-gray-400 dark:text-gray-500 mt-1.5 leading-snug">{{ $t('settings.merchantZeroConfThresholdDesc') }}</p>
+      </div>
+
+      <div v-if="settings.merchantMode" class="border-t border-gray-200 dark:border-gh-700 px-4 py-3">
+        <label class="block mb-1.5 text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">
+          {{ $t('settings.merchantRequiredConfirmations') }}
+        </label>
+        <input
+          v-model.number="settings.merchantRequiredConfirmations"
+          type="number"
+          min="1"
+          step="1"
+          class="w-full rounded-xl px-3 py-2.5 text-sm outline-none transition-colors
+                 bg-gray-50 dark:bg-gh-700
+                 text-gray-900 dark:text-white
+                 border border-gray-200 dark:border-gh-600
+                 focus:border-blue-400 dark:focus:border-blue-500"
+        />
+        <p class="text-xs text-gray-400 dark:text-gray-500 mt-1.5 leading-snug">{{ $t('settings.merchantRequiredConfirmationsDesc') }}</p>
+      </div>
+
       <div class="border-t border-gray-200 dark:border-gh-700 px-4 py-3">
         <label class="block mb-1.5 text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">
           {{ $t('settings.theme') }}
@@ -148,6 +259,21 @@
       <div class="border-t border-gray-200 dark:border-gh-700" />
 
       <button
+        @click="router.push('/receipts/verify')"
+        class="w-full px-4 py-3.5 text-sm font-medium text-left
+               text-gray-700 dark:text-gray-300
+               hover:bg-gray-50 dark:hover:bg-gh-700
+               transition-colors flex items-center justify-between"
+      >
+        <span>{{ $t('settings.verifyReceipt') }}</span>
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 opacity-40" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+        </svg>
+      </button>
+
+      <div class="border-t border-gray-200 dark:border-gh-700" />
+
+      <button
         @click="router.push('/about')"
         class="w-full px-4 py-3.5 text-sm font-medium text-left
                text-gray-700 dark:text-gray-300
@@ -212,6 +338,39 @@
       </div>
     </div>
 
+    <!-- Merchant mode disable confirmation -->
+    <div
+      v-if="showMerchantDisableConfirm"
+      class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-6"
+    >
+      <div class="bg-white dark:bg-gh-900 border border-gray-100 dark:border-gh-800 rounded-2xl p-6 w-full max-w-sm space-y-4 shadow-2xl">
+        <div class="flex items-center justify-center w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-900/30 mx-auto">
+          <Store class="w-6 h-6 text-blue-500" />
+        </div>
+        <div class="text-center space-y-1">
+          <h3 class="text-base font-bold text-gray-900 dark:text-white">{{ $t('settings.merchantModeDisableTitle') }}</h3>
+          <p class="text-sm text-gray-500 dark:text-gray-400">{{ $t('settings.merchantModeDisableDesc') }}</p>
+        </div>
+        <div class="flex gap-2 pt-1">
+          <button
+            @click="showMerchantDisableConfirm = false"
+            class="flex-1 py-2 rounded-xl text-sm font-medium transition-colors
+                   bg-gray-100 hover:bg-gray-200 text-gray-700
+                   dark:bg-gh-800 dark:hover:bg-gh-700 dark:text-gray-300"
+          >
+            {{ $t('common.cancel') }}
+          </button>
+          <button
+            @click="confirmDisableMerchantMode"
+            class="flex-1 py-2 rounded-xl text-sm font-medium transition-colors
+                   bg-blue-600 hover:bg-blue-700 text-white"
+          >
+            {{ $t('common.turnOff') }}
+          </button>
+        </div>
+      </div>
+    </div>
+
   </div>
 </template>
 
@@ -220,6 +379,7 @@ import { ref, watch, onMounted, computed } from 'vue'
 import { wallpapers } from '@/assets/wallpapers'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
+import { Store } from 'lucide-vue-next'
 import { settings } from '../stores/settings'
 import { disconnectWallet } from '../stores/navio'
 import { FIAT_CURRENCIES } from '../stores/navPrice'
@@ -281,6 +441,20 @@ const goToBackup = () => {
 }
 
 const showConfirm = ref(false)
+const showMerchantDisableConfirm = ref(false)
+
+const toggleMerchantMode = () => {
+  if (settings.merchantMode) {
+    showMerchantDisableConfirm.value = true
+  } else {
+    settings.merchantMode = true
+  }
+}
+
+const confirmDisableMerchantMode = () => {
+  settings.merchantMode = false
+  showMerchantDisableConfirm.value = false
+}
 
 const clearStorage = async () => {
   await disconnectWallet()
