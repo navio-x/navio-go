@@ -2,7 +2,7 @@
   "type": "module",
   "name": "navio-go",
   "private": true,
-  "version": "0.0.2-alpha",
+  "version": "0.0.3-alpha",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
