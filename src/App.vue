@@ -8,6 +8,7 @@
   >
     <div
       ref="scrollContainer"
+      data-scroll-root
       class="flex-1 overflow-y-auto overflow-x-hidden"
     >
       <router-view />
@@ -95,6 +96,13 @@ watch(() => route.path, async () => {
 // catches the "already there" case and pushes the user out immediately.
 watch(() => settings.merchantMode, (enabled) => {
   if (!enabled && route.path.startsWith('/pos')) {
+    router.replace('/wallet/balance')
+  }
+})
+
+// DEX modu Settings'ten kapatılırsa ve kullanıcı hâlâ /dex'teyse aynı anda dışarı çıkar.
+watch(() => settings.dexMode, (enabled) => {
+  if (!enabled && route.path.startsWith('/dex')) {
     router.replace('/wallet/balance')
   }
 })

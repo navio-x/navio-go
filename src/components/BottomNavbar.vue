@@ -91,7 +91,7 @@
 <script setup>
 import { ref, computed, watch, onMounted, nextTick } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { Wallet, Download, SendHorizontal, Layers, History, Settings, Briefcase, Store, MoreHorizontal } from 'lucide-vue-next'
+import { Wallet, Download, SendHorizontal, Layers, History, Settings, Briefcase, Store, Repeat, MoreHorizontal } from 'lucide-vue-next'
 import { Capacitor } from '@capacitor/core'
 import { settings } from '@/stores/settings'
 
@@ -120,6 +120,7 @@ const overflowManifest = [
   { name: 'assets',   path: '/wallet/assets', icon: Layers,    labelKey: 'assets.title' },
   { name: 'payroll',  path: '/payroll',       icon: Briefcase, labelKey: 'payroll.title',  enabled: () => settings.employerMode },
   { name: 'pos',      path: '/pos',           icon: Store,     labelKey: 'pos.title',      enabled: () => settings.merchantMode },
+  { name: 'dex',      path: '/dex',           icon: Repeat,    labelKey: 'dex.title',      enabled: () => settings.dexMode },
   { name: 'settings', path: '/settings',      icon: Settings,  labelKey: 'settings.title' },
 ]
 
@@ -167,5 +168,6 @@ const updatePill = async () => {
 watch(() => route.path, updatePill)
 watch(() => settings.employerMode, updatePill)
 watch(() => settings.merchantMode, updatePill)
+watch(() => settings.dexMode, updatePill)
 onMounted(updatePill)
 </script>

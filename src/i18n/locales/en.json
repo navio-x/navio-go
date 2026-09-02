@@ -79,7 +79,18 @@
     "merchantZeroConfThreshold": "Instant-accept limit",
     "merchantZeroConfThresholdDesc": "Payments at or below this amount are accepted as soon as they're seen on the network, before being confirmed in a block — faster checkout, but with a brief window of double-spend risk. Keep this low for everyday counter sales.",
     "merchantRequiredConfirmations": "Required confirmations",
-    "merchantRequiredConfirmationsDesc": "How many blocks must confirm a payment above the instant-accept limit before it counts as paid. More confirmations are safer against a blockchain reorganization, but make the customer wait longer at checkout."
+    "merchantRequiredConfirmationsDesc": "How many blocks must confirm a payment above the instant-accept limit before it counts as paid. More confirmations are safer against a blockchain reorganization, but make the customer wait longer at checkout.",
+    "dexMode": "DEX / EVM Mode",
+    "dexModeDesc": "Adds an optional BSC (EVM) account derived from this wallet's recovery phrase, for swapping on PancakeSwap. Off by default — no network calls until enabled.",
+    "evmNetwork": "EVM Network",
+    "evmNetworkMainnet": "BSC Mainnet",
+    "evmNetworkTestnet": "BSC Testnet",
+    "slippage": "Slippage Tolerance",
+    "slippageCustom": "Custom %",
+    "slippageDesc": "How much the price can move against you before a swap reverts. Higher tolerance means swaps succeed more often but you may get a worse price.",
+    "txDeadline": "Transaction Deadline",
+    "txDeadlineUnit": "min",
+    "txDeadlineDesc": "How long a swap can stay pending before it's rejected by the router."
   },
   "nav": {
     "more": "More"
@@ -601,5 +612,96 @@
     "fieldTxId": "Transaction ID",
     "fieldIssuedAt": "Receipt issued",
     "fieldFormatVersion": "Format version"
+  },
+  "dex": {
+    "title": "DEX",
+    "refresh": "Refresh",
+    "deriving": "Deriving address…",
+    "testnetWarning": "TESTNET — no real value",
+    "network": "Network",
+    "rpcStatus": "RPC Status",
+    "rpcConnected": "Connected",
+    "rpcError": "Connection error",
+    "viewExplorer": "View on Explorer",
+    "staleWarning": "Could not refresh — showing last known balances.",
+    "balances": {
+      "title": "Balances",
+      "hideZero": "Hide zero balances",
+      "showAll": "Show all",
+      "empty": "No tokens configured for this network yet."
+    },
+    "addToken": {
+      "button": "Add Custom Token",
+      "title": "Add Custom Token",
+      "addressLabel": "Token Contract Address",
+      "addressPlaceholder": "0x…",
+      "invalidAddress": "That doesn't look like a valid address.",
+      "lookup": "Look Up Token",
+      "lookupFailed": "Couldn't read this token from the contract. Check the address and network.",
+      "decimals": "Decimals",
+      "warning": "Anyone can create a token with any name or symbol. Unknown token contracts may block transfers or take a hidden fee — only add tokens you trust.",
+      "feeOnTransferLabel": "This token charges a fee or tax on transfer (if known)",
+      "confirm": "Add Token"
+    },
+    "errors": {
+      "walletLocked": "Wallet is locked — unlock it to derive the EVM address.",
+      "walletNotReady": "Wallet is not ready yet.",
+      "derivationFailed": "Could not derive the EVM address."
+    },
+    "swap": {
+      "title": "Swap",
+      "from": "From",
+      "to": "To",
+      "balance": "Balance",
+      "max": "Max",
+      "path": "Route",
+      "minReceived": "Minimum received",
+      "priceImpact": "Price impact",
+      "priceImpactWarning": "High price impact — you may receive significantly less value than you put in.",
+      "priceImpactHighConfirmTitle": "Very High Price Impact",
+      "priceImpactHighConfirmDesc": "This swap's price impact is above 15%. You could lose a large part of your funds' value. Continue anyway?",
+      "priceImpactHighConfirmProceed": "Swap Anyway",
+      "twoStepNotice": "This needs two approvals in your wallet: first to allow the router to spend this token, then the swap itself.",
+      "swapButton": "Swap",
+      "approveAndSwap": "Approve & Swap",
+      "approving": "Approving…",
+      "approvePending": "Approve pending…",
+      "preparing": "Preparing swap…",
+      "pending": "Swap pending…",
+      "swapAgain": "Swap Again",
+      "insufficientBalance": "Insufficient balance",
+      "selectDifferent": "Select two different assets",
+      "success": "Swap complete",
+      "viewTx": "View Transaction",
+      "errors": {
+        "network_unavailable": "Network unavailable — check your connection and try again.",
+        "router_unavailable": "This network doesn't have a router configured.",
+        "wallet_locked": "Wallet is locked — unlock it to swap.",
+        "no_liquidity": "No liquidity found for this pair.",
+        "insufficient_gas": "Not enough native balance for gas — add funds to cover the network fee.",
+        "insufficient_balance": "Insufficient balance.",
+        "user_rejected": "Transaction was cancelled.",
+        "insufficient_output": "Slippage too low — increase it and try again.",
+        "transfer_from_failed": "Insufficient balance or allowance.",
+        "insufficient_liquidity": "Not enough liquidity for this trade size.",
+        "expired": "Transaction deadline expired — try again.",
+        "approve_failed": "Approval transaction failed.",
+        "swap_reverted": "Swap transaction failed on-chain.",
+        "unknown": "Something went wrong with the swap."
+      }
+    },
+    "tokenInfo": {
+      "title": "Token Info",
+      "name": "Name",
+      "address": "Contract Address",
+      "nativeNote": "Native network currency — no contract address.",
+      "decimals": "Decimals",
+      "balance": "Balance",
+      "pinned": "Pinned",
+      "custom": "Custom",
+      "feeOnTransfer": "Fee on transfer",
+      "remove": "Remove Token",
+      "removeConfirm": "Remove"
+    }
   }
 }

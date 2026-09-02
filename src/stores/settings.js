@@ -43,6 +43,15 @@ export const settings = reactive({
   // settings.merchantZeroConfThresholdDesc for the trade-off shown to the user.
   merchantZeroConfThreshold:    Number(localStorage.getItem('merchantZeroConfThreshold') ?? 5),
   merchantRequiredConfirmations: Number(localStorage.getItem('merchantRequiredConfirmations') ?? 2),
+  // Off by default: opsiyonel BSC/EVM DEX katmanı. Kapalıyken menüde DEX
+  // görünmez ve tek bir RPC çağrısı bile yapılmaz (bkz. stores/evm.js).
+  dexMode:         localStorage.getItem('dexMode')         === 'true',
+  // 56 = BSC Mainnet, 97 = BSC Testnet.
+  evmNetwork:      Number(localStorage.getItem('evmNetwork') ?? 56),
+  // Baz puan cinsinden slippage toleransı (100 = %1).
+  slippageBps:     Number(localStorage.getItem('slippageBps') ?? 100),
+  // Swap işlemi için dakika cinsinden deadline.
+  txDeadlineMin:   Number(localStorage.getItem('txDeadlineMin') ?? 5),
 })
 
 // Settings değiştiğinde localStorage'a kaydet
@@ -88,6 +97,22 @@ watch(() => settings.merchantZeroConfThreshold, (val) => {
 
 watch(() => settings.merchantRequiredConfirmations, (val) => {
   localStorage.setItem('merchantRequiredConfirmations', val)
+})
+
+watch(() => settings.dexMode, (val) => {
+  localStorage.setItem('dexMode', val)
+})
+
+watch(() => settings.evmNetwork, (val) => {
+  localStorage.setItem('evmNetwork', val)
+})
+
+watch(() => settings.slippageBps, (val) => {
+  localStorage.setItem('slippageBps', val)
+})
+
+watch(() => settings.txDeadlineMin, (val) => {
+  localStorage.setItem('txDeadlineMin', val)
 })
 
 watch(() => settings.theme, (val) => {

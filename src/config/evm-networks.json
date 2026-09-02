@@ -1,0 +1,98 @@
+{
+  "56": {
+    "name": "BSC Mainnet",
+    "shortName": "BSC",
+    "chainId": 56,
+    "isTestnet": false,
+    "addressesVerified": false,
+    "addressesVerifiedNote": "TODO: BscScan'den doğrula — router/token adresleri henüz manuel doğrulanmadı.",
+    "rpc": [
+      "https://bsc-dataseed.binance.org",
+      "https://bsc-dataseed1.defibit.io"
+    ],
+    "explorer": "https://bscscan.com",
+    "nativeSymbol": "BNB",
+    "nativeDecimals": 18,
+    "router": "0x10ED43C718714eb63d5aA57B78B54704E256024E",
+    "routerName": "PancakeSwap V2",
+    "wrappedNative": "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
+    "baseTokens": ["WBNB", "USDT", "BUSD"],
+    "tokens": [
+      {
+        "symbol": "WBNB",
+        "name": "Wrapped BNB",
+        "address": "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
+        "decimals": 18,
+        "logo": "wbnb.webp",
+        "pinned": true,
+        "feeOnTransfer": false
+      },
+      {
+        "symbol": "USDT",
+        "name": "Tether USD",
+        "address": "0x55d398326f99059fF775485246999027B3197955",
+        "decimals": 18,
+        "logo": "usdt.webp",
+        "pinned": true,
+        "feeOnTransfer": false
+      },
+      {
+        "symbol": "BUSD",
+        "name": "Binance USD",
+        "address": "0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56",
+        "decimals": 18,
+        "logo": "busd.webp",
+        "pinned": true,
+        "feeOnTransfer": false
+      },
+      {
+        "symbol": "WNAV",
+        "name": "Wrapped Navcoin",
+        "address": "0xBFEf6cCFC830D3BaCA4F6766a0d4AaA242Ca9F3D",
+        "decimals": 8,
+        "logo": "wnav-light.svg",
+        "pinned": true,
+        "feeOnTransfer": false,
+        "addressVerifiedNote": "2026-08-29 tarihinde zincirden doğrulandı: symbol()=WNAV, name()=Wrapped Navcoin, decimals()=8. Kontrat kaynak kodu/güvenliği ayrıca incelenmedi."
+      }
+    ]
+  },
+  "97": {
+    "name": "BSC Testnet",
+    "shortName": "BSC Test",
+    "chainId": 97,
+    "isTestnet": true,
+    "addressesVerified": false,
+    "addressesVerifiedNote": "TODO: BscScan'den doğrula — router/token adresleri henüz manuel doğrulanmadı.",
+    "rpc": [
+      "https://data-seed-prebsc-1-s1.binance.org:8545"
+    ],
+    "explorer": "https://testnet.bscscan.com",
+    "nativeSymbol": "tBNB",
+    "nativeDecimals": 18,
+    "router": "0xD99D1c33F9fC3444f8101754aBC46c52416550D1",
+    "routerName": "PancakeSwap V2 (testnet)",
+    "wrappedNative": "0xae13d989daC2f0dEbFf460aC112a837C89BAa7cd",
+    "baseTokens": ["WBNB", "BUSD"],
+    "tokens": [
+      {
+        "symbol": "WBNB",
+        "name": "Wrapped BNB",
+        "address": "0xae13d989daC2f0dEbFf460aC112a837C89BAa7cd",
+        "decimals": 18,
+        "logo": "wbnb.webp",
+        "pinned": true,
+        "feeOnTransfer": false
+      },
+      {
+        "symbol": "BUSD",
+        "name": "Binance USD (test)",
+        "address": "0x78867BbEeF44f2326bF8DDd1941a4439382EF2A7",
+        "decimals": 18,
+        "logo": "busd.webp",
+        "pinned": true,
+        "feeOnTransfer": false
+      }
+    ]
+  }
+}

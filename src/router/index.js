@@ -151,6 +151,18 @@ export default createRouter({
       ],
     },
     {
+      // dexMode kapalıyken erişilemez: menüde görünmez ama kullanıcı URL'i
+      // elle yazarsa veya eski bir route restore edilirse ana sayfaya
+      // yönlendirilir. (Bkz. App.vue'daki "zaten oradayken kapatıldı" durumu
+      // için ek watch — merchantMode/pos ile aynı desen.)
+      path: "/dex",
+      component: () => import("../views/DexView.vue"),
+      meta: { showNavbar: true },
+      beforeEnter: (to, from, next) => {
+        next(settings.dexMode ? true : "/wallet/balance");
+      },
+    },
+    {
       path: "/extension/connect/:id",
       component: () => import("../views/extension/ConnectRequest.vue"),
     },

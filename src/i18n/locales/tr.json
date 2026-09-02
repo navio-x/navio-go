@@ -79,7 +79,18 @@
     "merchantZeroConfThreshold": "Anında kabul sınırı",
     "merchantZeroConfThresholdDesc": "Bu tutar ve altındaki ödemeler, bloğa onaylanmadan, ağda görülür görülmez kabul edilir — kasada daha hızlı işlem sağlar ancak kısa süreli çifte harcama riski taşır. Günlük kasa satışları için bunu düşük tutun.",
     "merchantRequiredConfirmations": "Gerekli onay sayısı",
-    "merchantRequiredConfirmationsDesc": "Anında kabul sınırının üzerindeki bir ödemenin ödendi sayılması için kaç blok onaylanması gerektiği. Daha fazla onay, blok zinciri yeniden düzenlenmesine karşı daha güvenlidir ama müşteriyi kasada daha uzun bekletir."
+    "merchantRequiredConfirmationsDesc": "Anında kabul sınırının üzerindeki bir ödemenin ödendi sayılması için kaç blok onaylanması gerektiği. Daha fazla onay, blok zinciri yeniden düzenlenmesine karşı daha güvenlidir ama müşteriyi kasada daha uzun bekletir.",
+    "dexMode": "DEX / EVM Modu",
+    "dexModeDesc": "Bu cüzdanın kurtarma ifadesinden türetilen opsiyonel bir BSC (EVM) hesabı ekler, PancakeSwap üzerinde swap yapmak için. Varsayılan olarak kapalıdır — açılmadan hiçbir ağ isteği yapılmaz.",
+    "evmNetwork": "EVM Ağı",
+    "evmNetworkMainnet": "BSC Mainnet",
+    "evmNetworkTestnet": "BSC Testnet",
+    "slippage": "Slippage Toleransı",
+    "slippageCustom": "Özel %",
+    "slippageDesc": "Bir swap işleminin iptal olmadan önce fiyatın aleyhinize ne kadar hareket edebileceği. Yüksek tolerans swap'in başarılı olma ihtimalini artırır ama daha kötü bir fiyat alabilirsiniz.",
+    "txDeadline": "İşlem Süresi (Deadline)",
+    "txDeadlineUnit": "dk",
+    "txDeadlineDesc": "Bir swap işleminin router tarafından reddedilmeden önce ne kadar süre bekleyebileceği."
   },
   "nav": {
     "more": "Diğer"
@@ -601,5 +612,96 @@
     "fieldTxId": "İşlem Kimliği",
     "fieldIssuedAt": "Makbuz oluşturulma",
     "fieldFormatVersion": "Format sürümü"
+  },
+  "dex": {
+    "title": "DEX",
+    "refresh": "Yenile",
+    "deriving": "Adres türetiliyor…",
+    "testnetWarning": "TESTNET — gerçek değer yok",
+    "network": "Ağ",
+    "rpcStatus": "RPC Durumu",
+    "rpcConnected": "Bağlı",
+    "rpcError": "Bağlantı hatası",
+    "viewExplorer": "Explorer'da Aç",
+    "staleWarning": "Güncellenemedi — son bilinen bakiyeler gösteriliyor.",
+    "balances": {
+      "title": "Bakiyeler",
+      "hideZero": "Sıfır bakiyeleri gizle",
+      "showAll": "Tümünü göster",
+      "empty": "Bu ağ için henüz token tanımlı değil."
+    },
+    "addToken": {
+      "button": "Özel Token Ekle",
+      "title": "Özel Token Ekle",
+      "addressLabel": "Token Kontrat Adresi",
+      "addressPlaceholder": "0x…",
+      "invalidAddress": "Bu geçerli bir adrese benzemiyor.",
+      "lookup": "Token'ı Sorgula",
+      "lookupFailed": "Bu token kontrattan okunamadı. Adresi ve ağı kontrol edin.",
+      "decimals": "Ondalık Basamak",
+      "warning": "Herhangi biri istediği isim veya sembolle bir token oluşturabilir. Bilinmeyen token kontratları transferi engelleyebilir veya gizli bir ücret kesebilir — yalnızca güvendiğiniz tokenları ekleyin.",
+      "feeOnTransferLabel": "Bu token transferde ücret/vergi kesiyor (biliyorsanız işaretleyin)",
+      "confirm": "Token Ekle"
+    },
+    "errors": {
+      "walletLocked": "Cüzdan kilitli — EVM adresini türetmek için kilidini açın.",
+      "walletNotReady": "Cüzdan henüz hazır değil.",
+      "derivationFailed": "EVM adresi türetilemedi."
+    },
+    "swap": {
+      "title": "Swap",
+      "from": "Gönderilen",
+      "to": "Alınan",
+      "balance": "Bakiye",
+      "max": "Maks",
+      "path": "Rota",
+      "minReceived": "Minimum alınan",
+      "priceImpact": "Fiyat etkisi",
+      "priceImpactWarning": "Yüksek fiyat etkisi — koyduğunuzdan belirgin şekilde daha az değer alabilirsiniz.",
+      "priceImpactHighConfirmTitle": "Çok Yüksek Fiyat Etkisi",
+      "priceImpactHighConfirmDesc": "Bu swap'in fiyat etkisi %15'in üzerinde. Fonlarınızın değerinin büyük bir kısmını kaybedebilirsiniz. Yine de devam edilsin mi?",
+      "priceImpactHighConfirmProceed": "Yine de Swap Yap",
+      "twoStepNotice": "Bu işlem cüzdanınızda iki ayrı onay gerektirir: önce router'ın bu token'ı harcamasına izin, sonra swap'in kendisi.",
+      "swapButton": "Swap Yap",
+      "approveAndSwap": "Onayla ve Swap Yap",
+      "approving": "Onaylanıyor…",
+      "approvePending": "Onay bekleniyor…",
+      "preparing": "Swap hazırlanıyor…",
+      "pending": "Swap bekleniyor…",
+      "swapAgain": "Tekrar Swap Yap",
+      "insufficientBalance": "Yetersiz bakiye",
+      "selectDifferent": "İki farklı varlık seçin",
+      "success": "Swap tamamlandı",
+      "viewTx": "İşlemi Görüntüle",
+      "errors": {
+        "network_unavailable": "Ağa ulaşılamıyor — bağlantınızı kontrol edip tekrar deneyin.",
+        "router_unavailable": "Bu ağ için tanımlı bir router yok.",
+        "wallet_locked": "Cüzdan kilitli — swap yapmak için kilidini açın.",
+        "no_liquidity": "Bu çift için likidite bulunamadı.",
+        "insufficient_gas": "Gaz ücreti için yetersiz native bakiye — ağ ücretini karşılamak için bakiye ekleyin.",
+        "insufficient_balance": "Yetersiz bakiye.",
+        "user_rejected": "İşlem iptal edildi.",
+        "insufficient_output": "Slippage yetersiz, artırıp tekrar deneyin.",
+        "transfer_from_failed": "Bakiye veya izin yetersiz.",
+        "insufficient_liquidity": "Bu işlem boyutu için yeterli likidite yok.",
+        "expired": "İşlem süresi (deadline) doldu — tekrar deneyin.",
+        "approve_failed": "Onay işlemi başarısız oldu.",
+        "swap_reverted": "Swap işlemi zincir üzerinde başarısız oldu.",
+        "unknown": "Swap sırasında bir şeyler ters gitti."
+      }
+    },
+    "tokenInfo": {
+      "title": "Token Bilgisi",
+      "name": "İsim",
+      "address": "Kontrat Adresi",
+      "nativeNote": "Ağın yerel (native) parası — kontrat adresi yoktur.",
+      "decimals": "Ondalık Basamak",
+      "balance": "Bakiye",
+      "pinned": "Sabitlenmiş",
+      "custom": "Özel Eklenen",
+      "feeOnTransfer": "Transferde ücret kesiyor",
+      "remove": "Token'ı Kaldır",
+      "removeConfirm": "Kaldır"
+    }
   }
 }

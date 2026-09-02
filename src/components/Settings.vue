@@ -182,6 +182,100 @@
         <p class="text-xs text-gray-400 dark:text-gray-500 mt-1.5 leading-snug">{{ $t('settings.merchantRequiredConfirmationsDesc') }}</p>
       </div>
 
+      <!-- DEX / EVM -->
+      <div class="border-t border-gray-200 dark:border-gh-700 px-4 py-3 flex items-center justify-between gap-3">
+        <div class="min-w-0">
+          <p class="text-sm text-gray-700 dark:text-gray-300 truncate">{{ $t('settings.dexMode') }}</p>
+          <p class="text-xs text-gray-400 dark:text-gray-500 mt-0.5 leading-snug">{{ $t('settings.dexModeDesc') }}</p>
+        </div>
+        <button
+          @click="settings.dexMode = !settings.dexMode"
+          class="relative inline-flex h-6 w-11 items-center rounded-full transition-colors shrink-0"
+          :class="settings.dexMode ? 'bg-blue-500' : 'bg-gray-300 dark:bg-gh-600'"
+          role="switch"
+          :aria-checked="settings.dexMode"
+        >
+          <span
+            class="inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform"
+            :class="settings.dexMode ? 'translate-x-6' : 'translate-x-1'"
+          />
+        </button>
+      </div>
+
+      <template v-if="settings.dexMode">
+        <div class="border-t border-gray-200 dark:border-gh-700 px-4 py-3">
+          <label class="block mb-1.5 text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">
+            {{ $t('settings.evmNetwork') }}
+          </label>
+          <select
+            v-model.number="settings.evmNetwork"
+            class="w-full px-3 py-2 rounded-lg text-sm
+                   bg-gray-100 dark:bg-gh-700
+                   text-gray-900 dark:text-white
+                   border border-gray-200 dark:border-gh-600
+                   hover:bg-gray-200 dark:hover:bg-gh-600
+                   transition-colors outline-none cursor-pointer"
+          >
+            <option :value="56">{{ $t('settings.evmNetworkMainnet') }}</option>
+            <option :value="97">{{ $t('settings.evmNetworkTestnet') }}</option>
+          </select>
+        </div>
+
+        <div class="border-t border-gray-200 dark:border-gh-700 px-4 py-3">
+          <label class="block mb-1.5 text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">
+            {{ $t('settings.slippage') }}
+          </label>
+          <div class="grid grid-cols-4 gap-1.5">
+            <button
+              v-for="preset in slippagePresets"
+              :key="preset"
+              @click="settings.slippageBps = preset"
+              class="px-2 py-2 rounded-lg text-xs font-medium transition-colors"
+              :class="settings.slippageBps === preset
+                ? 'bg-blue-600 text-white'
+                : 'bg-gray-100 dark:bg-gh-700 text-gray-600 dark:text-gray-300'"
+            >
+              {{ (preset / 100).toString() }}%
+            </button>
+            <input
+              v-model.number="customSlippageInput"
+              type="number"
+              min="0"
+              step="0.1"
+              :placeholder="$t('settings.slippageCustom')"
+              class="w-full rounded-lg px-2 py-2 text-xs text-center outline-none transition-colors
+                     bg-gray-50 dark:bg-gh-700
+                     text-gray-900 dark:text-white
+                     border border-gray-200 dark:border-gh-600
+                     focus:border-blue-400 dark:focus:border-blue-500"
+              @change="applyCustomSlippage"
+            />
+          </div>
+          <p class="text-xs text-gray-400 dark:text-gray-500 mt-1.5 leading-snug">{{ $t('settings.slippageDesc') }}</p>
+        </div>
+
+        <div class="border-t border-gray-200 dark:border-gh-700 px-4 py-3">
+          <label class="block mb-1.5 text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">
+            {{ $t('settings.txDeadline') }}
+          </label>
+          <div class="flex items-center gap-2">
+            <input
+              v-model.number="settings.txDeadlineMin"
+              type="number"
+              min="1"
+              step="1"
+              class="w-full rounded-xl px-3 py-2.5 text-sm outline-none transition-colors
+                     bg-gray-50 dark:bg-gh-700
+                     text-gray-900 dark:text-white
+                     border border-gray-200 dark:border-gh-600
+                     focus:border-blue-400 dark:focus:border-blue-500"
+            />
+            <span class="text-sm text-gray-400 dark:text-gray-500 shrink-0">{{ $t('settings.txDeadlineUnit') }}</span>
+          </div>
+          <p class="text-xs text-gray-400 dark:text-gray-500 mt-1.5 leading-snug">{{ $t('settings.txDeadlineDesc') }}</p>
+        </div>
+      </template>
+
       <div class="border-t border-gray-200 dark:border-gh-700 px-4 py-3">
         <label class="block mb-1.5 text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">
           {{ $t('settings.theme') }}
@@ -442,6 +536,16 @@ const goToBackup = () => {
 
 const showConfirm = ref(false)
 const showMerchantDisableConfirm = ref(false)
+
+const slippagePresets = [50, 100, 300] // %0.5 / %1 / %3
+const customSlippageInput = ref(null)
+
+const applyCustomSlippage = () => {
+  const pct = Number(customSlippageInput.value)
+  if (Number.isFinite(pct) && pct > 0) {
+    settings.slippageBps = Math.round(pct * 100)
+  }
+}
 
 const toggleMerchantMode = () => {
   if (settings.merchantMode) {
