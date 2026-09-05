@@ -1,6 +1,7 @@
 import { ref } from "vue";
-import blsctWasmUrl from "navio-blsct/wasm/blsct.wasm?url";
-import blsctJsUrl from "navio-blsct/wasm/blsct.js?url";
+import blsctWasmUrl from "@nav-io/navio-blsct/wasm/blsct.wasm?url";
+import blsctJsUrl from "@nav-io/navio-blsct/wasm/blsct.js?url";
+import blsctModuleUrl from "@nav-io/navio-blsct/wasm/blsct.mjs?url";
 import { IDB_PREFIX } from "@/stores/wallet_management";
 import {
   addWalletToRegistry,
@@ -149,7 +150,7 @@ export async function initNavioSDK() {
   let blsct;
   try {
     console.log("Importing navio-blsct module...");
-    blsct = await import("navio-blsct");
+    blsct = await import("@nav-io/navio-blsct");
     console.log("navio-blsct imported ✅");
   } catch (err) {
     console.error("Failed to import navio-blsct", err);
@@ -173,6 +174,7 @@ export async function initNavioSDK() {
     
     console.log("Loading WASM module with binary...");
     wasmModule = await blsct.loadBlsctModule({
+      wasmPath: blsctModuleUrl,
       wasmBinary: wasmBinary,
     });
     

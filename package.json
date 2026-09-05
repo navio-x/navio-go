@@ -2,7 +2,7 @@
   "type": "module",
   "name": "navio-go",
   "private": true,
-  "version": "0.0.4-alpha",
+  "version": "0.0.5-alpha",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
@@ -23,6 +23,7 @@
     "zip:extension:firefox": "wxt zip -b firefox"
   },
   "dependencies": {
+    "@nav-io/navio-blsct": "^1.1.19",
     "@capacitor-community/keep-awake": "^8.0.1",
     "@capacitor-mlkit/barcode-scanning": "^8.0.1",
     "@capacitor/android": "^8.2.0",
@@ -41,7 +42,7 @@
     "crypto-browserify": "^3.12.1",
     "jspdf": "^4.2.1",
     "lucide-vue-next": "^0.563.0",
-    "navio-sdk": "^0.1.16",
+    "navio-sdk": "^0.1.32",
     "pinia": "^3.0.4",
     "process": "^0.11.10",
     "qrcode.vue": "^3.7.1",
@@ -64,5 +65,8 @@
     "vite-plugin-pwa": "^1.2.0",
     "vitest": "^4.1.11",
     "wxt": "^0.20.27"
+  },
+  "overrides": {
+    "@swc/core": "1.12.14"
   }
 }

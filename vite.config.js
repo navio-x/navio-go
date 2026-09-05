@@ -52,15 +52,15 @@ export default defineConfig({
   resolve: {
     alias: [
       { find: "@", replacement: "/src" },
-      { 
-        find: 'navio-blsct/wasm', 
-        replacement: resolve(__dirname, 'node_modules/navio-blsct/wasm') 
+      {
+        find: '@nav-io/navio-blsct/wasm',
+        replacement: resolve(__dirname, 'node_modules/@nav-io/navio-blsct/wasm')
       },
     ]
   },
   optimizeDeps: {
-    include: ['sql.js', 'buffer', '@noble/hashes/sha256', '@noble/hashes/ripemd160'],
-    exclude: ["navio-sdk", "navio-blsct"],
+    include: ['sql.js', 'buffer'],
+    exclude: ["navio-sdk", "@nav-io/navio-blsct"],
     esbuildOptions: {
       define: {
         global: 'globalThis'
@@ -94,7 +94,7 @@ export default defineConfig({
       allow: [
         resolve(__dirname, ".."),
         resolve(__dirname, "node_modules"),
-        resolve(__dirname, "node_modules/navio-blsct"),
+        resolve(__dirname, "node_modules/@nav-io/navio-blsct"),
         resolve(__dirname, "../../../libblsct-bindings"),
       ],
     },
