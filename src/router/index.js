@@ -163,6 +163,35 @@ export default createRouter({
       },
     },
     {
+      // tradeMode kapalıyken erişilemez: menüde görünmez ama kullanıcı URL'i
+      // elle yazarsa veya eski bir route restore edilirse ana sayfaya
+      // yönlendirilir. (Bkz. App.vue'daki "zaten oradayken kapatıldı" durumu
+      // için ek watch — merchantMode/pos ve dexMode/dex ile aynı desen.)
+      // Not: bu, stores/evm.js'deki EVM/BSC köprüsü "dex"ten ayrı, Navio'nun
+      // kendi p2p RFQ alım-satımı — bkz. stores/trade.js. Parent-route guard
+      // (POS ile aynı desen) altındaki tüm alt sayfaları tek yerden korur —
+      // Assets/token detay ekranları köprü durumundan bağımsız, sadece
+      // tradeMode'a bağlıdır (bkz. stores/trade.js Phase 2 yorumu).
+      path: "/trade",
+      meta: { showNavbar: true },
+      beforeEnter: (to, from, next) => {
+        next(settings.tradeMode ? true : "/wallet/balance");
+      },
+      children: [
+        { path: "", component: () => import("../views/trade/TradeHome.vue") },
+        { path: "assets", component: () => import("../views/trade/TradeAssets.vue") },
+        { path: "assets/:tokenId", component: () => import("../views/trade/TradeTokenDetail.vue") },
+        { path: "take", component: () => import("../views/trade/TradeTakeRequest.vue") },
+        { path: "take/:uuid", component: () => import("../views/trade/TradeQuotes.vue") },
+        { path: "maker", component: () => import("../views/trade/TradeMakerHome.vue") },
+        { path: "maker/intent", component: () => import("../views/trade/TradeMakerIntent.vue") },
+        { path: "maker/respond", component: () => import("../views/trade/TradeMakerRespond.vue") },
+        { path: "maker/order", component: () => import("../views/trade/TradeMakerOrder.vue") },
+        { path: "manage", component: () => import("../views/trade/TradeManage.vue") },
+        { path: "history", component: () => import("../views/trade/TradeHistory.vue") },
+      ],
+    },
+    {
       path: "/extension/connect/:id",
       component: () => import("../views/extension/ConnectRequest.vue"),
     },

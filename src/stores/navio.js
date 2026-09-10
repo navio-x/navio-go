@@ -62,7 +62,8 @@ export {
   chainTip,
   balance,
   utxos,
-  receiveAddress
+  receiveAddress,
+  syncHealth
 };
 
 export function isSyncing() {
@@ -582,17 +583,22 @@ export async function refreshCreatedCollections() {
   }
 }
 
-export async function createCollection({ kind, metadata, totalSupply }) {
+export async function createCollection({ kind, metadata, totalSupply, initialMint }) {
   if (!_navioClient.value) throw new Error("Wallet not ready");
   const options = {
     metadata,
     totalSupply: BigInt(totalSupply || 0),
   };
+  // initialMint only exists on createTokenCollection (fungible) — NFTs are
+  // minted one at a time with their own id, not a bulk starting supply.
+  if (kind !== "nft" && initialMint) {
+    options.initialMint = { address: initialMint.address, amount: BigInt(initialMint.amount) };
+  }
   const result =
     kind === "nft"
       ? await _navioClient.value.createNftCollection(options)
       : await _navioClient.value.createTokenCollection(options);
-  await refreshCreatedCollections();
+  await Promise.all([refreshCreatedCollections(), ...(options.initialMint ? [refreshAssetBalances()] : [])]);
   return result;
 }
 
@@ -619,7 +625,7 @@ export async function mintNftFromCollection({ address, collectionTokenId, nftId,
   return result;
 }
 
-export async function sendTokenAsset({ address, tokenId, amount, memo, subtractFeeFromAmount }) {
+export async function sendTokenAsset({ address, tokenId, amount, memo, subtractFeeFromAmount, selectedUtxos }) {
   if (!_navioClient.value) throw new Error("Wallet not ready");
   const result = await _navioClient.value.sendToken({
     address,
@@ -627,6 +633,7 @@ export async function sendTokenAsset({ address, tokenId, amount, memo, subtractF
     amount: BigInt(amount),
     memo: memo || undefined,
     subtractFeeFromAmount: !!subtractFeeFromAmount,
+    ...(selectedUtxos ? { selectedUtxos } : {}),
   });
   await refreshAssetBalances();
   return result;

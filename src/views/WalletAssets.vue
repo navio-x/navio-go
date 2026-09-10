@@ -147,6 +147,9 @@
               <p class="text-xs text-gray-400 dark:text-gray-500 mt-0.5">
                 {{ $t('assets.outputCount', { n: asset.outputCount }) }}
               </p>
+              <p v-if="getReservedAmount(asset.tokenId) > 0n" class="text-xs text-amber-600 dark:text-amber-400 mt-0.5">
+                {{ $t('trade.manage.locked') }}: {{ getReservedAmount(asset.tokenId).toString() }}
+              </p>
             </div>
             <div class="shrink-0 flex items-center gap-2">
               <p class="font-semibold tabular-nums text-gray-900 dark:text-white text-sm">{{ asset.balance.toString() }}</p>
@@ -370,7 +373,7 @@
           <div class="flex items-center justify-between">
             <label class="text-xs font-medium text-gray-500 dark:text-gray-400">{{ $t('assets.mintAmount') }}</label>
             <button
-              @click="sendTokenAmount = sendTokenTarget.balance.toString()"
+              @click="sendTokenAmount = sendableTokenBalance.toString()"
               class="text-xs font-medium text-blue-600 dark:text-blue-400"
             >
               {{ $t('wallet.useAll') }}
@@ -387,7 +390,10 @@
             focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
           <p class="text-xs text-gray-400 dark:text-gray-500">
-            {{ $t('assets.mintMax', { n: sendTokenTarget.balance.toString() }) }}
+            {{ $t('assets.mintMax', { n: sendableTokenBalance.toString() }) }}
+          </p>
+          <p v-if="reservedForSendToken > 0n" class="text-xs text-amber-600 dark:text-amber-400 leading-relaxed">
+            {{ $t('trade.reserved.warning', { amount: reservedForSendToken.toString() }) }}
           </p>
         </div>
         <div class="space-y-1.5">
@@ -484,7 +490,7 @@
       v-if="showCreate"
       class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-6"
     >
-      <div class="bg-white dark:bg-gh-900 border border-gray-100 dark:border-gh-800 rounded-2xl p-6 w-full max-w-sm space-y-4 shadow-2xl">
+      <div class="bg-white dark:bg-gh-900 border border-gray-100 dark:border-gh-800 rounded-2xl p-6 w-full max-w-md space-y-4 shadow-2xl">
         <h3 class="text-base font-bold text-gray-900 dark:text-white">{{ $t('assets.createTitle') }}</h3>
         <p class="text-sm text-gray-500 dark:text-gray-400">{{ $t('assets.createDesc') }}</p>
 
@@ -511,53 +517,55 @@
           </button>
         </div>
 
-        <template v-if="createKind === 'token'">
-          <div class="space-y-1.5">
-            <label class="text-xs font-medium text-gray-500 dark:text-gray-400">{{ $t('assets.createName') }}</label>
-            <input
-              v-model="createName"
-              type="text"
-              class="w-full border border-gray-200 dark:border-gh-700 rounded-xl p-2.5 text-sm
-              bg-white dark:bg-gh-800 text-gray-900 dark:text-white
-              focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
+        <div class="grid grid-cols-2 gap-3">
+          <template v-if="createKind === 'token'">
+            <div class="space-y-1.5">
+              <label class="text-xs font-medium text-gray-500 dark:text-gray-400">{{ $t('assets.createName') }}</label>
+              <input
+                v-model="createName"
+                type="text"
+                class="w-full border border-gray-200 dark:border-gh-700 rounded-xl p-2.5 text-sm
+                bg-white dark:bg-gh-800 text-gray-900 dark:text-white
+                focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
 
-          <div class="space-y-1.5">
-            <label class="text-xs font-medium text-gray-500 dark:text-gray-400">{{ $t('assets.createSymbol') }}</label>
-            <input
-              v-model="createSymbol"
-              type="text"
-              class="w-full border border-gray-200 dark:border-gh-700 rounded-xl p-2.5 text-sm
-              bg-white dark:bg-gh-800 text-gray-900 dark:text-white
-              focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-        </template>
+            <div class="space-y-1.5">
+              <label class="text-xs font-medium text-gray-500 dark:text-gray-400">{{ $t('assets.createSymbol') }}</label>
+              <input
+                v-model="createSymbol"
+                type="text"
+                class="w-full border border-gray-200 dark:border-gh-700 rounded-xl p-2.5 text-sm
+                bg-white dark:bg-gh-800 text-gray-900 dark:text-white
+                focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+          </template>
 
-        <template v-else>
-          <div class="space-y-1.5">
-            <label class="text-xs font-medium text-gray-500 dark:text-gray-400">{{ $t('assets.createCollectionName') }}</label>
-            <input
-              v-model="createCollectionName"
-              type="text"
-              class="w-full border border-gray-200 dark:border-gh-700 rounded-xl p-2.5 text-sm
-              bg-white dark:bg-gh-800 text-gray-900 dark:text-white
-              focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
+          <template v-else>
+            <div class="space-y-1.5">
+              <label class="text-xs font-medium text-gray-500 dark:text-gray-400">{{ $t('assets.createCollectionName') }}</label>
+              <input
+                v-model="createCollectionName"
+                type="text"
+                class="w-full border border-gray-200 dark:border-gh-700 rounded-xl p-2.5 text-sm
+                bg-white dark:bg-gh-800 text-gray-900 dark:text-white
+                focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
 
-          <div class="space-y-1.5">
-            <label class="text-xs font-medium text-gray-500 dark:text-gray-400">{{ $t('assets.createCreator') }}</label>
-            <input
-              v-model="createCreator"
-              type="text"
-              class="w-full border border-gray-200 dark:border-gh-700 rounded-xl p-2.5 text-sm
-              bg-white dark:bg-gh-800 text-gray-900 dark:text-white
-              focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-        </template>
+            <div class="space-y-1.5">
+              <label class="text-xs font-medium text-gray-500 dark:text-gray-400">{{ $t('assets.createCreator') }}</label>
+              <input
+                v-model="createCreator"
+                type="text"
+                class="w-full border border-gray-200 dark:border-gh-700 rounded-xl p-2.5 text-sm
+                bg-white dark:bg-gh-800 text-gray-900 dark:text-white
+                focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+          </template>
+        </div>
 
         <div class="space-y-1.5">
           <label class="text-xs font-medium text-gray-500 dark:text-gray-400">{{ $t('assets.createTotalSupply') }}</label>
@@ -571,6 +579,68 @@
             bg-white dark:bg-gh-800 text-gray-900 dark:text-white
             focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
+        </div>
+
+        <!-- Initial mint: only fungible tokens support minting first supply
+             in the same transaction as the collection (NFTs mint one at a
+             time with their own id — see stores/navio.js createCollection). -->
+        <div v-if="createKind === 'token'" class="border-t border-gray-100 dark:border-gh-700 pt-3 space-y-3">
+          <div class="flex items-center justify-between gap-3">
+            <div class="min-w-0">
+              <p class="text-sm font-medium text-gray-700 dark:text-gray-300">{{ $t('assets.createInitialMint') }}</p>
+              <p class="text-xs text-gray-400 dark:text-gray-500 mt-0.5 leading-snug">{{ $t('assets.createInitialMintDesc') }}</p>
+            </div>
+            <button
+              @click="createInitialMint = !createInitialMint"
+              :class="createInitialMint ? 'bg-blue-600' : 'bg-gray-200 dark:bg-gh-600'"
+              class="relative shrink-0 w-11 h-6 rounded-full transition-colors duration-200 focus:outline-none"
+              role="switch"
+              :aria-checked="createInitialMint"
+            >
+              <span
+                :class="createInitialMint ? 'translate-x-5' : 'translate-x-0'"
+                class="absolute top-1 left-1 w-4 h-4 bg-white rounded-full shadow transition-transform duration-200"
+              />
+            </button>
+          </div>
+
+          <template v-if="createInitialMint">
+            <div class="space-y-1.5">
+              <label class="text-xs font-medium text-gray-500 dark:text-gray-400">{{ $t('assets.mintAddress') }}</label>
+              <input
+                v-model="createMintAddress"
+                type="text"
+                class="w-full border border-gray-200 dark:border-gh-700 rounded-xl p-2.5 text-xs font-mono
+                bg-white dark:bg-gh-800 text-gray-900 dark:text-white
+                focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div class="space-y-1.5">
+              <div class="flex items-center justify-between">
+                <label class="text-xs font-medium text-gray-500 dark:text-gray-400">{{ $t('assets.mintAmount') }}</label>
+                <button
+                  v-if="createTotalSupply"
+                  @click="createMintAmount = createTotalSupply"
+                  class="text-xs font-medium text-blue-600 dark:text-blue-400"
+                >
+                  {{ $t('assets.mintAll') }}
+                </button>
+              </div>
+              <input
+                v-model="createMintAmount"
+                @input="onCreateMintAmountInput"
+                type="text"
+                inputmode="numeric"
+                pattern="[0-9]*"
+                class="w-full border border-gray-200 dark:border-gh-700 rounded-xl p-2.5 text-sm
+                bg-white dark:bg-gh-800 text-gray-900 dark:text-white
+                focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              <p v-if="createTotalSupply" class="text-xs text-gray-400 dark:text-gray-500">
+                {{ $t('assets.mintMax', { n: formatSupply(BigInt(createTotalSupply)) }) }}
+              </p>
+            </div>
+          </template>
         </div>
 
         <p v-if="createError" class="text-sm text-red-500 dark:text-red-400">{{ createError }}</p>
@@ -613,6 +683,11 @@ import {
   sendTokenAsset,
   sendNftAsset,
 } from "@/stores/navio";
+// Coin-locking safety net for the trade module — see stores/trade.js's
+// Phase 4 note and WalletSend.vue's identical NAV-side integration. NFTs
+// never need this: the RFQ protocol categorically rejects NFT token ids
+// (navio-sdk's toDaemonToken), so an NFT can never be reserved.
+import { getReservedAmount, getSendableUtxos, loadReservations } from "@/stores/trade";
 import { Loader2, Layers, Coins, Image, Copy, Plus, Send } from "lucide-vue-next";
 import copy from "copy-to-clipboard";
 import { useI18n } from "vue-i18n";
@@ -670,6 +745,7 @@ onMounted(async () => {
   await refreshAll();
   loading.value = false;
   pollTimer = setInterval(refreshAll, 10000);
+  loadReservations();
 });
 
 onUnmounted(() => {
@@ -788,12 +864,22 @@ const sendTokenMemo = ref("");
 const sendingToken = ref(false);
 const sendTokenError = ref("");
 
+// Locked by an outstanding maker quote/order for this token — zero for any
+// wallet that has never touched trading, or for any token that isn't
+// currently reserved.
+const reservedForSendToken = computed(() =>
+  sendTokenTarget.value ? getReservedAmount(sendTokenTarget.value.tokenId) : 0n
+);
+const sendableTokenBalance = computed(() =>
+  sendTokenTarget.value ? sendTokenTarget.value.balance - reservedForSendToken.value : 0n
+);
+
 const sendTokenAmountValid = computed(() => {
   if (sendTokenAmount.value === "") return false;
   if (!/^\d+$/.test(sendTokenAmount.value)) return false;
   const amount = BigInt(sendTokenAmount.value);
   if (amount <= 0n) return false;
-  if (sendTokenTarget.value && amount > sendTokenTarget.value.balance) return false;
+  if (sendTokenTarget.value && amount > sendableTokenBalance.value) return false;
   return true;
 });
 
@@ -814,11 +900,17 @@ async function submitSendToken() {
   sendingToken.value = true;
   sendTokenError.value = "";
   try {
+    // Only touch UTXO selection when this token actually has a reservation
+    // — the ordinary auto-selected send path is otherwise untouched.
+    const selectedUtxos = reservedForSendToken.value > 0n
+      ? (await getSendableUtxos(sendTokenTarget.value.tokenId)).map((u) => u.outputHash)
+      : undefined;
     await sendTokenAsset({
       address: sendTokenAddress.value.trim(),
       tokenId: sendTokenTarget.value.tokenId,
       amount: sendTokenAmount.value,
       memo: sendTokenMemo.value.trim(),
+      ...(selectedUtxos ? { selectedUtxos } : {}),
     });
     sendTokenTarget.value = null;
   } catch (err) {
@@ -866,6 +958,12 @@ const createSymbol = ref("");
 const createCollectionName = ref("");
 const createCreator = ref("");
 const createTotalSupply = ref("");
+// Initial mint: fungible tokens only — the SDK mints the first supply in
+// the same transaction as the collection itself (see stores/navio.js
+// createCollection / navio-sdk's CreateTokenCollectionOptions.initialMint).
+const createInitialMint = ref(false);
+const createMintAddress = ref("");
+const createMintAmount = ref("");
 const creating = ref(false);
 const createError = ref("");
 
@@ -875,11 +973,22 @@ const createFormValid = computed(() => {
   if (createKind.value === "nft") {
     return createCollectionName.value.trim() !== "" && createCreator.value.trim() !== "";
   }
+  if (createInitialMint.value) {
+    if (!createMintAddress.value.trim()) return false;
+    if (!/^\d+$/.test(createMintAmount.value)) return false;
+    const amount = BigInt(createMintAmount.value);
+    if (amount <= 0n) return false;
+    if (amount > BigInt(createTotalSupply.value)) return false;
+  }
   return BigInt(createTotalSupply.value) > 0n;
 });
 
 function onTotalSupplyInput() {
   createTotalSupply.value = createTotalSupply.value.replace(/[^\d]/g, "");
+}
+
+function onCreateMintAmountInput() {
+  createMintAmount.value = createMintAmount.value.replace(/[^\d]/g, "");
 }
 
 function openCreate() {
@@ -890,6 +999,9 @@ function openCreate() {
   createCollectionName.value = "";
   createCreator.value = "";
   createTotalSupply.value = "";
+  createInitialMint.value = false;
+  createMintAddress.value = receiveAddress.value ?? "";
+  createMintAmount.value = "";
   createError.value = "";
 }
 
@@ -910,6 +1022,9 @@ async function submitCreate() {
       kind: createKind.value,
       metadata: Object.keys(metadata).length ? metadata : undefined,
       totalSupply: createTotalSupply.value || "0",
+      initialMint: createKind.value === "token" && createInitialMint.value
+        ? { address: createMintAddress.value.trim(), amount: createMintAmount.value }
+        : undefined,
     });
     showCreate.value = false;
   } catch (err) {

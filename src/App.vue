@@ -107,6 +107,13 @@ watch(() => settings.dexMode, (enabled) => {
   }
 })
 
+// Trade modu Settings'ten kapatılırsa ve kullanıcı hâlâ /trade'teyse aynı anda dışarı çıkar.
+watch(() => settings.tradeMode, (enabled) => {
+  if (!enabled && route.path.startsWith('/trade')) {
+    router.replace('/wallet/balance')
+  }
+})
+
 function confirmExit() {
   CapApp.exitApp()
 }

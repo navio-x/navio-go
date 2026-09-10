@@ -276,6 +276,26 @@
         </div>
       </template>
 
+      <!-- Native Navio RFQ trading (not the EVM/BSC DEX above) -->
+      <div class="border-t border-gray-200 dark:border-gh-700 px-4 py-3 flex items-center justify-between gap-3">
+        <div class="min-w-0">
+          <p class="text-sm text-gray-700 dark:text-gray-300 truncate">{{ $t('settings.tradeMode') }}</p>
+          <p class="text-xs text-gray-400 dark:text-gray-500 mt-0.5 leading-snug">{{ $t('settings.tradeModeDesc') }}</p>
+        </div>
+        <button
+          @click="settings.tradeMode = !settings.tradeMode"
+          class="relative inline-flex h-6 w-11 items-center rounded-full transition-colors shrink-0"
+          :class="settings.tradeMode ? 'bg-blue-500' : 'bg-gray-300 dark:bg-gh-600'"
+          role="switch"
+          :aria-checked="settings.tradeMode"
+        >
+          <span
+            class="inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform"
+            :class="settings.tradeMode ? 'translate-x-6' : 'translate-x-1'"
+          />
+        </button>
+      </div>
+
       <div class="border-t border-gray-200 dark:border-gh-700 px-4 py-3">
         <label class="block mb-1.5 text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">
           {{ $t('settings.theme') }}

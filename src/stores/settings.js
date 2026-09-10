@@ -52,6 +52,12 @@ export const settings = reactive({
   slippageBps:     Number(localStorage.getItem('slippageBps') ?? 100),
   // Swap işlemi için dakika cinsinden deadline.
   txDeadlineMin:   Number(localStorage.getItem('txDeadlineMin') ?? 5),
+  // Off by default: native Navio RFQ peer-to-peer trading (requestQuote /
+  // acceptQuote / setSwapIntent / replyQuote — see stores/trade.js). Not to
+  // be confused with dexMode above, which is the unrelated EVM/BSC bridge.
+  // Kapalıyken menüde görünmez ve köprü probe'u dahil hiçbir RPC çağrısı
+  // yapılmaz (bkz. stores/trade.js).
+  tradeMode:       localStorage.getItem('tradeMode')       === 'true',
 })
 
 // Settings değiştiğinde localStorage'a kaydet
@@ -101,6 +107,10 @@ watch(() => settings.merchantRequiredConfirmations, (val) => {
 
 watch(() => settings.dexMode, (val) => {
   localStorage.setItem('dexMode', val)
+})
+
+watch(() => settings.tradeMode, (val) => {
+  localStorage.setItem('tradeMode', val)
 })
 
 watch(() => settings.evmNetwork, (val) => {

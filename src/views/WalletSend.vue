@@ -69,6 +69,9 @@
                    placeholder-gray-400 dark:placeholder-gray-500
                    focus:border-blue-400 dark:focus:border-blue-500"
           />
+          <p v-if="reservedNav > 0" class="mt-1.5 text-xs text-amber-600 dark:text-amber-400 leading-relaxed">
+            {{ $t('trade.reserved.warning', { amount: `${reservedNav} NAV` }) }}
+          </p>
         </div>
 
         <div class="border-t border-gray-100 dark:border-gh-700 px-4 py-3">
@@ -361,6 +364,14 @@ import { BarcodeScanner, BarcodeFormat } from "@capacitor-mlkit/barcode-scanning
 import { QrCode, Loader2, Check, Info, Clock, ShieldAlert } from "lucide-vue-next";
 import { settings } from "@/stores/settings";
 import { getPriceIn } from "@/stores/navPrice";
+// Coin-locking safety net for the trade module (see stores/trade.js's Phase
+// 4 note): reads only, and every read is a no-op when there are no
+// outstanding maker commitments — a wallet that has never touched trading
+// sees identical behavior to before this import existed. loadReservations()
+// is called unconditionally on mount (not gated by settings.tradeMode)
+// because an outstanding commitment is real regardless of whether the
+// trading UI is currently toggled on.
+import { getReservedAmount, getSendableUtxos, loadReservations } from "@/stores/trade";
 // evaluateScannedRequest / trustMerchantKey are dynamically imported below
 // (not statically here) so this always-loaded screen never pulls POS
 // signing/storage code into the main bundle — only fetched the moment a
@@ -387,6 +398,7 @@ let posTickTimer = null;
 
 onMounted(() => {
   posTickTimer = setInterval(() => { posNow.value = Date.now(); }, 1000);
+  loadReservations();
 });
 onUnmounted(() => {
   clearInterval(posTickTimer);
@@ -451,7 +463,13 @@ async function onPosApprove() {
   openConfirm();
 }
 
-const availableBalance = computed(() => Number(balance.value) || 0)
+// NAV currently committed to an outstanding maker quote/order — excluded
+// from what's shown/usable here so "useAll" and manual entry can't reach
+// into it. Zero (the common case: no outstanding trade commitments) leaves
+// this identical to the balance shown before the trade module existed.
+const reservedNav = computed(() => Number(getReservedAmount(null)) / 1e8)
+
+const availableBalance = computed(() => Math.max(0, (Number(balance.value) || 0) - reservedNav.value))
 
 const formattedBalance = computed(() =>
   availableBalance.value.toLocaleString(undefined, { maximumFractionDigits: 8 })
@@ -495,7 +513,21 @@ const sendTransaction = () => {
   isLoading.value = true;
   errorMessage.value = '';
 
-  client.sendTransaction({ address: recipient.value, amount: toSatoshi(amount.value), memo: memo.value, subtractFeeFromAmount: subtractFeeFromAmount.value })
+  // Only touch UTXO selection when a reservation actually exists — the
+  // ordinary auto-selected send path (the entire wallet before the trade
+  // module existed) is otherwise untouched.
+  const utxosPromise = reservedNav.value > 0
+    ? getSendableUtxos(null).then((utxos) => utxos.map((u) => u.outputHash))
+    : Promise.resolve(undefined);
+
+  utxosPromise
+    .then((selectedUtxos) => client.sendTransaction({
+      address: recipient.value,
+      amount: toSatoshi(amount.value),
+      memo: memo.value,
+      subtractFeeFromAmount: subtractFeeFromAmount.value,
+      ...(selectedUtxos ? { selectedUtxos } : {}),
+    }))
     .then((result) => {
       console.log('Transaction ID:', result.txId);
       resultSuccess.value = true;
