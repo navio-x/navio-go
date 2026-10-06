@@ -24,4 +24,16 @@ const app = createApp(App);
 app.use(createPinia());
 app.use(router);
 app.use(i18n);
+
+// Without these, a failed lazy-route chunk load or a synchronous error
+// thrown during a component's setup() is swallowed silently in production —
+// the URL can even change while the screen stays on the previous page, with
+// nothing in the console to explain why. Surface both loudly instead.
+app.config.errorHandler = (err, instance, info) => {
+  console.error("[app] uncaught error:", err, info);
+};
+router.onError((error, to, from) => {
+  console.error("[router] navigation failed:", to.fullPath, "from", from.fullPath, error);
+});
+
 app.mount("#app");

@@ -72,6 +72,23 @@
       </div>
 
       <div class="border-t border-gray-200 dark:border-gh-700 px-4 py-3 flex items-center justify-between gap-3">
+        <label class="text-sm text-gray-700 dark:text-gray-300">{{ $t('settings.syncIndicator') }}</label>
+        <div class="flex shrink-0 rounded-lg bg-gray-100 dark:bg-gh-700 p-0.5">
+          <button
+            v-for="opt in ['bar', 'circle']"
+            :key="opt"
+            @click="settings.syncIndicator = opt"
+            class="px-3 py-1 rounded-md text-xs font-medium transition-colors"
+            :class="settings.syncIndicator === opt
+              ? 'bg-white dark:bg-gh-600 text-gray-900 dark:text-white shadow-sm'
+              : 'text-gray-500 dark:text-gray-400'"
+          >
+            {{ $t(opt === 'bar' ? 'settings.syncIndicatorBar' : 'settings.syncIndicatorCircle') }}
+          </button>
+        </div>
+      </div>
+
+      <div class="border-t border-gray-200 dark:border-gh-700 px-4 py-3 flex items-center justify-between gap-3">
         <div class="min-w-0">
           <p class="text-sm text-gray-700 dark:text-gray-300 truncate">{{ $t('settings.employerMode') }}</p>
           <p class="text-xs text-gray-400 dark:text-gray-500 mt-0.5 leading-snug">{{ $t('settings.employerModeDesc') }}</p>
@@ -296,6 +313,98 @@
         </button>
       </div>
 
+      <!-- P2P encrypted chat (navio-p2pmsg) -->
+      <div class="border-t border-gray-200 dark:border-gh-700 px-4 py-3 flex items-center justify-between gap-3">
+        <div class="min-w-0">
+          <p class="text-sm text-gray-700 dark:text-gray-300 truncate">{{ $t('settings.chatMode') }}</p>
+          <p class="text-xs text-gray-400 dark:text-gray-500 mt-0.5 leading-snug">{{ $t('settings.chatModeDesc') }}</p>
+        </div>
+        <button
+          @click="settings.chatMode = !settings.chatMode"
+          class="relative inline-flex h-6 w-11 items-center rounded-full transition-colors shrink-0"
+          :class="settings.chatMode ? 'bg-blue-500' : 'bg-gray-300 dark:bg-gh-600'"
+          role="switch"
+          :aria-checked="settings.chatMode"
+        >
+          <span
+            class="inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform"
+            :class="settings.chatMode ? 'translate-x-6' : 'translate-x-1'"
+          />
+        </button>
+      </div>
+
+      <div v-if="settings.chatMode" class="border-t border-gray-200 dark:border-gh-700 px-4 py-3">
+        <label class="block mb-1.5 text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">
+          {{ $t('settings.chatNickname') }}
+        </label>
+        <input
+          v-model="settings.chatNickname"
+          type="text"
+          :placeholder="walletName"
+          class="w-full rounded-xl px-3 py-2.5 text-sm outline-none transition-colors
+                 bg-gray-50 dark:bg-gh-700
+                 text-gray-900 dark:text-white
+                 border border-gray-200 dark:border-gh-600
+                 focus:border-blue-400 dark:focus:border-blue-500"
+        />
+        <p class="text-xs text-gray-400 dark:text-gray-500 mt-1.5 leading-snug">{{ $t('settings.chatNicknameDesc') }}</p>
+      </div>
+
+      <div v-if="settings.chatMode" class="border-t border-gray-200 dark:border-gh-700 px-4 py-3">
+        <label class="block mb-1.5 text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">
+          {{ $t('settings.chatPeers') }}
+        </label>
+        <input
+          v-model="settings.chatPeers"
+          type="text"
+          placeholder="ws://185.87.120.229:28999"
+          class="w-full rounded-xl px-3 py-2.5 text-sm outline-none transition-colors
+                 bg-gray-50 dark:bg-gh-700
+                 text-gray-900 dark:text-white
+                 border border-gray-200 dark:border-gh-600
+                 focus:border-blue-400 dark:focus:border-blue-500"
+        />
+        <p class="text-xs text-gray-400 dark:text-gray-500 mt-1.5 leading-snug">{{ $t('settings.chatPeersDesc') }}</p>
+      </div>
+
+      <div v-if="settings.chatMode" class="border-t border-gray-200 dark:border-gh-700 px-4 py-3">
+        <label class="block mb-1.5 text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">
+          {{ $t('settings.chatNetwork') }}
+        </label>
+        <select
+          v-model="settings.chatNetwork"
+          class="w-full px-3 py-2 rounded-lg text-sm
+                 bg-gray-100 dark:bg-gh-700
+                 text-gray-900 dark:text-white
+                 border border-gray-200 dark:border-gh-600
+                 hover:bg-gray-200 dark:hover:bg-gh-600
+                 transition-colors outline-none cursor-pointer"
+        >
+          <option value="">{{ $t('settings.chatNetworkAuto') }}</option>
+          <option value="mainnet">Mainnet</option>
+          <option value="testnet">Testnet</option>
+          <option value="regtest">Regtest</option>
+        </select>
+        <p class="text-xs text-gray-400 dark:text-gray-500 mt-1.5 leading-snug">{{ $t('settings.chatNetworkDesc') }}</p>
+      </div>
+
+      <div class="border-t border-gray-200 dark:border-gh-700 px-4 py-3">
+        <label class="block mb-1.5 text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">
+          {{ $t('settings.faucetUrl') }}
+        </label>
+        <input
+          v-model.trim="settings.faucetUrl"
+          type="url"
+          placeholder="http://185.86.15.11:8787"
+          class="w-full rounded-xl px-3 py-2.5 text-sm outline-none transition-colors
+                 bg-gray-50 dark:bg-gh-700
+                 text-gray-900 dark:text-white
+                 border border-gray-200 dark:border-gh-600
+                 focus:border-blue-400 dark:focus:border-blue-500"
+        />
+        <p class="text-xs text-gray-400 dark:text-gray-500 mt-1.5 leading-snug">{{ $t('settings.faucetUrlDesc') }}</p>
+      </div>
+
       <div class="border-t border-gray-200 dark:border-gh-700 px-4 py-3">
         <label class="block mb-1.5 text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">
           {{ $t('settings.theme') }}
@@ -401,6 +510,63 @@
       </button>
     </div>
 
+    <!-- Security: optional "stay unlocked" + auto-open -->
+    <div class="rounded-2xl border border-gray-200 dark:border-gh-700 bg-white dark:bg-gh-800 overflow-hidden">
+      <div class="px-4 py-3">
+        <label class="block mb-1.5 text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">
+          {{ $t('settings.unlockDuration') }}
+        </label>
+        <select
+          v-model="settings.unlockDuration"
+          class="w-full px-3 py-2 rounded-lg text-sm
+                 bg-gray-100 dark:bg-gh-700
+                 text-gray-900 dark:text-white
+                 border border-gray-200 dark:border-gh-600
+                 hover:bg-gray-200 dark:hover:bg-gh-600
+                 transition-colors outline-none cursor-pointer"
+        >
+          <option v-for="opt in unlockDurationOptions" :key="opt" :value="opt">
+            {{ $t('settings.unlockDurationOptions.' + opt) }}
+          </option>
+        </select>
+        <p class="mt-1.5 text-xs text-gray-400 dark:text-gray-500">{{ $t('settings.unlockDurationDesc') }}</p>
+      </div>
+
+      <div class="border-t border-gray-200 dark:border-gh-700 px-4 py-3 flex items-center justify-between gap-3">
+        <div>
+          <label class="text-sm text-gray-700 dark:text-gray-300">{{ $t('settings.autoOpenLastWallet') }}</label>
+          <p class="mt-0.5 text-xs text-gray-400 dark:text-gray-500">{{ $t('settings.autoOpenLastWalletDesc') }}</p>
+        </div>
+        <button
+          @click="settings.autoOpenLastWallet = !settings.autoOpenLastWallet"
+          class="relative inline-flex h-6 w-11 items-center rounded-full transition-colors shrink-0"
+          :class="settings.autoOpenLastWallet ? 'bg-blue-500' : 'bg-gray-300 dark:bg-gh-600'"
+        >
+          <span
+            class="inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform"
+            :class="settings.autoOpenLastWallet ? 'translate-x-6' : 'translate-x-1'"
+          />
+        </button>
+      </div>
+    </div>
+
+    <!-- Log out: closes the wallet, back to the create/select screen -->
+    <div class="rounded-2xl border border-gray-200 dark:border-gh-700 bg-white dark:bg-gh-800 overflow-hidden">
+      <button
+        @click="logout"
+        class="w-full px-4 py-3.5 text-sm font-medium text-left
+               text-gray-700 dark:text-gray-300
+               hover:bg-gray-50 dark:hover:bg-gh-700
+               transition-colors flex items-center justify-between gap-3"
+      >
+        <span class="flex items-center gap-3">
+          <LogOut class="w-4 h-4 opacity-60 shrink-0" />
+          {{ $t('settings.logout') }}
+        </span>
+        <span v-if="walletName" class="text-xs text-gray-400 dark:text-gray-500 truncate">{{ walletName }}</span>
+      </button>
+    </div>
+
     <!-- Danger zone -->
     <div class="rounded-2xl border border-red-200 dark:border-red-900/50 bg-white dark:bg-gh-800 overflow-hidden">
       <button
@@ -493,9 +659,10 @@ import { ref, watch, onMounted, computed } from 'vue'
 import { wallpapers } from '@/assets/wallpapers'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
-import { Store } from 'lucide-vue-next'
+import { Store, LogOut } from 'lucide-vue-next'
 import { settings } from '../stores/settings'
-import { disconnectWallet } from '../stores/navio'
+import { disconnectWallet, logoutWallet, walletName } from '../stores/navio'
+import { UNLOCK_DURATIONS } from '../lib/unlockCache'
 import { FIAT_CURRENCIES } from '../stores/navPrice'
 
 const { locale, t } = useI18n()
@@ -552,6 +719,14 @@ onMounted(() => {
 
 const goToBackup = () => {
   router.push('/wallet/backup')
+}
+
+const unlockDurationOptions = ['off', ...Object.keys(UNLOCK_DURATIONS)]
+
+// Cüzdanı kapatır ve cüzdan oluşturma/seçme ekranına döner; veriler silinmez.
+const logout = async () => {
+  await logoutWallet()
+  router.replace('/wallet/home')
 }
 
 const showConfirm = ref(false)

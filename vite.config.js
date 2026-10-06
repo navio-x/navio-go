@@ -84,6 +84,16 @@ export default defineConfig({
       output: {
         manualChunks: {
           'navio': ['navio-sdk'],
+          // Pinned to its own chunk once the DEX and Hyperliquid market
+          // screens both started needing pieces of viem: letting Rollup
+          // auto-split it produced a chunk whose top-level `new LruMap(...)`
+          // caches ran before the chunk defining that class had executed
+          // ("X is not a constructor" on some Android WebViews). A single
+          // dedicated chunk removes that load-order hazard.
+          'viem': ['viem'],
+          // Same precaution for the Hyperliquid order-signing SDK — it also
+          // has module-scope class instantiation (msgpack/hash helpers).
+          'hyperliquid-sdk': ['@nktkas/hyperliquid'],
         }
       }
     }

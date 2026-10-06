@@ -24,7 +24,28 @@
     "title": "Navio Go",
     "tagline": "Privé · Sécurisé · Rapide",
     "getStarted": "Commencer →",
-    "sovereignty": "Vos clés. Votre souveraineté."
+    "sovereignty": "Vos clés. Votre souveraineté.",
+    "skip": "Passer",
+    "enable": "Activer",
+    "enableHint": "Vous pouvez modifier cela à tout moment dans les paramètres.",
+    "features": {
+      "dex": {
+        "title": "Tradez et échangez",
+        "desc": "Tradez les marchés spot sur Hyperliquid et échangez des jetons sur BNB Chain, depuis un compte dérivé de votre portefeuille."
+      },
+      "merchant": {
+        "title": "Acceptez des paiements",
+        "desc": "Transformez votre téléphone en point de vente : affichez un QR code au comptoir et soyez payé en NAV."
+      },
+      "payroll": {
+        "title": "Payez votre équipe",
+        "desc": "Envoyez salaires et paiements de freelances en un seul lot, avec des reçus signés que les destinataires peuvent vérifier."
+      },
+      "chat": {
+        "title": "Discussion privée",
+        "desc": "Des messages chiffrés de bout en bout avec vos contacts, sur le réseau pair-à-pair de Navio."
+      }
+    }
   },
   "settings": {
     "title": "Paramètres",
@@ -63,7 +84,19 @@
     "clearStorageDesc": "Cela supprimera définitivement tous les paramètres et données du portefeuille de cet appareil.",
     "clearStorageConfirm": "Êtes-vous sûr ? Cette action est irréversible.",
     "employerMode": "Mode employeur",
-    "employerModeDesc": "Paiements groupés de salaires et freelances. Les données restent chiffrées sur cet appareil."
+    "employerModeDesc": "Paiements groupés de salaires et freelances. Les données restent chiffrées sur cet appareil.",
+    "unlockDuration": "Garder le portefeuille déverrouillé",
+    "unlockDurationOptions": {
+      "off": "Désactivé (toujours demander le mot de passe)",
+      "1h": "1 heure",
+      "24h": "24 heures",
+      "7d": "7 jours",
+      "30d": "30 jours"
+    },
+    "unlockDurationDesc": "Mémorise le mot de passe d'un portefeuille chiffré sur cet appareil, à compter de la dernière saisie. Pendant ce délai, toute personne ayant accès à cet appareil peut ouvrir le portefeuille.",
+    "autoOpenLastWallet": "Ouvrir automatiquement le dernier portefeuille",
+    "autoOpenLastWalletDesc": "Ignore la liste des portefeuilles au démarrage et ouvre le dernier portefeuille utilisé.",
+    "logout": "Se déconnecter"
   },
   "wallet": {
     "balance": "Solde",
@@ -205,11 +238,6 @@
   },
   "agreement": {
     "title": "Navio Go Wallet – Accord",
-    "betaBadge": "Bêta · Testnet uniquement",
-    "betaWarningTitle": "Cette application est en version bêta. Utilisation à vos risques et périls.",
-    "betaPoint1": "Navio est actuellement en phase testnet. N'utilisez pas de fonds réels.",
-    "betaPoint2": "Des bugs inattendus, des pertes de données ou des problèmes de connexion peuvent survenir à tout moment.",
-    "betaPoint3": "Vous assumez l'entière responsabilité de toute perte ou dommage résultant de l'utilisation de ce logiciel.",
     "accept": "J'accepte",
     "decline": "Refuser",
     "description": "Cet accord régit votre utilisation de Navio Go Wallet. En continuant, vous confirmez que vous comprenez et acceptez les conditions décrites ci-dessous.",
@@ -354,5 +382,8 @@
     "goToWallets": "Aller aux Portefeuilles",
     "signingBatch": "Envoi d'une transaction à {n} destinataires...",
     "networkFee": "Frais de Réseau"
+  },
+  "home": {
+    "switchWallet": "Changer de portefeuille"
   }
 }

@@ -24,7 +24,28 @@
     "title": "Navio Go",
     "tagline": "프라이빗 · 안전 · 빠른",
     "getStarted": "시작하기 →",
-    "sovereignty": "당신의 키. 당신의 주권."
+    "sovereignty": "당신의 키. 당신의 주권.",
+    "skip": "건너뛰기",
+    "enable": "사용",
+    "enableHint": "이 설정은 언제든지 설정에서 변경할 수 있습니다.",
+    "features": {
+      "dex": {
+        "title": "거래 및 스왑",
+        "desc": "지갑에서 파생된 계정으로 Hyperliquid 현물 시장에서 거래하고 BNB Chain에서 토큰을 스왑하세요."
+      },
+      "merchant": {
+        "title": "결제 받기",
+        "desc": "휴대폰을 결제 단말기로 사용하세요. 계산대에서 QR 코드를 보여 주고 NAV로 결제받을 수 있습니다."
+      },
+      "payroll": {
+        "title": "팀에 급여 지급",
+        "desc": "급여와 프리랜서 대금을 한 번에 일괄 전송하고, 수령인이 검증할 수 있는 서명된 영수증을 제공합니다."
+      },
+      "chat": {
+        "title": "비공개 채팅",
+        "desc": "Navio 자체 P2P 네트워크를 통해 연락처와 종단 간 암호화 메시지를 주고받으세요."
+      }
+    }
   },
   "settings": {
     "title": "설정",
@@ -63,7 +84,19 @@
     "clearStorageDesc": "이 기기의 모든 설정 및 지갑 데이터가 영구적으로 삭제됩니다.",
     "clearStorageConfirm": "정말로 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.",
     "employerMode": "고용주 모드",
-    "employerModeDesc": "일괄 급여 및 프리랜서 지급. 데이터는 이 기기에만 암호화되어 저장됩니다."
+    "employerModeDesc": "일괄 급여 및 프리랜서 지급. 데이터는 이 기기에만 암호화되어 저장됩니다.",
+    "unlockDuration": "지갑 잠금 해제 유지",
+    "unlockDurationOptions": {
+      "off": "끄기 (항상 비밀번호 요청)",
+      "1h": "1시간",
+      "24h": "24시간",
+      "7d": "7일",
+      "30d": "30일"
+    },
+    "unlockDurationDesc": "암호화된 지갑의 비밀번호를 이 기기에 기억하며, 기간은 비밀번호를 마지막으로 입력한 시점부터 계산됩니다. 그동안 이 기기에 접근할 수 있는 사람은 누구나 지갑을 열 수 있습니다.",
+    "autoOpenLastWallet": "마지막 지갑 자동 열기",
+    "autoOpenLastWalletDesc": "시작할 때 지갑 목록을 건너뛰고 마지막으로 사용한 지갑을 엽니다.",
+    "logout": "로그아웃"
   },
   "wallet": {
     "balance": "잔액",
@@ -206,11 +239,6 @@
   "agreement": {
     "title": "Navio Go 지갑 – 이용 약관",
     "accept": "동의합니다",
-    "betaBadge": "베타 · 테스트넷 전용",
-    "betaWarningTitle": "이 앱은 베타 단계입니다. 사용에 따른 책임은 본인에게 있습니다.",
-    "betaPoint1": "Navio는 현재 테스트넷 단계입니다. 실제 자산을 사용하지 마세요.",
-    "betaPoint2": "예기치 않은 버그, 데이터 손실 또는 연결 문제가 언제든지 발생할 수 있습니다.",
-    "betaPoint3": "이 소프트웨어 사용으로 인한 모든 손실 또는 손해에 대한 책임은 전적으로 사용자에게 있습니다.",
     "decline": "거부",
     "description": "본 약관은 Navio Go 지갑 사용을 규율합니다. 계속 진행함으로써 아래 명시된 조건을 이해하고 동의함을 확인합니다.",
     "nonCustodial": "Navio Go 지갑은 비수탁형 디지털 지갑입니다. 개인 키와 복구 구문은 사용자 기기에서만 생성되고 저장됩니다.",
@@ -354,5 +382,8 @@
     "goToWallets": "지갑으로 이동",
     "signingBatch": "{n}명의 수취인에게 트랜잭션 1건 전송 중...",
     "networkFee": "네트워크 수수료"
+  },
+  "home": {
+    "switchWallet": "지갑 전환"
   }
 }

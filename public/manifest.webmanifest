@@ -6,7 +6,7 @@
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#ffffff",
-  "theme_color": "#1e2329",
+  "theme_color": "#1f2630",
   "icons": [
     {
       "src": "icons/icon-48.webp",
@@ -39,12 +39,6 @@
       "purpose": "any"
     },
     {
-      "src": "icons/icon-192.webp",
-      "type": "image/webp",
-      "sizes": "192x192",
-      "purpose": "maskable"
-    },
-    {
       "src": "icons/icon-256.webp",
       "type": "image/webp",
       "sizes": "256x256",
@@ -55,12 +49,6 @@
       "type": "image/webp",
       "sizes": "512x512",
       "purpose": "any"
-    },
-    {
-      "src": "icons/icon-512.webp",
-      "type": "image/webp",
-      "sizes": "512x512",
-      "purpose": "maskable"
     }
   ]
 }

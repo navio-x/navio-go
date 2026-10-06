@@ -24,7 +24,28 @@
     "title": "Navio Go",
     "tagline": "私密 · 安全 · 快速",
     "getStarted": "开始使用 →",
-    "sovereignty": "您的密钥。您的主权。"
+    "sovereignty": "您的密钥。您的主权。",
+    "skip": "跳过",
+    "enable": "启用",
+    "enableHint": "您可以随时在设置中更改。",
+    "features": {
+      "dex": {
+        "title": "交易与兑换",
+        "desc": "使用由钱包派生的账户，在 Hyperliquid 上进行现货交易，并在 BNB Chain 上兑换代币。"
+      },
+      "merchant": {
+        "title": "接受付款",
+        "desc": "把手机变成收银台：在柜台出示二维码，即可收取 NAV。"
+      },
+      "payroll": {
+        "title": "为团队发薪",
+        "desc": "一次性批量发放工资和自由职业者报酬，并附带收款人可验证的签名收据。"
+      },
+      "chat": {
+        "title": "私密聊天",
+        "desc": "通过 Navio 自有的点对点网络，与联系人进行端到端加密通讯。"
+      }
+    }
   },
   "settings": {
     "title": "设置",
@@ -63,7 +84,19 @@
     "clearStorageDesc": "这将永久删除此设备上的所有设置和钱包数据。",
     "clearStorageConfirm": "确定吗？此操作无法撤销。",
     "employerMode": "雇主模式",
-    "employerModeDesc": "批量发放工资和自由职业报酬。数据仅加密保存在本设备上。"
+    "employerModeDesc": "批量发放工资和自由职业报酬。数据仅加密保存在本设备上。",
+    "unlockDuration": "保持钱包解锁",
+    "unlockDurationOptions": {
+      "off": "关闭（每次都要求输入密码）",
+      "1h": "1 小时",
+      "24h": "24 小时",
+      "7d": "7 天",
+      "30d": "30 天"
+    },
+    "unlockDurationDesc": "在此设备上记住加密钱包的密码，从您上次输入密码时开始计时。在此期间，任何能够使用此设备的人都可以打开钱包。",
+    "autoOpenLastWallet": "自动打开上次使用的钱包",
+    "autoOpenLastWalletDesc": "启动时跳过钱包列表，直接打开您上次使用的钱包。",
+    "logout": "退出登录"
   },
   "wallet": {
     "balance": "余额",
@@ -206,11 +239,6 @@
   "agreement": {
     "title": "Navio Go 钱包 – 协议",
     "accept": "我接受",
-    "betaBadge": "测试版 · 仅限测试网",
-    "betaWarningTitle": "本应用处于测试阶段，使用风险由您自行承担。",
-    "betaPoint1": "Navio 目前处于测试网阶段，请勿使用真实资产。",
-    "betaPoint2": "随时可能出现意外错误、数据丢失或连接问题。",
-    "betaPoint3": "因使用本软件造成的任何损失或损害，您须承担全部责任。",
     "decline": "拒绝",
     "description": "本协议规范您对 Navio Go 钱包的使用。继续即表示您理解并接受以下条款。",
     "nonCustodial": "Navio Go 钱包是一款非托管数字钱包。您的私钥和恢复短语仅在您的设备上生成和存储。",
@@ -354,5 +382,8 @@
     "goToWallets": "前往钱包",
     "signingBatch": "正在向 {n} 位收款人发送 1 笔交易...",
     "networkFee": "网络手续费"
+  },
+  "home": {
+    "switchWallet": "切换钱包"
   }
 }

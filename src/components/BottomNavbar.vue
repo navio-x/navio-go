@@ -3,11 +3,11 @@
     ref="navRef"
     class="w-full z-[100]
            flex items-center
-           px-0 pt-3
+           px-3 gap-1 pt-3
            backdrop-blur-lg border-t
            transition-all duration-300
-           bg-gradient-to-t from-[rgba(255,255,255,0.98)] to-[rgba(255,255,255,0.95)]
-           dark:bg-gradient-to-t dark:from-[rgba(30,35,41,0.98)] dark:to-[rgba(30,35,41,0.95)]
+           bg-gradient-to-t from-[rgba(249,250,251,0.98)] to-[rgba(249,250,251,0.95)]
+           dark:bg-gradient-to-t dark:from-[rgba(31,38,48,0.98)] dark:to-[rgba(31,38,48,0.95)]
            border-black/10 dark:border-white/5"
     :style="{ paddingBottom: isIos ? 'env(safe-area-inset-bottom)' : '0.75rem' }"
   >
@@ -89,9 +89,9 @@
 </template>
 
 <script setup>
-import { ref, computed, watch, onMounted, nextTick } from 'vue'
+import { ref, computed, watch, onMounted, onUnmounted, nextTick } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { Wallet, Download, SendHorizontal, Layers, History, Settings, Briefcase, Store, Repeat, ArrowLeftRight, MoreHorizontal } from 'lucide-vue-next'
+import { Wallet, Download, SendHorizontal, Layers, History, Settings, Briefcase, Store, Repeat, ArrowLeftRight, MessageCircle, MoreHorizontal } from 'lucide-vue-next'
 import { Capacitor } from '@capacitor/core'
 import { settings } from '@/stores/settings'
 
@@ -122,6 +122,7 @@ const overflowManifest = [
   { name: 'pos',      path: '/pos',           icon: Store,     labelKey: 'pos.title',      enabled: () => settings.merchantMode },
   { name: 'dex',      path: '/dex',           icon: Repeat,    labelKey: 'dex.title',      enabled: () => settings.dexMode },
   { name: 'trade',    path: '/trade',         icon: ArrowLeftRight, labelKey: 'trade.title', enabled: () => settings.tradeMode },
+  { name: 'chat',     path: '/chat',          icon: MessageCircle, labelKey: 'chat.title',  enabled: () => settings.chatMode },
   { name: 'settings', path: '/settings',      icon: Settings,  labelKey: 'settings.title' },
 ]
 
@@ -171,5 +172,17 @@ watch(() => settings.employerMode, updatePill)
 watch(() => settings.merchantMode, updatePill)
 watch(() => settings.dexMode, updatePill)
 watch(() => settings.tradeMode, updatePill)
-onMounted(updatePill)
+watch(() => settings.chatMode, updatePill)
+// The pill is positioned from measured pixels, so it has to be re-measured
+// whenever the bar itself changes size (window resize, rotation, styles or
+// fonts arriving after mount) — not only on route changes.
+let navResizeObserver = null
+onMounted(() => {
+  updatePill()
+  if (typeof ResizeObserver !== 'undefined' && navRef.value) {
+    navResizeObserver = new ResizeObserver(updatePill)
+    navResizeObserver.observe(navRef.value)
+  }
+})
+onUnmounted(() => navResizeObserver?.disconnect())
 </script>

@@ -61,6 +61,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { App as CapApp } from '@capacitor/app'
 import { Capacitor } from '@capacitor/core'
 import { settings, applyTheme } from './stores/settings'
+import { syncSystemBarsToPage } from './lib/systemBars'
 import { isExtensionContext } from './lib/extensionSession'
 import BottomNavbar from './components/BottomNavbar.vue'
 import PwaInstallPrompt from './components/PwaInstallPrompt.vue'
@@ -88,6 +89,8 @@ watch(() => route.path, async () => {
   if (scrollContainer.value) {
     scrollContainer.value.scrollTop = 0
   }
+  // Android: repaint the status/navigation bars to the new page's background.
+  syncSystemBarsToPage()
 })
 
 // Merchant mode can be switched off from Settings while a POS route is
@@ -110,6 +113,13 @@ watch(() => settings.dexMode, (enabled) => {
 // Trade modu Settings'ten kapatılırsa ve kullanıcı hâlâ /trade'teyse aynı anda dışarı çıkar.
 watch(() => settings.tradeMode, (enabled) => {
   if (!enabled && route.path.startsWith('/trade')) {
+    router.replace('/wallet/balance')
+  }
+})
+
+// Chat modu Settings'ten kapatılırsa ve kullanıcı hâlâ /chat'teyse aynı anda dışarı çıkar.
+watch(() => settings.chatMode, (enabled) => {
+  if (!enabled && route.path.startsWith('/chat')) {
     router.replace('/wallet/balance')
   }
 })
@@ -157,7 +167,7 @@ html, body {
 
 
 html.dark, html.dark body {
-  background-color: #1e2329;
+  background-color: #1f2630;
 }
 
 body {

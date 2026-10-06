@@ -31,313 +31,390 @@
       </div>
 
       <template v-else>
-        <!-- Account card -->
-        <div class="rounded-2xl border border-gray-200 dark:border-gh-700 bg-white dark:bg-gh-800 p-5 flex flex-col items-center gap-4">
-          <div v-if="evmAddress" class="p-3 bg-white rounded-xl ring-1 ring-gray-100 dark:ring-gh-700">
-            <QRCode :value="evmAddress" :size="140" />
-          </div>
-          <div v-else class="h-[164px] w-[164px] bg-gray-100 dark:bg-gh-700 rounded-xl animate-pulse" />
-
-          <div class="w-full bg-gray-50 dark:bg-gh-700 rounded-xl px-4 py-3">
-            <p class="font-mono text-xs text-gray-700 dark:text-gray-300 break-all text-center leading-relaxed select-all">
-              {{ evmAddress || $t('dex.deriving') }}
+        <!-- Account strip: the EVM address is the same on both networks, so
+             it sits above the tabs. The full card (QR, network, RPC status,
+             explorer) is one tap away rather than always on screen. -->
+        <div class="rounded-2xl border border-gray-200 dark:border-gh-700 bg-white dark:bg-gh-800 overflow-hidden">
+          <div class="px-4 py-2.5 flex items-center gap-2">
+            <Wallet class="w-4 h-4 shrink-0 text-gray-400 dark:text-gray-500" />
+            <p class="flex-1 min-w-0 font-mono text-xs text-gray-700 dark:text-gray-300 truncate">
+              {{ evmAddress ? addressShort : $t('dex.deriving') }}
             </p>
-          </div>
-
-          <button
-            @click="copyAddress"
-            :disabled="!evmAddress"
-            class="w-full flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-semibold transition-colors disabled:opacity-50"
-            :class="copied ? 'bg-green-500 text-white' : 'bg-blue-600 hover:bg-blue-700 text-white'"
-          >
-            <Check v-if="copied" class="w-4 h-4" />
-            <Copy v-else class="w-4 h-4" />
-            {{ copied ? $t('common.copied') : $t('common.copy') }}
-          </button>
-
-          <div class="w-full grid grid-cols-2 gap-2 text-xs">
-            <div class="bg-gray-50 dark:bg-gh-700 rounded-xl px-3 py-2">
-              <p class="text-gray-400 dark:text-gray-500">{{ $t('dex.network') }}</p>
-              <p class="font-medium text-gray-800 dark:text-gray-100 truncate">
-                {{ network?.name }} ({{ network?.chainId }})
-              </p>
-            </div>
-            <div class="bg-gray-50 dark:bg-gh-700 rounded-xl px-3 py-2">
-              <p class="text-gray-400 dark:text-gray-500">{{ $t('dex.rpcStatus') }}</p>
-              <p
-                class="font-medium flex items-center gap-1"
-                :class="evmStatus === 'error' ? 'text-red-500' : 'text-green-600 dark:text-green-400'"
-              >
-                <Wifi v-if="evmStatus !== 'error'" class="w-3.5 h-3.5 shrink-0" />
-                <WifiOff v-else class="w-3.5 h-3.5 shrink-0" />
-                <span class="truncate">{{ evmStatus === 'error' ? $t('dex.rpcError') : $t('dex.rpcConnected') }}</span>
-              </p>
-            </div>
-          </div>
-
-          <a
-            v-if="explorerUrl"
-            :href="explorerUrl"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-medium transition-colors
-                   border border-gray-200 dark:border-gh-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gh-700"
-          >
-            <ExternalLink class="w-4 h-4" />
-            {{ $t('dex.viewExplorer') }}
-          </a>
-        </div>
-
-        <!-- Stale data badge -->
-        <div
-          v-if="rpcStale"
-          class="rounded-xl bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700/50 px-4 py-2.5 text-xs text-yellow-800 dark:text-yellow-300 font-medium"
-        >
-          {{ $t('dex.staleWarning') }}
-        </div>
-
-        <!-- Swap card -->
-        <div class="rounded-2xl border border-gray-200 dark:border-gh-700 bg-white dark:bg-gh-800 p-5 space-y-3">
-          <h2 class="text-sm font-semibold text-gray-500 dark:text-gray-400">{{ $t('dex.swap.title') }}</h2>
-
-          <!-- From -->
-          <div class="rounded-xl bg-gray-50 dark:bg-gh-700 p-3 space-y-2">
-            <div class="flex items-center justify-between text-xs text-gray-400 dark:text-gray-500">
-              <span>{{ $t('dex.swap.from') }}</span>
-              <span>
-                {{ $t('dex.swap.balance') }}: {{ fromBalanceDisplay }}
-                <button @click="setMaxAmount" :disabled="isBusy" class="ml-1 font-semibold text-blue-600 dark:text-blue-400">
-                  {{ $t('dex.swap.max') }}
-                </button>
-              </span>
-            </div>
-            <div class="flex items-center gap-2">
-              <select
-                v-model="fromAssetKey"
-                :disabled="isBusy"
-                class="shrink-0 max-w-[40%] px-2 py-2 rounded-lg text-sm font-medium bg-white dark:bg-gh-800 text-gray-900 dark:text-white border border-gray-200 dark:border-gh-600 outline-none"
-              >
-                <option v-for="opt in assetOptions" :key="opt.key" :value="opt.key">{{ opt.symbol }}</option>
-              </select>
-              <input
-                v-model="amountInput"
-                type="number"
-                min="0"
-                step="any"
-                placeholder="0.0"
-                :disabled="isBusy"
-                class="w-full min-w-0 bg-transparent text-right text-lg font-semibold text-gray-900 dark:text-white outline-none"
-              />
-            </div>
-          </div>
-
-          <!-- Flip button -->
-          <div class="flex justify-center -my-1 relative z-10">
             <button
-              @click="flipAssets"
-              :disabled="isBusy"
-              class="w-8 h-8 rounded-full bg-white dark:bg-gh-800 border border-gray-200 dark:border-gh-600 flex items-center justify-center shadow-sm"
+              @click="copyAddress"
+              :disabled="!evmAddress"
+              :aria-label="$t('common.copy')"
+              class="p-1.5 rounded-lg text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gh-700 disabled:opacity-50"
             >
-              <ArrowDownUp class="w-4 h-4 text-gray-500 dark:text-gray-400" />
+              <Check v-if="copied" class="w-4 h-4 text-green-500" />
+              <Copy v-else class="w-4 h-4" />
+            </button>
+            <button
+              @click="showAccountDetails = !showAccountDetails"
+              :aria-label="$t('dex.accountDetails')"
+              :aria-expanded="showAccountDetails"
+              class="p-1.5 rounded-lg text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gh-700"
+            >
+              <ChevronDown class="w-4 h-4 transition-transform" :class="{ 'rotate-180': showAccountDetails }" />
             </button>
           </div>
 
-          <!-- To -->
-          <div class="rounded-xl bg-gray-50 dark:bg-gh-700 p-3 space-y-2">
-            <p class="text-xs text-gray-400 dark:text-gray-500">{{ $t('dex.swap.to') }}</p>
-            <div class="flex items-center gap-2">
-              <select
-                v-model="toAssetKey"
-                :disabled="isBusy"
-                class="shrink-0 max-w-[40%] px-2 py-2 rounded-lg text-sm font-medium bg-white dark:bg-gh-800 text-gray-900 dark:text-white border border-gray-200 dark:border-gh-600 outline-none"
-              >
-                <option v-for="opt in assetOptions" :key="opt.key" :value="opt.key">{{ opt.symbol }}</option>
-              </select>
-              <p class="w-full text-right text-lg font-semibold text-gray-900 dark:text-white truncate">
-                {{ swap.status.value === 'quoting' ? '…' : estimatedOutDisplay }}
+          <div v-if="showAccountDetails" class="border-t border-gray-200 dark:border-gh-700 p-5 flex flex-col items-center gap-4">
+            <div v-if="evmAddress" class="p-3 bg-white rounded-xl ring-1 ring-gray-100 dark:ring-gh-700">
+              <QRCode :value="evmAddress" :size="140" />
+            </div>
+            <div v-else class="h-[164px] w-[164px] bg-gray-100 dark:bg-gh-700 rounded-xl animate-pulse" />
+
+            <div class="w-full bg-gray-50 dark:bg-gh-700 rounded-xl px-4 py-3">
+              <p class="font-mono text-xs text-gray-700 dark:text-gray-300 break-all text-center leading-relaxed select-all">
+                {{ evmAddress || $t('dex.deriving') }}
               </p>
             </div>
-          </div>
 
-          <!-- Quote details -->
-          <div v-if="swap.quote.value" class="text-xs space-y-1 pt-1">
-            <div class="flex justify-between text-gray-500 dark:text-gray-400">
-              <span>{{ $t('dex.swap.path') }}</span>
-              <span class="font-medium text-gray-700 dark:text-gray-300">{{ pathSymbolsDisplay }}</span>
+            <button
+              @click="copyAddress"
+              :disabled="!evmAddress"
+              class="w-full flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-semibold transition-colors disabled:opacity-50"
+              :class="copied ? 'bg-green-500 text-white' : 'bg-blue-600 hover:bg-blue-700 text-white'"
+            >
+              <Check v-if="copied" class="w-4 h-4" />
+              <Copy v-else class="w-4 h-4" />
+              {{ copied ? $t('common.copied') : $t('common.copy') }}
+            </button>
+
+            <div class="w-full grid grid-cols-2 gap-2 text-xs">
+              <div class="bg-gray-50 dark:bg-gh-700 rounded-xl px-3 py-2">
+                <p class="text-gray-400 dark:text-gray-500">{{ $t('dex.network') }}</p>
+                <p class="font-medium text-gray-800 dark:text-gray-100 truncate">
+                  {{ network?.name }} ({{ network?.chainId }})
+                </p>
+              </div>
+              <div class="bg-gray-50 dark:bg-gh-700 rounded-xl px-3 py-2">
+                <p class="text-gray-400 dark:text-gray-500">{{ $t('dex.rpcStatus') }}</p>
+                <p
+                  class="font-medium flex items-center gap-1"
+                  :class="evmStatus === 'error' ? 'text-red-500' : 'text-green-600 dark:text-green-400'"
+                >
+                  <Wifi v-if="evmStatus !== 'error'" class="w-3.5 h-3.5 shrink-0" />
+                  <WifiOff v-else class="w-3.5 h-3.5 shrink-0" />
+                  <span class="truncate">{{ evmStatus === 'error' ? $t('dex.rpcError') : $t('dex.rpcConnected') }}</span>
+                </p>
+              </div>
             </div>
-            <div class="flex justify-between text-gray-500 dark:text-gray-400">
-              <span>{{ $t('dex.swap.minReceived') }}</span>
-              <span class="font-medium text-gray-700 dark:text-gray-300">{{ minReceivedDisplay }}</span>
-            </div>
-            <div class="flex justify-between">
-              <span class="text-gray-500 dark:text-gray-400">{{ $t('dex.swap.priceImpact') }}</span>
-              <span :class="priceImpactClass">{{ priceImpactDisplay }}</span>
-            </div>
-          </div>
 
-          <!-- Price impact warning (>5%) -->
-          <div
-            v-if="priceImpactPct !== null && priceImpactPct > 5"
-            class="rounded-xl bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800/50 px-3 py-2.5 text-xs text-red-700 dark:text-red-300"
-          >
-            {{ $t('dex.swap.priceImpactWarning') }}
-          </div>
-
-          <!-- Two-step approval notice -->
-          <div
-            v-if="swap.needsApproval.value && !isBusy && swap.status.value !== 'success'"
-            class="rounded-xl bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800/50 px-3 py-2.5 text-xs text-blue-700 dark:text-blue-300"
-          >
-            {{ $t('dex.swap.twoStepNotice') }}
-          </div>
-
-          <!-- Swap error -->
-          <div
-            v-if="swap.status.value === 'error'"
-            class="rounded-xl bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800/50 px-3 py-2.5 text-xs text-red-700 dark:text-red-300"
-          >
-            {{ $t('dex.swap.errors.' + (swap.errorCode.value || 'unknown')) }}
-          </div>
-
-          <!-- Swap success -->
-          <div
-            v-if="swap.status.value === 'success'"
-            class="rounded-xl bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800/50 px-3 py-2.5 text-xs text-green-700 dark:text-green-300 space-y-1"
-          >
-            <p class="font-semibold">{{ $t('dex.swap.success') }}{{ successAmountDisplay ? ` — ${successAmountDisplay}` : '' }}</p>
             <a
-              v-if="explorerTxUrl(swap.txHash.value)"
-              :href="explorerTxUrl(swap.txHash.value)"
+              v-if="explorerUrl"
+              :href="explorerUrl"
               target="_blank"
               rel="noopener noreferrer"
-              class="inline-flex items-center gap-1 underline"
+              class="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-medium transition-colors
+                     border border-gray-200 dark:border-gh-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gh-700"
             >
-              <ExternalLink class="w-3 h-3" />
-              {{ $t('dex.swap.viewTx') }}
+              <ExternalLink class="w-4 h-4" />
+              {{ $t('dex.viewExplorer') }}
             </a>
           </div>
+        </div>
 
+        <!-- Network tabs -->
+        <div class="grid grid-cols-2 gap-1 p-1 rounded-xl bg-gray-100 dark:bg-gh-800">
           <button
-            @click="handleSwapClick"
-            :disabled="!canSwap && swap.status.value !== 'success'"
-            class="w-full py-3 rounded-xl text-sm font-semibold text-white transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
-            :class="swap.status.value === 'error' ? 'bg-red-600 hover:bg-red-700' : 'bg-blue-600 hover:bg-blue-700'"
+            v-for="tab in DEX_TABS"
+            :key="tab.id"
+            @click="dexTab = tab.id"
+            :aria-pressed="dexTab === tab.id"
+            class="py-2 rounded-lg text-sm font-semibold transition-colors truncate px-2"
+            :class="dexTab === tab.id
+              ? 'bg-white dark:bg-gh-600 text-gray-900 dark:text-white shadow-sm'
+              : 'text-gray-500 dark:text-gray-400'"
           >
-            <Loader2 v-if="isBusy" class="w-4 h-4 animate-spin" />
-            {{ swapButtonLabel }}
+            {{ $t(tab.label) }}
           </button>
         </div>
 
-        <!-- High price impact confirm modal -->
-        <div v-if="showHighImpactConfirm" class="fixed inset-0 z-[200] flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-          <div class="bg-white dark:bg-gh-900 border border-gray-100 dark:border-gh-800 rounded-2xl p-6 w-full max-w-sm space-y-4 shadow-2xl">
-            <div class="flex items-center justify-center w-12 h-12 rounded-full bg-red-100 dark:bg-red-900/30 mx-auto">
-              <AlertTriangle class="w-6 h-6 text-red-500" />
-            </div>
-            <div class="text-center space-y-1">
-              <h3 class="text-base font-bold text-gray-900 dark:text-white">{{ $t('dex.swap.priceImpactHighConfirmTitle') }}</h3>
-              <p class="text-sm text-gray-500 dark:text-gray-400">{{ $t('dex.swap.priceImpactHighConfirmDesc') }}</p>
-            </div>
-            <div class="flex gap-2 pt-1">
-              <button
-                @click="showHighImpactConfirm = false"
-                class="flex-1 py-2 rounded-xl text-sm font-medium bg-gray-100 hover:bg-gray-200 text-gray-700 dark:bg-gh-800 dark:hover:bg-gh-700 dark:text-gray-300"
-              >
-                {{ $t('common.cancel') }}
-              </button>
-              <button
-                @click="confirmHighImpact"
-                class="flex-1 py-2 rounded-xl text-sm font-medium bg-red-600 hover:bg-red-700 text-white"
-              >
-                {{ $t('dex.swap.priceImpactHighConfirmProceed') }}
-              </button>
-            </div>
+        <!-- TAB: Binance Smart Chain — balances (+ custom tokens) and swap -->
+        <div v-show="dexTab === 'bsc'" class="space-y-4">
+          <!-- Stale data badge -->
+          <div
+            v-if="rpcStale"
+            class="rounded-xl bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700/50 px-4 py-2.5 text-xs text-yellow-800 dark:text-yellow-300 font-medium"
+          >
+            {{ $t('dex.staleWarning') }}
           </div>
-        </div>
 
-        <!-- Balances -->
-        <div class="rounded-2xl border border-gray-200 dark:border-gh-700 bg-white dark:bg-gh-800 overflow-hidden">
-          <div class="px-4 py-3 flex items-center justify-between">
-            <h2 class="text-sm font-semibold text-gray-500 dark:text-gray-400">{{ $t('dex.balances.title') }}</h2>
-            <button @click="hideZero = !hideZero" class="text-xs font-medium text-blue-600 dark:text-blue-400">
-              {{ hideZero ? $t('dex.balances.showAll') : $t('dex.balances.hideZero') }}
+          <!-- Balances | Swap — same underline segment tabs as the
+               Hyperliquid panel -->
+          <div class="flex gap-5 border-b border-gray-200 dark:border-gh-700" role="tablist">
+            <button
+              v-for="tab in BSC_TABS"
+              :key="tab.id"
+              role="tab"
+              :aria-selected="bscTab === tab.id"
+              @click="bscTab = tab.id"
+              class="relative -mb-px pb-2 text-sm font-semibold transition-colors"
+              :class="bscTab === tab.id
+                ? 'text-gray-900 dark:text-white border-b-2 border-blue-500'
+                : 'text-gray-400 dark:text-gray-500 border-b-2 border-transparent'"
+            >
+              {{ $t(tab.label) }}
             </button>
           </div>
 
-          <!-- Native balance, always on top -->
-          <div class="border-t border-gray-200 dark:border-gh-700 px-4 py-3 flex items-center justify-between gap-2">
-            <div class="flex items-center gap-2 min-w-0">
-              <TokenIcon v-if="nativeAssetInfo" :symbol="nativeAssetInfo.symbol" :logo="nativeAssetInfo.logo" :size="24" />
-              <p class="text-sm font-medium text-gray-800 dark:text-gray-100">{{ network?.nativeSymbol }}</p>
-            </div>
-            <div class="flex items-center gap-1 shrink-0">
-              <div class="text-right">
-                <p class="text-sm font-mono text-gray-700 dark:text-gray-300">
-                  {{ nativeBalance ? formatDisplay(nativeBalance.formatted) : '—' }}
-                </p>
-                <p v-if="nativeBalance && fiatValueDisplay('native', nativeBalance.formatted)" class="text-xs text-gray-400 dark:text-gray-500">
-                  {{ fiatValueDisplay('native', nativeBalance.formatted) }}
-                </p>
+          <div v-show="bscTab === 'balances'" class="space-y-4">
+            <!-- Balances -->
+            <div class="rounded-2xl border border-gray-200 dark:border-gh-700 bg-white dark:bg-gh-800 overflow-hidden">
+              <div class="px-4 py-3 flex items-center justify-between">
+                <h2 class="text-sm font-semibold text-gray-500 dark:text-gray-400">{{ $t('dex.balances.title') }}</h2>
+                <button @click="hideZero = !hideZero" class="text-xs font-medium text-blue-600 dark:text-blue-400">
+                  {{ hideZero ? $t('dex.balances.showAll') : $t('dex.balances.hideZero') }}
+                </button>
               </div>
-              <button
-                v-if="nativeAssetInfo"
-                @click="openTokenInfo(nativeAssetInfo)"
-                :aria-label="$t('dex.tokenInfo.title')"
-                class="p-1.5 rounded-lg text-gray-400 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-gh-700"
+
+              <!-- Native balance, always on top -->
+              <div class="border-t border-gray-200 dark:border-gh-700 px-4 py-3 flex items-center justify-between gap-2">
+                <div class="flex items-center gap-2 min-w-0">
+                  <TokenIcon v-if="nativeAssetInfo" :symbol="nativeAssetInfo.symbol" :logo="nativeAssetInfo.logo" :size="24" />
+                  <p class="text-sm font-medium text-gray-800 dark:text-gray-100">{{ network?.nativeSymbol }}</p>
+                </div>
+                <div class="flex items-center gap-1 shrink-0">
+                  <div class="text-right">
+                    <p class="text-sm font-mono text-gray-700 dark:text-gray-300">
+                      {{ nativeBalance ? formatDisplay(nativeBalance.formatted) : '—' }}
+                    </p>
+                    <p v-if="nativeBalance && fiatValueDisplay('native', nativeBalance.formatted)" class="text-xs text-gray-400 dark:text-gray-500">
+                      {{ fiatValueDisplay('native', nativeBalance.formatted) }}
+                    </p>
+                  </div>
+                  <button
+                    v-if="nativeAssetInfo"
+                    @click="openTokenInfo(nativeAssetInfo)"
+                    :aria-label="$t('dex.tokenInfo.title')"
+                    class="p-1.5 rounded-lg text-gray-400 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-gh-700"
+                  >
+                    <Info class="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+
+              <div
+                v-for="token in visibleTokens"
+                :key="token.address"
+                class="border-t border-gray-200 dark:border-gh-700 px-4 py-3 flex items-center justify-between gap-2"
               >
-                <Info class="w-4 h-4" />
-              </button>
+                <div class="flex items-center gap-2 min-w-0">
+                  <TokenIcon :symbol="token.symbol" :logo="token.logo" :custom="!!token.custom" :size="28" />
+                  <div class="min-w-0">
+                    <p class="text-sm font-medium text-gray-800 dark:text-gray-100 truncate">{{ token.symbol }}</p>
+                    <p class="text-xs text-gray-400 dark:text-gray-500 truncate">{{ token.name }}</p>
+                  </div>
+                </div>
+                <div class="flex items-center gap-1 shrink-0">
+                  <div class="text-right">
+                    <p class="text-sm font-mono text-gray-700 dark:text-gray-300">
+                      {{ token.balance !== undefined ? formatDisplay(token.formatted) : '—' }}
+                    </p>
+                    <p v-if="token.balance !== undefined && fiatValueDisplay(token.address.toLowerCase(), token.formatted)" class="text-xs text-gray-400 dark:text-gray-500">
+                      {{ fiatValueDisplay(token.address.toLowerCase(), token.formatted) }}
+                    </p>
+                  </div>
+                  <button
+                    @click="openTokenInfo(token)"
+                    :aria-label="$t('dex.tokenInfo.title')"
+                    class="p-1.5 rounded-lg text-gray-400 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-gh-700"
+                  >
+                    <Info class="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+
+              <p
+                v-if="tokenBalanceList.length === 0"
+                class="border-t border-gray-200 dark:border-gh-700 px-4 py-4 text-sm text-gray-400 dark:text-gray-500 text-center"
+              >
+                {{ $t('dex.balances.empty') }}
+              </p>
             </div>
+
+            <!-- Add custom token -->
+            <button
+              @click="openAddToken"
+              class="w-full flex items-center justify-center gap-2 py-3 rounded-2xl text-sm font-medium transition-colors
+                     border border-dashed border-gray-300 dark:border-gh-600 text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gh-800"
+            >
+              <Plus class="w-4 h-4" />
+              {{ $t('dex.addToken.button') }}
+            </button>
           </div>
 
-          <div
-            v-for="token in visibleTokens"
-            :key="token.address"
-            class="border-t border-gray-200 dark:border-gh-700 px-4 py-3 flex items-center justify-between gap-2"
-          >
-            <div class="flex items-center gap-2 min-w-0">
-              <TokenIcon :symbol="token.symbol" :logo="token.logo" :custom="!!token.custom" :size="28" />
-              <div class="min-w-0">
-                <p class="text-sm font-medium text-gray-800 dark:text-gray-100 truncate">{{ token.symbol }}</p>
-                <p class="text-xs text-gray-400 dark:text-gray-500 truncate">{{ token.name }}</p>
+          <div v-show="bscTab === 'swap'" class="space-y-4">
+            <!-- Swap card -->
+            <div class="rounded-2xl border border-gray-200 dark:border-gh-700 bg-white dark:bg-gh-800 p-5 space-y-3">
+              <h2 class="text-sm font-semibold text-gray-500 dark:text-gray-400">{{ $t('dex.swap.title') }}</h2>
+
+              <!-- From -->
+              <div class="rounded-xl bg-gray-50 dark:bg-gh-700 p-3 space-y-2">
+                <div class="flex items-center justify-between text-xs text-gray-400 dark:text-gray-500">
+                  <span>{{ $t('dex.swap.from') }}</span>
+                  <span>
+                    {{ $t('dex.swap.balance') }}: {{ fromBalanceDisplay }}
+                    <button @click="setMaxAmount" :disabled="isBusy" class="ml-1 font-semibold text-blue-600 dark:text-blue-400">
+                      {{ $t('dex.swap.max') }}
+                    </button>
+                  </span>
+                </div>
+                <div class="flex items-center gap-2">
+                  <select
+                    v-model="fromAssetKey"
+                    :disabled="isBusy"
+                    class="shrink-0 max-w-[40%] px-2 py-2 rounded-lg text-sm font-medium bg-white dark:bg-gh-800 text-gray-900 dark:text-white border border-gray-200 dark:border-gh-600 outline-none"
+                  >
+                    <option v-for="opt in assetOptions" :key="opt.key" :value="opt.key">{{ opt.symbol }}</option>
+                  </select>
+                  <input
+                    v-model="amountInput"
+                    type="number"
+                    min="0"
+                    step="any"
+                    placeholder="0.0"
+                    :disabled="isBusy"
+                    class="w-full min-w-0 bg-transparent text-right text-lg font-semibold text-gray-900 dark:text-white outline-none"
+                  />
+                </div>
               </div>
-            </div>
-            <div class="flex items-center gap-1 shrink-0">
-              <div class="text-right">
-                <p class="text-sm font-mono text-gray-700 dark:text-gray-300">
-                  {{ token.balance !== undefined ? formatDisplay(token.formatted) : '—' }}
-                </p>
-                <p v-if="token.balance !== undefined && fiatValueDisplay(token.address.toLowerCase(), token.formatted)" class="text-xs text-gray-400 dark:text-gray-500">
-                  {{ fiatValueDisplay(token.address.toLowerCase(), token.formatted) }}
-                </p>
+
+              <!-- Flip button -->
+              <div class="flex justify-center -my-1 relative z-10">
+                <button
+                  @click="flipAssets"
+                  :disabled="isBusy"
+                  class="w-8 h-8 rounded-full bg-white dark:bg-gh-800 border border-gray-200 dark:border-gh-600 flex items-center justify-center shadow-sm"
+                >
+                  <ArrowDownUp class="w-4 h-4 text-gray-500 dark:text-gray-400" />
+                </button>
               </div>
-              <button
-                @click="openTokenInfo(token)"
-                :aria-label="$t('dex.tokenInfo.title')"
-                class="p-1.5 rounded-lg text-gray-400 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-gh-700"
+
+              <!-- To -->
+              <div class="rounded-xl bg-gray-50 dark:bg-gh-700 p-3 space-y-2">
+                <p class="text-xs text-gray-400 dark:text-gray-500">{{ $t('dex.swap.to') }}</p>
+                <div class="flex items-center gap-2">
+                  <select
+                    v-model="toAssetKey"
+                    :disabled="isBusy"
+                    class="shrink-0 max-w-[40%] px-2 py-2 rounded-lg text-sm font-medium bg-white dark:bg-gh-800 text-gray-900 dark:text-white border border-gray-200 dark:border-gh-600 outline-none"
+                  >
+                    <option v-for="opt in assetOptions" :key="opt.key" :value="opt.key">{{ opt.symbol }}</option>
+                  </select>
+                  <p class="w-full text-right text-lg font-semibold text-gray-900 dark:text-white truncate">
+                    {{ swap.status.value === 'quoting' ? '…' : estimatedOutDisplay }}
+                  </p>
+                </div>
+              </div>
+
+              <!-- Quote details -->
+              <div v-if="swap.quote.value" class="text-xs space-y-1 pt-1">
+                <div class="flex justify-between text-gray-500 dark:text-gray-400">
+                  <span>{{ $t('dex.swap.path') }}</span>
+                  <span class="font-medium text-gray-700 dark:text-gray-300">{{ pathSymbolsDisplay }}</span>
+                </div>
+                <div class="flex justify-between text-gray-500 dark:text-gray-400">
+                  <span>{{ $t('dex.swap.minReceived') }}</span>
+                  <span class="font-medium text-gray-700 dark:text-gray-300">{{ minReceivedDisplay }}</span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="text-gray-500 dark:text-gray-400">{{ $t('dex.swap.priceImpact') }}</span>
+                  <span :class="priceImpactClass">{{ priceImpactDisplay }}</span>
+                </div>
+              </div>
+
+              <!-- Price impact warning (>5%) -->
+              <div
+                v-if="priceImpactPct !== null && priceImpactPct > 5"
+                class="rounded-xl bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800/50 px-3 py-2.5 text-xs text-red-700 dark:text-red-300"
               >
-                <Info class="w-4 h-4" />
+                {{ $t('dex.swap.priceImpactWarning') }}
+              </div>
+
+              <!-- Two-step approval notice -->
+              <div
+                v-if="swap.needsApproval.value && !isBusy && swap.status.value !== 'success'"
+                class="rounded-xl bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800/50 px-3 py-2.5 text-xs text-blue-700 dark:text-blue-300"
+              >
+                {{ $t('dex.swap.twoStepNotice') }}
+              </div>
+
+              <!-- Swap error -->
+              <div
+                v-if="swap.status.value === 'error'"
+                class="rounded-xl bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800/50 px-3 py-2.5 text-xs text-red-700 dark:text-red-300"
+              >
+                {{ $t('dex.swap.errors.' + (swap.errorCode.value || 'unknown')) }}
+              </div>
+
+              <!-- Swap success -->
+              <div
+                v-if="swap.status.value === 'success'"
+                class="rounded-xl bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800/50 px-3 py-2.5 text-xs text-green-700 dark:text-green-300 space-y-1"
+              >
+                <p class="font-semibold">{{ $t('dex.swap.success') }}{{ successAmountDisplay ? ` — ${successAmountDisplay}` : '' }}</p>
+                <a
+                  v-if="explorerTxUrl(swap.txHash.value)"
+                  :href="explorerTxUrl(swap.txHash.value)"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="inline-flex items-center gap-1 underline"
+                >
+                  <ExternalLink class="w-3 h-3" />
+                  {{ $t('dex.swap.viewTx') }}
+                </a>
+              </div>
+
+              <button
+                @click="handleSwapClick"
+                :disabled="!canSwap && swap.status.value !== 'success'"
+                class="w-full py-3 rounded-xl text-sm font-semibold text-white transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
+                :class="swap.status.value === 'error' ? 'bg-red-600 hover:bg-red-700' : 'bg-blue-600 hover:bg-blue-700'"
+              >
+                <Loader2 v-if="isBusy" class="w-4 h-4 animate-spin" />
+                {{ swapButtonLabel }}
               </button>
             </div>
-          </div>
 
-          <p
-            v-if="tokenBalanceList.length === 0"
-            class="border-t border-gray-200 dark:border-gh-700 px-4 py-4 text-sm text-gray-400 dark:text-gray-500 text-center"
-          >
-            {{ $t('dex.balances.empty') }}
-          </p>
+            <!-- High price impact confirm modal -->
+            <div v-if="showHighImpactConfirm" class="fixed inset-0 z-[200] flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+              <div class="bg-white dark:bg-gh-900 border border-gray-100 dark:border-gh-800 rounded-2xl p-6 w-full max-w-sm space-y-4 shadow-2xl">
+                <div class="flex items-center justify-center w-12 h-12 rounded-full bg-red-100 dark:bg-red-900/30 mx-auto">
+                  <AlertTriangle class="w-6 h-6 text-red-500" />
+                </div>
+                <div class="text-center space-y-1">
+                  <h3 class="text-base font-bold text-gray-900 dark:text-white">{{ $t('dex.swap.priceImpactHighConfirmTitle') }}</h3>
+                  <p class="text-sm text-gray-500 dark:text-gray-400">{{ $t('dex.swap.priceImpactHighConfirmDesc') }}</p>
+                </div>
+                <div class="flex gap-2 pt-1">
+                  <button
+                    @click="showHighImpactConfirm = false"
+                    class="flex-1 py-2 rounded-xl text-sm font-medium bg-gray-100 hover:bg-gray-200 text-gray-700 dark:bg-gh-800 dark:hover:bg-gh-700 dark:text-gray-300"
+                  >
+                    {{ $t('common.cancel') }}
+                  </button>
+                  <button
+                    @click="confirmHighImpact"
+                    class="flex-1 py-2 rounded-xl text-sm font-medium bg-red-600 hover:bg-red-700 text-white"
+                  >
+                    {{ $t('dex.swap.priceImpactHighConfirmProceed') }}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
 
-        <!-- Add custom token -->
-        <button
-          @click="openAddToken"
-          class="w-full flex items-center justify-center gap-2 py-3 rounded-2xl text-sm font-medium transition-colors
-                 border border-dashed border-gray-300 dark:border-gh-600 text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gh-800"
-        >
-          <Plus class="w-4 h-4" />
-          {{ $t('dex.addToken.button') }}
-        </button>
+        <!-- TAB: Hyperliquid — balances and markets -->
+        <div v-show="dexTab === 'hl'" class="space-y-4">
+          <!-- Same Assets | Markets panel as the home screen -->
+          <div class="rounded-2xl border border-gray-200 dark:border-gh-700 bg-white dark:bg-gh-800 px-4 pt-3 pb-3">
+            <HlAssetsMarkets ref="hlPanel" storage-key="dexHlTab" />
+          </div>
+        </div>
       </template>
     </div>
 
@@ -528,8 +605,10 @@ import { isAddress, getAddress, parseUnits, formatUnits } from 'viem'
 import copy from 'copy-to-clipboard'
 import QRCode from 'qrcode.vue'
 import TokenIcon from '@/components/TokenIcon.vue'
+import HlAssetsMarkets from '@/components/HlAssetsMarkets.vue'
 import {
   Copy, Check, ExternalLink, RefreshCw, Wifi, WifiOff, Plus, X, AlertTriangle, Loader2, ArrowDownUp, Info,
+  ChevronDown, Wallet,
 } from 'lucide-vue-next'
 import { settings } from '@/stores/settings'
 import {
@@ -550,6 +629,29 @@ const { t } = useI18n()
 
 const derivationError = ref('')
 const copied = ref(false)
+
+// Account strip + network tabs. The last-used tab is remembered so coming
+// back to the page lands where the user left off.
+const DEX_TABS = [
+  { id: 'bsc', label: 'dex.tabs.bsc' },
+  { id: 'hl', label: 'dex.hyperliquid.title' },
+]
+const DEX_TAB_KEY = 'dexTab'
+const dexTab = ref(localStorage.getItem(DEX_TAB_KEY) === 'hl' ? 'hl' : 'bsc')
+watch(dexTab, (tab) => localStorage.setItem(DEX_TAB_KEY, tab))
+const showAccountDetails = ref(false)
+
+// Binance Smart Chain tab's own two sections, remembered the same way.
+const BSC_TABS = [
+  { id: 'balances', label: 'dex.balances.title' },
+  { id: 'swap', label: 'dex.swap.title' },
+]
+const BSC_TAB_KEY = 'dexBscTab'
+const bscTab = ref(localStorage.getItem(BSC_TAB_KEY) === 'swap' ? 'swap' : 'balances')
+watch(bscTab, (tab) => localStorage.setItem(BSC_TAB_KEY, tab))
+const addressShort = computed(() =>
+  evmAddress.value ? `${evmAddress.value.slice(0, 10)}…${evmAddress.value.slice(-8)}` : ''
+)
 const hideZero = ref(false)
 const refreshing = ref(false)
 
@@ -569,7 +671,7 @@ const explorerUrl = computed(() => {
 
 // "pinned" yalnızca registry'nin küratörlü/önerilen token'ları olduğunu
 // işaretler — "Sıfır bakiyeleri gizle" açıkken bile onları göstermeye devam
-// etmek, kullanıcının WBNB/USDT/BUSD/WNAV'ın hepsine sahip olmadığı çoğu
+// etmek, kullanıcının WBNB/USDT/BUSD'ın hepsine sahip olmadığı çoğu
 // durumda anahtarı işlevsiz kılıyordu. Filtre artık pinned olsun olmasın
 // tüm token'lara aynı şekilde uygulanıyor.
 const visibleTokens = computed(() =>
@@ -594,7 +696,7 @@ function copyAddress() {
 
 async function handleRefresh() {
   refreshing.value = true
-  await refreshBalances()
+  await Promise.all([refreshBalances(), hlPanel.value?.refresh()])
   refreshing.value = false
 }
 
@@ -806,6 +908,10 @@ async function onTouchEnd() {
 
 // ============================= Faz 2: Swap =============================
 const swap = usePancakeSwap()
+
+// Hyperliquid tab: the shared Assets | Markets panel owns its own data; the
+// ref is only for the page-level refresh button / pull-to-refresh.
+const hlPanel = ref(null)
 
 onMounted(async () => {
   if (!settings.dexMode) return

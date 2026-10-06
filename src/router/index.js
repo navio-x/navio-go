@@ -18,7 +18,9 @@ import About from "../views/About.vue";
 import WallpaperPicker from "../views/WallpaperPicker.vue";
 import NetworkStatus from "../views/NetworkStatus.vue";
 import { settings } from "../stores/settings";
-export default createRouter({
+import { isSdkReady } from "../stores/navio";
+
+const router = createRouter({
   history: createWebHashHistory(),
   routes: [
     { path: "/", component: InitalizeSDK },
@@ -163,6 +165,67 @@ export default createRouter({
       },
     },
     {
+      // Hyperliquid spot asset (USDC/HYPE/BTC): balance, deposit (own EVM
+      // address + QR) and withdraw to an EVM address. Gated by dexMode.
+      path: "/hl/asset/:symbol",
+      component: () => import("../views/market/HlAsset.vue"),
+      meta: { showNavbar: true },
+      beforeEnter: (to, from, next) => {
+        next(settings.dexMode ? true : "/wallet/balance");
+      },
+    },
+    {
+      // Hyperliquid account for a spot pair's base token (balances,
+      // deposit/withdraw, open on Hyperliquid) — reached from the home
+      // screen's Wrapped Navio row. Gated by dexMode like /market/hl.
+      path: "/market/hl/:pair/account",
+      component: () => import("../views/market/HlAccount.vue"),
+      meta: { showNavbar: true },
+      beforeEnter: (to, from, next) => {
+        next(settings.dexMode ? true : "/wallet/balance");
+      },
+    },
+    {
+      // Candlestick price chart for a Hyperliquid spot pair — reached from
+      // the market screen's header icon. Gated by dexMode like /market/hl.
+      path: "/market/hl/:pair/chart",
+      component: () => import("../views/market/MarketChart.vue"),
+      meta: { showNavbar: true },
+      beforeEnter: (to, from, next) => {
+        next(settings.dexMode ? true : "/wallet/balance");
+      },
+    },
+    {
+      // Hyperliquid market screen (full order book + balances for a spot
+      // pair, e.g. "NAV-USDC") — reached from the DEX tab's Hyperliquid
+      // card or the assets list, so gated by dexMode same as /dex itself.
+      path: "/market/hl/:pair",
+      component: () => import("../views/market/MarketScreen.vue"),
+      meta: { showNavbar: true },
+      beforeEnter: (to, from, next) => {
+        next(settings.dexMode ? true : "/wallet/balance");
+      },
+    },
+    {
+      // Navio <-> Hyperliquid custodial bridge — deposit into HyperCore and
+      // withdraw back out. Reached from MarketScreen's NAV/USDC screen, so
+      // gated by dexMode the same way /dex and /market/hl are.
+      path: "/bridge/deposit",
+      component: () => import("../views/bridge/BridgeDeposit.vue"),
+      meta: { showNavbar: true },
+      beforeEnter: (to, from, next) => {
+        next(settings.dexMode ? true : "/wallet/balance");
+      },
+    },
+    {
+      path: "/bridge/withdraw",
+      component: () => import("../views/bridge/BridgeWithdraw.vue"),
+      meta: { showNavbar: true },
+      beforeEnter: (to, from, next) => {
+        next(settings.dexMode ? true : "/wallet/balance");
+      },
+    },
+    {
       // tradeMode kapalıyken erişilemez: menüde görünmez ama kullanıcı URL'i
       // elle yazarsa veya eski bir route restore edilirse ana sayfaya
       // yönlendirilir. (Bkz. App.vue'daki "zaten oradayken kapatıldı" durumu
@@ -192,6 +255,34 @@ export default createRouter({
       ],
     },
     {
+      // chatMode kapalıyken erişilemez: menüde görünmez ama kullanıcı URL'i
+      // elle yazarsa veya eski bir route restore edilirse ana sayfaya
+      // yönlendirilir. (Bkz. App.vue'daki "zaten oradayken kapatıldı" durumu
+      // için ek watch — merchantMode/pos, dexMode/dex ve tradeMode/trade ile
+      // aynı desen.) Parent-route guard altındaki tüm alt sayfaları (kişi
+      // listesi, kişi formu, sohbet ekranı) tek yerden korur.
+      path: "/chat",
+      meta: { showNavbar: true },
+      beforeEnter: (to, from, next) => {
+        next(settings.chatMode ? true : "/wallet/balance");
+      },
+      children: [
+        { path: "", component: () => import("../views/chat/ChatContacts.vue") },
+        { path: "contacts/new", component: () => import("../views/chat/ChatContactForm.vue") },
+        { path: "contacts/:id/edit", component: () => import("../views/chat/ChatContactForm.vue") },
+        { path: "group/new", component: () => import("../views/chat/GroupCreate.vue") },
+        // The two actual conversation screens override the parent's
+        // showNavbar: true — a chat thread wants its full height for
+        // messages + the keyboard, same as WhatsApp/Telegram, which is why
+        // ChatConversation/GroupConversation are laid out with a fixed
+        // header+composer (h-full, not min-h-screen) rather than scrolling
+        // under a bottom nav.
+        { path: "group/:groupId", component: () => import("../views/chat/GroupConversation.vue"), meta: { showNavbar: false } },
+        { path: "group/:groupId/manage", component: () => import("../views/chat/GroupManage.vue") },
+        { path: ":contactId", component: () => import("../views/chat/ChatConversation.vue"), meta: { showNavbar: false } },
+      ],
+    },
+    {
       path: "/extension/connect/:id",
       component: () => import("../views/extension/ConnectRequest.vue"),
     },
@@ -201,3 +292,19 @@ export default createRouter({
     },
   ]
 });
+
+// Every screen past the start screen assumes the SDK is initialised and (for
+// most of them) that a wallet is loaded — both live only in memory. If the
+// app comes up directly on such a route (page reload, the OS restoring a
+// backgrounded WebView, a dev-server reload), send it through "/" first,
+// which initialises the SDK and then routes to the wallet list or welcome.
+// The extension's approval windows initialise the SDK themselves, and the
+// receipt verifier is reachable on its own.
+const BOOTS_ITSELF = ["/", "/receipts/verify"];
+router.beforeEach((to) => {
+  if (isSdkReady()) return true;
+  if (BOOTS_ITSELF.includes(to.path) || to.path.startsWith("/extension/")) return true;
+  return "/";
+});
+
+export default router;

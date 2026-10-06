@@ -27,12 +27,33 @@
 }
 
 @theme {
-  --color-gh-950: #16191f;
-  --color-gh-900: #1e2329;
-  --color-gh-800: #272d35;
-  --color-gh-700: #313840;
-  --color-gh-600: #3d4450;
-  --color-gh-500: #4a5568;
+  /* Dark-mode surfaces, matched to the Binance app's dark theme: 900 is the
+     page, 800 cards/fields, 700 raised controls and borders, 600 the
+     active/hover step above that. */
+  --color-gh-950: #1a2029;
+  --color-gh-900: #1f2630;
+  --color-gh-800: #272f3a;
+  --color-gh-700: #333b46;
+  --color-gh-600: #3a4450;
+  --color-gh-500: #4b5563;
+  /* Buy/sell sides and price up/down on the trade screens — Binance's
+     green and pinkish red, the same in both themes. */
+  --color-buy: #2ebd85;
+  --color-sell: #f6465d;
+}
+
+/* Dark-mode text, matched to the Binance app's dark theme. The app's text
+   uses Tailwind's gray scale (dark:text-gray-300/400/500 …), so the scale
+   itself is retuned under .dark rather than touching every class:
+   100/200 primary, 300 secondary, 400 tertiary, 500 muted labels and
+   placeholders, 600 disabled. */
+.dark {
+  --color-gray-100: #eaecef;
+  --color-gray-200: #eaecef;
+  --color-gray-300: #b7bdc6;
+  --color-gray-400: #848e9c;
+  --color-gray-500: #707a8a;
+  --color-gray-600: #5e6673;
 }
 
 /* Themed scrollbars (Firefox) */

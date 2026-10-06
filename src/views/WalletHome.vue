@@ -1,5 +1,23 @@
 <template>
-  <div class="p-5 space-y-5 bg-white text-gray-900 dark:bg-gh-900 dark:text-white transition-colors duration-300">
+  <!-- A wallet is being opened automatically (auto-open last wallet, or an
+       extension session): show a full-screen loader instead of flashing the
+       wallet list the user isn't going to use. -->
+  <div
+    v-if="autoOpening"
+    class="fixed inset-0 z-40 flex flex-col items-center justify-center gap-4 bg-white text-gray-900 dark:bg-gh-900 dark:text-white"
+    role="status"
+  >
+    <svg class="w-8 h-8 animate-spin text-blue-600 dark:text-blue-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+      <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
+      <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
+    </svg>
+    <div class="text-center space-y-0.5">
+      <p v-if="autoOpenName" class="text-sm font-semibold">{{ autoOpenName }}</p>
+      <p class="text-xs text-gray-400 dark:text-gray-500">{{ $t('walletList.loading') }}</p>
+    </div>
+  </div>
+
+  <div v-else class="p-5 space-y-5 bg-white text-gray-900 dark:bg-gh-900 dark:text-white transition-colors duration-300">
 
     <!-- Header -->
     <div class="flex items-center justify-between">
@@ -172,6 +190,40 @@
         <p v-if="passwordError" class="text-sm text-red-500 dark:text-red-400">
           {{ passwordError }}
         </p>
+        <div>
+          <label class="block mb-1.5 text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">
+            {{ $t('settings.unlockDuration') }}
+          </label>
+          <select
+            v-model="settings.unlockDuration"
+            class="w-full px-3 py-2 rounded-lg text-sm
+            bg-gray-100 dark:bg-gh-800
+            text-gray-900 dark:text-white
+            border border-gray-200 dark:border-gh-700
+            transition-colors outline-none cursor-pointer"
+          >
+            <option v-for="opt in UNLOCK_DURATION_OPTIONS" :key="opt" :value="opt">
+              {{ $t('settings.unlockDurationOptions.' + opt) }}
+            </option>
+          </select>
+        </div>
+        <div class="flex items-center justify-between gap-3">
+          <span class="text-sm text-gray-700 dark:text-gray-300">{{ $t('settings.autoOpenLastWallet') }}</span>
+          <button
+            type="button"
+            role="switch"
+            :aria-checked="settings.autoOpenLastWallet"
+            :aria-label="$t('settings.autoOpenLastWallet')"
+            @click="settings.autoOpenLastWallet = !settings.autoOpenLastWallet"
+            class="relative inline-flex h-6 w-11 items-center rounded-full transition-colors shrink-0"
+            :class="settings.autoOpenLastWallet ? 'bg-blue-500' : 'bg-gray-300 dark:bg-gh-600'"
+          >
+            <span
+              class="inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform"
+              :class="settings.autoOpenLastWallet ? 'translate-x-6' : 'translate-x-1'"
+            />
+          </button>
+        </div>
         <div class="flex gap-2 pt-1">
           <button
             @click="cancelUnlock"
@@ -295,8 +347,12 @@ import { useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
 import { Eye, EyeOff } from "lucide-vue-next";
 import { getAllWallets, deleteWalletFull } from "@/stores/wallet_management";
-import { loadWallet } from "@/stores/navio";
-import { readWalletSession } from "@/lib/extensionSession";
+import { loadWallet, getNavioClient, LAST_WALLET_KEY } from "@/stores/navio";
+import { settings, unlockMaxAgeMs } from "@/stores/settings";
+import { readWalletSession, isExtensionContext } from "@/lib/extensionSession";
+import { UNLOCK_DURATIONS, rememberPassword, recallPassword, forgetPassword } from "@/lib/unlockCache";
+
+const UNLOCK_DURATION_OPTIONS = ["off", ...Object.keys(UNLOCK_DURATIONS)];
 
 const { t: $t }        = useI18n();
 const router           = useRouter();
@@ -318,7 +374,32 @@ watch(walletToUnlock, async (val) => {
 const loadingId        = ref(null);
 const connectionError  = ref(null); // { message, wallet }
 
+// Optional: skip the list and go straight into the last-opened wallet. Only
+// on a cold start — if a wallet is already live the user came back here on
+// purpose (e.g. to switch wallets).
+function findAutoOpenWallet() {
+  if (!settings.autoOpenLastWallet || getNavioClient()) return null;
+  return getAllWallets().find((w) => w.name === localStorage.getItem(LAST_WALLET_KEY)) ?? null;
+}
+
+// Decided synchronously so the list never renders first. An extension popup
+// can't know until its session read returns, so it starts on the loader too.
+const autoOpenName = ref(findAutoOpenWallet()?.name ?? "");
+const autoOpening  = ref(!!autoOpenName.value || isExtensionContext());
+
 onMounted(async () => {
+  // Stay on the loader only if we're actually navigating into the wallet;
+  // anything else (password needed, error, nothing to open) needs the list.
+  if ((await autoOpen()) !== "ok") {
+    autoOpening.value = false;
+    // The unlock dialog (if that's why we stopped) only exists now that the
+    // loader is gone, so its own focus-on-open watcher ran too early.
+    await nextTick();
+    passwordInputEl.value?.focus();
+  }
+});
+
+async function autoOpen() {
   localStorage.setItem('user_agreement_accepted', true);
   console.log("Listing wallets...");
   wallets.value = getAllWallets();
@@ -332,14 +413,22 @@ onMounted(async () => {
   if (session?.walletName) {
     const match = wallets.value.find((w) => w.name === session.walletName);
     if (match) {
+      autoOpenName.value = match.name;
+      let status;
       if (!match.encrypted) {
-        await _doLoad(match, undefined);
+        status = await _doLoad(match, undefined);
       } else if (session.password) {
-        await _doLoad(match, session.password, { silent: true });
+        status = await _doLoad(match, session.password, { silent: true });
       }
+      if (status === "ok") return status;
     }
   }
-});
+
+  const last = findAutoOpenWallet();
+  if (!last) return "none";
+  autoOpenName.value = last.name;
+  return load(last);
+}
 
 function formatDate(ts) {
   return new Date(ts).toLocaleDateString(undefined, {
@@ -349,12 +438,20 @@ function formatDate(ts) {
 
 async function load(wallet) {
   if (wallet.encrypted) {
+    // Still inside the "keep unlocked" window from an earlier password
+    // entry? Then open without asking. A stale entry (wrong_password) is
+    // dropped inside _doLoad and we fall through to the prompt.
+    const cached = await recallPassword(wallet.name, unlockMaxAgeMs());
+    if (cached) {
+      const status = await _doLoad(wallet, cached, { cached: true });
+      if (status !== "wrong_password") return status;
+    }
     walletToUnlock.value = wallet;
     passwordInput.value  = "";
     passwordError.value  = "";
-    return;
+    return "password_required";
   }
-  await _doLoad(wallet, undefined);
+  return _doLoad(wallet, undefined);
 }
 
 async function doUnlock() {
@@ -368,7 +465,9 @@ function cancelUnlock() {
   passwordError.value  = "";
 }
 
-async function _doLoad(wallet, password, { silent = false } = {}) {
+// `cached`: password came from the unlock cache rather than the user — a
+// wrong one is forgotten quietly, and a right one doesn't restart the timer.
+async function _doLoad(wallet, password, { silent = false, cached = false } = {}) {
   console.log("Trying to load wallet : " + wallet.name);
   try {
     loadingId.value = wallet.id;
@@ -383,17 +482,23 @@ async function _doLoad(wallet, password, { silent = false } = {}) {
     sessionStorage.setItem("walletName", wallet.name);
     sessionStorage.setItem("network",    walletNetwork);
     walletToUnlock.value = null;
+    if (password && !silent && !cached && unlockMaxAgeMs()) {
+      await rememberPassword(wallet.name, password);
+    }
     router.push("/wallet/balance");
+    return "ok";
   } catch (err) {
     if (err?.message === "wrong_password") {
       // Cached password is stale (silent auto-unlock attempt) — just leave
       // the wallet list showing so the user can unlock manually instead of
       // surfacing an error they didn't cause.
-      if (!silent) passwordError.value = $t('walletList.wrongPassword');
-    } else {
-      console.error("Wallet Load failed:", err);
-      if (!silent) connectionError.value = { message: err?.message ?? String(err), wallet };
+      if (cached) await forgetPassword(wallet.name);
+      else if (!silent) passwordError.value = $t('walletList.wrongPassword');
+      return "wrong_password";
     }
+    console.error("Wallet Load failed:", err);
+    if (!silent) connectionError.value = { message: err?.message ?? String(err), wallet };
+    return "error";
   } finally {
     loadingId.value = null;
   }
@@ -412,6 +517,10 @@ function confirmDelete(wallet) {
 async function doDelete() {
   if (!walletToDelete.value) return;
   await deleteWalletFull(walletToDelete.value.id);
+  await forgetPassword(walletToDelete.value.name);
+  if (localStorage.getItem(LAST_WALLET_KEY) === walletToDelete.value.name) {
+    localStorage.removeItem(LAST_WALLET_KEY);
+  }
   wallets.value = getAllWallets();
   walletToDelete.value = null;
 }

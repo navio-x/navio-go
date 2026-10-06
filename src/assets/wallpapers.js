@@ -5,14 +5,27 @@ import cypherpunkLight from './wallpapers/cypherpunk-light.svg?url'
 import minimalDark    from './wallpapers/minimal-dark.svg?url'
 import minimalLight   from './wallpapers/minimal-light.svg?url'
 
+// `dark`/`light` are CSS background-image values; null means "no image".
+// `className` is for a wallpaper that's drawn by a stylesheet rule instead
+// (see .bg in WalletBalance.vue).
 export const wallpapers = [
   {
+    // No wallpaper at all — just the page's own background colour.
     id: 'default',
     label: 'Default',
-    previewDark:  'linear-gradient(135deg, #1e2329 0%, #272d35 100%)',
+    previewDark:  'linear-gradient(#1f2630, #1f2630)',
+    previewLight: 'linear-gradient(#f9fafb, #f9fafb)',
+    dark:  null,
+    light: null,
+  },
+  {
+    id: 'blocks',
+    label: 'Blocks',
+    previewDark:  'linear-gradient(135deg, #1f2630 0%, #272f3a 100%)',
     previewLight: 'linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%)',
     dark:  null,
     light: null,
+    className: 'bg',
   },
   {
     id: 'privacy',

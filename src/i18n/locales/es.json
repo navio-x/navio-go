@@ -24,7 +24,28 @@
     "title": "Navio Go",
     "tagline": "Privado · Seguro · Rápido",
     "getStarted": "Comenzar →",
-    "sovereignty": "Tus claves. Tu soberanía."
+    "sovereignty": "Tus claves. Tu soberanía.",
+    "skip": "Omitir",
+    "enable": "Activar",
+    "enableHint": "Puedes cambiarlo en cualquier momento en Ajustes.",
+    "features": {
+      "dex": {
+        "title": "Opera e intercambia",
+        "desc": "Opera en mercados spot de Hyperliquid e intercambia tokens en BNB Chain, desde una cuenta derivada de tu billetera."
+      },
+      "merchant": {
+        "title": "Acepta pagos",
+        "desc": "Convierte tu teléfono en un punto de venta: muestra un código QR en el mostrador y cobra en NAV."
+      },
+      "payroll": {
+        "title": "Paga a tu equipo",
+        "desc": "Envía salarios y pagos a freelancers en un solo lote, con recibos firmados que los destinatarios pueden verificar."
+      },
+      "chat": {
+        "title": "Chat privado",
+        "desc": "Mensajes cifrados de extremo a extremo con tus contactos, a través de la red entre pares de Navio."
+      }
+    }
   },
   "settings": {
     "title": "Configuración",
@@ -63,7 +84,19 @@
     "clearStorageDesc": "Esto eliminará permanentemente todas las configuraciones y datos de la cartera de este dispositivo.",
     "clearStorageConfirm": "¿Estás seguro? Esta acción no se puede deshacer.",
     "employerMode": "Modo empleador",
-    "employerModeDesc": "Pagos de nómina y freelance por lotes. Los datos permanecen cifrados en este dispositivo."
+    "employerModeDesc": "Pagos de nómina y freelance por lotes. Los datos permanecen cifrados en este dispositivo.",
+    "unlockDuration": "Mantener la billetera desbloqueada",
+    "unlockDurationOptions": {
+      "off": "Desactivado (pedir siempre la contraseña)",
+      "1h": "1 hora",
+      "24h": "24 horas",
+      "7d": "7 días",
+      "30d": "30 días"
+    },
+    "unlockDurationDesc": "Recuerda la contraseña de una billetera cifrada en este dispositivo, contando desde la última vez que la escribiste. Durante ese tiempo, cualquiera con acceso a este dispositivo puede abrir la billetera.",
+    "autoOpenLastWallet": "Abrir automáticamente la última billetera",
+    "autoOpenLastWalletDesc": "Omite la lista de billeteras al iniciar y abre la última billetera que usaste.",
+    "logout": "Cerrar sesión"
   },
   "wallet": {
     "balance": "Saldo",
@@ -207,11 +240,6 @@
     "title": "Navio Go Wallet – Acuerdo",
     "accept": "Acepto",
     "decline": "Rechazar",
-    "betaBadge": "Beta · Solo Testnet",
-    "betaWarningTitle": "Esta aplicación está en fase beta. Úsala bajo tu propio riesgo.",
-    "betaPoint1": "Navio se encuentra actualmente en fase testnet. No uses fondos reales.",
-    "betaPoint2": "Pueden ocurrir errores inesperados, pérdida de datos o problemas de conectividad en cualquier momento.",
-    "betaPoint3": "Asumes toda la responsabilidad por cualquier pérdida o daño derivado del uso de este software.",
     "description": "Este Acuerdo rige tu uso de Navio Go Wallet. Al continuar, confirmas que entiendes y aceptas los términos descritos a continuación.",
     "nonCustodial": "Navio Go Wallet es una billetera digital sin custodia. Tus claves privadas y frase de recuperación se generan y almacenan exclusivamente en tu dispositivo.",
     "noAccess": "No las almacenamos, accedemos ni recuperamos.",
@@ -354,5 +382,8 @@
     "goToWallets": "Ir a Billeteras",
     "signingBatch": "Enviando 1 transacción a {n} destinatarios...",
     "networkFee": "Comisión de Red"
+  },
+  "home": {
+    "switchWallet": "Cambiar de billetera"
   }
 }

@@ -24,7 +24,28 @@
     "title": "Navio Go",
     "tagline": "Privat · Sicher · Schnell",
     "getStarted": "Loslegen →",
-    "sovereignty": "Deine Schlüssel. Deine Souveränität."
+    "sovereignty": "Deine Schlüssel. Deine Souveränität.",
+    "skip": "Überspringen",
+    "enable": "Aktivieren",
+    "enableHint": "Du kannst das jederzeit in den Einstellungen ändern.",
+    "features": {
+      "dex": {
+        "title": "Handeln und tauschen",
+        "desc": "Handle Spot-Märkte auf Hyperliquid und tausche Token auf der BNB Chain – mit einem Konto, das aus deiner Wallet abgeleitet wird."
+      },
+      "merchant": {
+        "title": "Zahlungen annehmen",
+        "desc": "Mach dein Handy zur Kasse: Zeige an der Theke einen QR-Code und lass dich in NAV bezahlen."
+      },
+      "payroll": {
+        "title": "Dein Team bezahlen",
+        "desc": "Sende Gehälter und Freelancer-Honorare gesammelt, mit signierten Belegen, die Empfänger prüfen können."
+      },
+      "chat": {
+        "title": "Privater Chat",
+        "desc": "Ende-zu-Ende-verschlüsselte Nachrichten mit deinen Kontakten über Navios eigenes Peer-to-Peer-Netzwerk."
+      }
+    }
   },
   "settings": {
     "title": "Einstellungen",
@@ -63,7 +84,19 @@
     "clearStorageDesc": "Dadurch werden alle Einstellungen und Wallet-Daten auf diesem Gerät dauerhaft entfernt.",
     "clearStorageConfirm": "Sind Sie sicher? Diese Aktion kann nicht rückgängig gemacht werden.",
     "employerMode": "Arbeitgebermodus",
-    "employerModeDesc": "Sammelzahlungen für Gehälter und Freelancer. Daten bleiben verschlüsselt auf diesem Gerät."
+    "employerModeDesc": "Sammelzahlungen für Gehälter und Freelancer. Daten bleiben verschlüsselt auf diesem Gerät.",
+    "unlockDuration": "Wallet entsperrt halten",
+    "unlockDurationOptions": {
+      "off": "Aus (immer nach Passwort fragen)",
+      "1h": "1 Stunde",
+      "24h": "24 Stunden",
+      "7d": "7 Tage",
+      "30d": "30 Tage"
+    },
+    "unlockDurationDesc": "Merkt sich das Passwort einer verschlüsselten Wallet auf diesem Gerät, gerechnet ab der letzten Eingabe. In dieser Zeit kann jeder mit Zugriff auf dieses Gerät die Wallet öffnen.",
+    "autoOpenLastWallet": "Letzte Wallet automatisch öffnen",
+    "autoOpenLastWalletDesc": "Überspringt beim Start die Wallet-Liste und öffnet die zuletzt verwendete Wallet.",
+    "logout": "Abmelden"
   },
   "wallet": {
     "balance": "Guthaben",
@@ -207,11 +240,6 @@
     "title": "Navio Go Wallet – Vereinbarung",
     "accept": "Ich stimme zu",
     "decline": "Ablehnen",
-    "betaBadge": "Beta · Nur Testnetz",
-    "betaWarningTitle": "Diese App befindet sich in der Beta-Phase. Nutzung auf eigenes Risiko.",
-    "betaPoint1": "Navio befindet sich derzeit in der Testnet-Phase. Verwende keine echten Mittel.",
-    "betaPoint2": "Unerwartete Fehler, Datenverluste oder Verbindungsprobleme können jederzeit auftreten.",
-    "betaPoint3": "Du übernimmst die volle Verantwortung für alle Verluste oder Schäden durch die Nutzung dieser Software.",
     "description": "Diese Vereinbarung regelt deine Nutzung von Navio Go Wallet. Durch das Fortfahren bestätigst du, dass du die unten aufgeführten Bedingungen verstehst und akzeptierst.",
     "nonCustodial": "Navio Go Wallet ist eine nicht-verwahrende digitale Wallet. Deine privaten Schlüssel und Wiederherstellungsphrase werden ausschließlich auf deinem Gerät generiert und gespeichert.",
     "noAccess": "Wir speichern, greifen darauf zu oder stellen sie nicht wieder her.",
@@ -354,5 +382,8 @@
     "goToWallets": "Zu den Wallets",
     "signingBatch": "Sende 1 Transaktion an {n} Empfänger...",
     "networkFee": "Netzwerkgebühr"
+  },
+  "home": {
+    "switchWallet": "Wallet wechseln"
   }
 }

@@ -44,16 +44,6 @@
         "logo": "busd.webp",
         "pinned": true,
         "feeOnTransfer": false
-      },
-      {
-        "symbol": "WNAV",
-        "name": "Wrapped Navcoin",
-        "address": "0xBFEf6cCFC830D3BaCA4F6766a0d4AaA242Ca9F3D",
-        "decimals": 8,
-        "logo": "wnav-light.svg",
-        "pinned": true,
-        "feeOnTransfer": false,
-        "addressVerifiedNote": "2026-08-29 tarihinde zincirden doğrulandı: symbol()=WNAV, name()=Wrapped Navcoin, decimals()=8. Kontrat kaynak kodu/güvenliği ayrıca incelenmedi."
       }
     ]
   },

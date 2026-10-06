@@ -24,7 +24,28 @@
     "title": "Navio Go",
     "tagline": "Privado · Seguro · Rápido",
     "getStarted": "Começar →",
-    "sovereignty": "Suas chaves. Sua soberania."
+    "sovereignty": "Suas chaves. Sua soberania.",
+    "skip": "Pular",
+    "enable": "Ativar",
+    "enableHint": "Você pode mudar isso a qualquer momento nas Configurações.",
+    "features": {
+      "dex": {
+        "title": "Negocie e troque",
+        "desc": "Negocie mercados spot na Hyperliquid e troque tokens na BNB Chain, com uma conta derivada da sua carteira."
+      },
+      "merchant": {
+        "title": "Aceite pagamentos",
+        "desc": "Transforme seu celular em um ponto de venda: mostre um QR code no balcão e receba em NAV."
+      },
+      "payroll": {
+        "title": "Pague sua equipe",
+        "desc": "Envie salários e pagamentos a freelancers em um único lote, com recibos assinados que os destinatários podem verificar."
+      },
+      "chat": {
+        "title": "Chat privado",
+        "desc": "Mensagens criptografadas de ponta a ponta com seus contatos, pela rede ponto a ponto da Navio."
+      }
+    }
   },
   "settings": {
     "title": "Configurações",
@@ -63,7 +84,19 @@
     "clearStorageDesc": "Isso removerá permanentemente todas as configurações e dados da carteira deste dispositivo.",
     "clearStorageConfirm": "Tem certeza? Esta ação não pode ser desfeita.",
     "employerMode": "Modo Empregador",
-    "employerModeDesc": "Pagamentos de folha de pagamento e freelancers em lote. Os dados permanecem criptografados neste dispositivo."
+    "employerModeDesc": "Pagamentos de folha de pagamento e freelancers em lote. Os dados permanecem criptografados neste dispositivo.",
+    "unlockDuration": "Manter a carteira desbloqueada",
+    "unlockDurationOptions": {
+      "off": "Desativado (sempre pedir a senha)",
+      "1h": "1 hora",
+      "24h": "24 horas",
+      "7d": "7 dias",
+      "30d": "30 dias"
+    },
+    "unlockDurationDesc": "Lembra a senha de uma carteira criptografada neste dispositivo, contando a partir da última vez que você a digitou. Durante esse período, qualquer pessoa com acesso a este dispositivo pode abrir a carteira.",
+    "autoOpenLastWallet": "Abrir automaticamente a última carteira",
+    "autoOpenLastWalletDesc": "Pula a lista de carteiras ao iniciar e abre a última carteira usada.",
+    "logout": "Sair"
   },
   "wallet": {
     "balance": "Saldo",
@@ -206,11 +239,6 @@
   "agreement": {
     "title": "Navio Go Wallet – Acordo",
     "accept": "Aceito",
-    "betaBadge": "Beta · Somente Testnet",
-    "betaWarningTitle": "Este aplicativo está em fase beta. Use por sua própria conta e risco.",
-    "betaPoint1": "O Navio está atualmente na fase testnet. Não use fundos reais.",
-    "betaPoint2": "Bugs inesperados, perda de dados ou problemas de conectividade podem ocorrer a qualquer momento.",
-    "betaPoint3": "Você assume total responsabilidade por qualquer perda ou dano resultante do uso deste software.",
     "decline": "Recusar",
     "description": "Este Acordo rege o uso do Navio Go Wallet. Ao continuar, você confirma que entende e aceita os termos descritos abaixo.",
     "nonCustodial": "O Navio Go Wallet é uma carteira digital sem custódia. Suas chaves privadas e frase de recuperação são geradas e armazenadas exclusivamente no seu dispositivo.",
@@ -354,5 +382,8 @@
     "goToWallets": "Ir para Carteiras",
     "signingBatch": "Enviando 1 transação para {n} destinatários...",
     "networkFee": "Taxa de Rede"
+  },
+  "home": {
+    "switchWallet": "Trocar de carteira"
   }
 }

@@ -13,6 +13,11 @@ import {
   deleteWalletFull,
 } from './wallet_management.js';
 import { publishWalletSession, clearWalletSession } from "@/lib/extensionSession.js";
+import { forgetPassword } from "@/lib/unlockCache.js";
+
+// Name of the most recently opened wallet — read by WalletHome.vue for the
+// optional "auto-open last wallet" setting.
+export const LAST_WALLET_KEY = "lastWallet";
 const ELECTRUM_HOSTS = {
   mainnet: "electrum.nav.io",
   testnet: "testnet.nav.io",
@@ -357,7 +362,24 @@ export async function disconnectWallet() {
   }
   _navioClient.value = null;
   syncing.value = false;
-  clearWalletSession();
+  await clearWalletSession();
+}
+
+// Explicit "log out": closes the wallet and makes sure nothing reopens it
+// without the password — the remembered unlock is dropped and it stops being
+// the auto-open target. Wallet data itself is untouched.
+export async function logoutWallet() {
+  const name = walletName.value || localStorage.getItem(LAST_WALLET_KEY);
+  await disconnectWallet();
+  localStorage.removeItem(LAST_WALLET_KEY);
+  await forgetPassword(name);
+  walletName.value = "";
+  balance.value = "0";
+  utxos.value = [];
+  receiveAddress.value = "";
+  txHistory.value = [];
+  tokenBalances.value = [];
+  nftBalances.value = [];
 }
 
 export { stopSync };
@@ -367,9 +389,10 @@ export async function createWallet({
   network = "testnet",
   password,
 } = {}) {
-  if (!_sdkInitialized.value) {
-    throw new Error("SDK not initialized!");
-  }
+  // Normally done by the start screen (InitalizeSDK.vue), but the app can
+  // come up on another route — a reload mid-flow, or the OS restoring the
+  // page. initNavioSDK is a no-op when it has already run.
+  await initNavioSDK();
 
   const client = new NavioClient({
     network,
@@ -389,6 +412,7 @@ export async function createWallet({
 
   _navioClient.value = client;
   walletName.value=wallet_name;
+  localStorage.setItem(LAST_WALLET_KEY, wallet_name);
   console.log("Wallet Ready ✅");
 
   const keyManager = client.getKeyManager();
@@ -440,9 +464,10 @@ export async function loadWallet({
   network = "testnet",
   password,
 } = {}) {
-  if (!_sdkInitialized.value) {
-    throw new Error("SDK not initialized!");
-  }
+  // Normally done by the start screen (InitalizeSDK.vue), but the app can
+  // come up on another route — a reload mid-flow, or the OS restoring the
+  // page. initNavioSDK is a no-op when it has already run.
+  await initNavioSDK();
 
   const client = new NavioClient({
     network,
@@ -478,6 +503,7 @@ export async function loadWallet({
   _navioClient.value = client;
   console.log("Wallet loaded");
   walletName.value=wallet_id;
+  localStorage.setItem(LAST_WALLET_KEY, wallet_id);
 
   // Update receive address
   updateReceiveAddress(network, password);
@@ -487,6 +513,7 @@ export async function loadWallet({
 
 export async function restoreWallet({ wallet_name, network, mnemonic, startHeight, password }) {
   if (!mnemonic) throw new Error("Mnemonic required");
+  await initNavioSDK();
 
   const restoreHeight =
   startHeight !== undefined && startHeight !== null
@@ -549,6 +576,8 @@ export async function restoreWallet({ wallet_name, network, mnemonic, startHeigh
 
   updateReceiveAddress(network, password);
   startSync();
+
+  localStorage.setItem(LAST_WALLET_KEY, wallet_name);
 
   return {
     client,

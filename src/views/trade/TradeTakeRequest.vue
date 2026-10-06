@@ -12,8 +12,8 @@
       <div class="px-5 pb-6 space-y-4 max-w-md">
         <p class="text-sm text-gray-500 dark:text-gray-400">{{ $t('trade.take.intro') }}</p>
 
-        <TradeTokenField v-model="buyTokenId" :label="$t('trade.take.buyLabel')" />
-        <TradeTokenField v-model="sellTokenId" :label="$t('trade.take.sellLabel')" />
+        <TradeTokenField v-model="buyTokenId" :label="$t('trade.take.buyLabel')" network-tokens />
+        <TradeTokenField v-model="sellTokenId" :label="$t('trade.take.sellLabel')" network-tokens />
 
         <div class="space-y-1.5">
           <label class="text-xs font-medium text-gray-500 dark:text-gray-400">{{ $t('trade.take.amountLabel') }}</label>

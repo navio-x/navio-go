@@ -106,7 +106,7 @@
           <p class="text-sm font-semibold text-gray-900 dark:text-white">{{ $t('trade.take.cta') }}</p>
           <p class="text-xs text-gray-400 dark:text-gray-500">{{ $t('trade.take.intro') }}</p>
         </div>
-        <ChevronRight class="w-4 h-4 opacity-40 shrink-0" />
+        <ChevronRight class="w-4 h-4 text-gray-400 dark:text-gray-500 shrink-0" />
       </button>
 
       <button
@@ -120,7 +120,7 @@
           <p class="text-sm font-semibold text-gray-900 dark:text-white">{{ $t('trade.maker.cta') }}</p>
           <p class="text-xs text-gray-400 dark:text-gray-500">{{ $t('trade.maker.intro') }}</p>
         </div>
-        <ChevronRight class="w-4 h-4 opacity-40 shrink-0" />
+        <ChevronRight class="w-4 h-4 text-gray-400 dark:text-gray-500 shrink-0" />
       </button>
     </div>
 

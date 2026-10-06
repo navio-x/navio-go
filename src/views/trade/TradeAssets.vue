@@ -74,7 +74,7 @@
             </div>
             <div class="shrink-0 flex items-center gap-2">
               <p class="font-semibold tabular-nums text-gray-900 dark:text-white text-sm">{{ asset.balance.toString() }}</p>
-              <ChevronRight class="w-4 h-4 opacity-40" />
+              <ChevronRight class="w-4 h-4 text-gray-400 dark:text-gray-500" />
             </div>
           </button>
         </div>
@@ -102,7 +102,7 @@
                 {{ $t('trade.tokenDetail.nftId') }}: {{ asset.nftId != null ? asset.nftId.toString() : '—' }}
               </p>
             </div>
-            <ChevronRight class="w-4 h-4 opacity-40 shrink-0" />
+            <ChevronRight class="w-4 h-4 text-gray-400 dark:text-gray-500 shrink-0" />
           </button>
         </div>
 
