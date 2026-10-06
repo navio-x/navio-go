@@ -1,5 +1,6 @@
 import { ref } from "vue";
-import { createWalletClient, http } from "viem";
+import { createWalletClient, http, formatUnits } from "viem";
+import { recordSwap } from "@/lib/evm/swapLog";
 import { settings } from "@/stores/settings";
 import { getActiveClient, activeRpcUrl, buildEvmChain } from "@/stores/evm";
 import {
@@ -289,6 +290,15 @@ export function usePancakeSwap() {
       actualAmountOut.value = feeOnTransfer
         ? (await readAssetBalance(client, toAsset, owner)) - preBalance
         : best.out;
+
+      // For the History screen — the app has no other record of EVM activity.
+      recordSwap(owner, {
+        hash: swapHash,
+        chainId,
+        time: Date.now(),
+        from: { symbol: fromAsset.symbol, amount: formatUnits(amountInRaw, fromAsset.decimals ?? network.nativeDecimals) },
+        to: { symbol: toAsset.symbol, amount: formatUnits(actualAmountOut.value, toAsset.decimals ?? network.nativeDecimals) },
+      });
 
       status.value = "success";
     } catch (e) {

@@ -25,7 +25,8 @@
 
     <!-- HYPERLIQUID ASSETS -->
     <section v-if="homeTab === 'assets'" class="pt-1">
-      <div v-if="!evmAddress" class="space-y-3 py-2">
+      <slot v-if="$slots.assets" name="assets" />
+      <div v-else-if="!evmAddress" class="space-y-3 py-2">
         <div v-for="i in 4" :key="i" class="h-9 rounded-lg bg-gray-100 dark:bg-gh-800 animate-pulse" />
       </div>
       <component
@@ -218,7 +219,7 @@ import { evmAddress } from '@/stores/evm'
 import { useHyperliquidBalances } from '@/composables/useHyperliquidBalances'
 import { useHyperliquidSpotTickers } from '@/composables/useHyperliquidSpotTickers'
 import { HL_SPOT_MARKETS } from '@/lib/hyperliquid/market'
-import { HL_LOGOS } from '@/lib/hyperliquid/config'
+import { HL_LOGOS, HL_NAMES } from '@/lib/hyperliquid/config'
 import TokenIcon from '@/components/TokenIcon.vue'
 import { ChevronRight, Plus, Check, X } from 'lucide-vue-next'
 
@@ -226,6 +227,9 @@ const props = defineProps({
   // localStorage key remembering which of the two tabs was last open —
   // separate per host screen.
   storageKey: { type: String, default: 'homeTab' },
+  // Balance rows from a host that already loads them; when given, this
+  // panel doesn't poll for its own.
+  balances: { type: Array, default: null },
 })
 
 const router = useRouter()
@@ -242,19 +246,15 @@ function formatFiat(value, currency = settings.currency ?? 'USD') {
 // ===================== Hyperliquid (dexMode only) =====================
 // Gated on dexMode the same way /dex and /market/hl are: with it off the
 // address stays '' so neither composable makes a single request.
-const hlAddress = computed(() => (settings.dexMode ? evmAddress.value : ''))
+const hlAddress = computed(() => (settings.dexMode && !props.balances ? evmAddress.value : ''))
 const hl = useHyperliquidBalances(hlAddress)
+const balanceRows = computed(() => props.balances ?? hl.balances.value)
 
-// Same icons as DexView's Hyperliquid card.
-const HL_NAMES = {
-  NAV: 'Wrapped Navio', USDC: 'USD Coin', HYPE: 'Hyperliquid', BTC: 'Bitcoin',
-  ETH: 'Ethereum', SOL: 'Solana', ZEC: 'Zcash', AVAX: 'Avalanche',
-}
 const HL_ORDER = ['NAV', 'USDC', 'HYPE', 'BTC', 'ETH', 'SOL', 'ZEC', 'AVAX']
-// Wrapped Navio opens its bridge account page; the others open their
-// asset page (deposit / withdraw, and a Trade link where a market exists).
+// NAV opens its own page (wallet + exchange in one); the others open their
+// asset page (receive / send, and a Trade link where a market exists).
 const ROW_ROUTE = {
-  NAV: '/market/hl/NAV-USDC/account',
+  NAV: '/asset/NAV',
   USDC: '/hl/asset/USDC',
   HYPE: '/hl/asset/HYPE',
   BTC: '/hl/asset/BTC',
@@ -270,7 +270,7 @@ const isAssetShown = (row) => settings.homeAssets.includes(row.symbol) || Number
 
 const hlRows = computed(() => {
   const rate = navPrice.rates[settings.currency ?? 'USD'] ?? null
-  return hl.balances.value.filter(isAssetShown)
+  return balanceRows.value.filter(isAssetShown)
     .sort((a, b) => HL_ORDER.indexOf(a.symbol) - HL_ORDER.indexOf(b.symbol))
     .map((row) => ({
       ...row,
@@ -318,7 +318,7 @@ function setHomeTab(tab) {
 
 const showAssetPicker = ref(false)
 const pickerAssets = computed(() =>
-  [...hl.balances.value]
+  [...balanceRows.value]
     .sort((a, b) => HL_ORDER.indexOf(a.symbol) - HL_ORDER.indexOf(b.symbol))
     .map((row) => ({ symbol: row.symbol, total: row.total, hasBalance: Number(row.total) > 0, shown: isAssetShown(row) }))
 )

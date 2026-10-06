@@ -13,7 +13,7 @@
   >
     <!-- Sliding pill -->
     <div
-      class="absolute rounded-xl bg-black/5 dark:bg-white/8 pointer-events-none"
+      class="absolute rounded-xl bg-blue-600/10 dark:bg-blue-400/15 pointer-events-none"
       :style="pillStyle"
     />
 
@@ -22,30 +22,32 @@
       :key="item.name"
       :to="item.path"
       :ref="el => { buttonRefs[index] = el }"
-      class="flex-1 flex items-center justify-center py-3 rounded-xl relative min-w-0"
+      class="flex-1 flex flex-col items-center justify-center gap-0.5 py-2 rounded-xl relative min-w-0 transition-colors duration-300"
+      :class="route.path === item.path
+        ? 'text-blue-600 dark:text-blue-400'
+        : 'text-black/50 dark:text-white/50'"
     >
-      <component
-        :is="item.icon"
-        class="w-6 h-6 transition-colors duration-300"
-        :class="route.path === item.path
-          ? 'text-[#00cc6a] dark:text-[#00ff88]'
-          : 'text-black/50 dark:text-white/50'"
-      />
+      <component :is="item.icon" class="w-[22px] h-[22px]" :stroke-width="route.path === item.path ? 2.25 : 1.75" />
+      <span
+        class="max-w-full px-0.5 text-[10px] leading-tight truncate"
+        :class="route.path === item.path ? 'font-semibold' : 'font-medium'"
+      >{{ $t(item.labelKey) }}</span>
     </router-link>
 
     <button
       type="button"
       :ref="el => { buttonRefs[fixedNavItems.length] = el }"
-      class="flex-1 flex items-center justify-center py-3 rounded-xl relative min-w-0"
-      :aria-label="$t('nav.more')"
+      class="flex-1 flex flex-col items-center justify-center gap-0.5 py-2 rounded-xl relative min-w-0 transition-colors duration-300"
+      :class="isMoreActive
+        ? 'text-blue-600 dark:text-blue-400'
+        : 'text-black/50 dark:text-white/50'"
       @click="showMore = true"
     >
-      <MoreHorizontal
-        class="w-6 h-6 transition-colors duration-300"
-        :class="isMoreActive
-          ? 'text-[#00cc6a] dark:text-[#00ff88]'
-          : 'text-black/50 dark:text-white/50'"
-      />
+      <MoreHorizontal class="w-[22px] h-[22px]" :stroke-width="isMoreActive ? 2.25 : 1.75" />
+      <span
+        class="max-w-full px-0.5 text-[10px] leading-tight truncate"
+        :class="isMoreActive ? 'font-semibold' : 'font-medium'"
+      >{{ $t('nav.more') }}</span>
     </button>
   </nav>
 
@@ -72,13 +74,13 @@
           :is="item.icon"
           class="w-5 h-5 shrink-0"
           :class="isOverflowItemActive(item)
-            ? 'text-[#00cc6a] dark:text-[#00ff88]'
+            ? 'text-blue-600 dark:text-blue-400'
             : 'text-black/60 dark:text-white/60'"
         />
         <span
           class="text-sm font-medium"
           :class="isOverflowItemActive(item)
-            ? 'text-[#00cc6a] dark:text-[#00ff88]'
+            ? 'text-blue-600 dark:text-blue-400'
             : 'text-gray-700 dark:text-gray-300'"
         >
           {{ $t(item.labelKey) }}
@@ -91,7 +93,7 @@
 <script setup>
 import { ref, computed, watch, onMounted, onUnmounted, nextTick } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { Wallet, Download, SendHorizontal, Layers, History, Settings, Briefcase, Store, Repeat, ArrowLeftRight, MessageCircle, MoreHorizontal } from 'lucide-vue-next'
+import { Wallet, ArrowDownLeft, ArrowUpRight, Layers, History, Settings, Briefcase, Store, Repeat, ArrowLeftRight, MessageCircle, MoreHorizontal, CandlestickChart } from 'lucide-vue-next'
 import { Capacitor } from '@capacitor/core'
 import { settings } from '@/stores/settings'
 
@@ -105,22 +107,23 @@ const navRef = ref(null)
 const buttonRefs = ref([])
 const showMore = ref(false)
 
-// The bar itself is capped at 5 slots: 4 fixed high-frequency actions plus
-// one "More" slot. Everything else — including future optional modes —
-// lives in the More sheet below, in a fixed manifest order that never
-// depends on which toggle was turned on first.
-const fixedNavItems = [
-  { name: 'wallet',  path: '/wallet/balance', icon: Wallet },
-  { name: 'receive', path: '/wallet/receive', icon: Download },
-  { name: 'send',    path: '/wallet/send',    icon: SendHorizontal },
-  { name: 'history', path: '/wallet/history', icon: History },
-]
+// The bar holds the high-frequency actions — home, receive, send, swap,
+// history — plus one "More" slot. Everything else — including future
+// optional modes — lives in the More sheet below, in a fixed manifest
+// order that never depends on which toggle was turned on first.
+const fixedNavItems = computed(() => [
+  { name: 'wallet',  path: '/wallet/balance', icon: Wallet,  labelKey: 'wallet.home' },
+  { name: 'receive', path: '/wallet/receive', icon: ArrowDownLeft, labelKey: 'wallet.receive' },
+  { name: 'send',    path: '/wallet/send',    icon: ArrowUpRight, labelKey: 'wallet.send' },
+  ...(settings.dexMode ? [{ name: 'swap', path: '/swap', icon: Repeat, labelKey: 'swap.title' }] : []),
+  { name: 'history', path: '/wallet/history', icon: History, labelKey: 'wallet.history' },
+])
 
 const overflowManifest = [
   { name: 'assets',   path: '/wallet/assets', icon: Layers,    labelKey: 'assets.title' },
   { name: 'payroll',  path: '/payroll',       icon: Briefcase, labelKey: 'payroll.title',  enabled: () => settings.employerMode },
   { name: 'pos',      path: '/pos',           icon: Store,     labelKey: 'pos.title',      enabled: () => settings.merchantMode },
-  { name: 'dex',      path: '/dex',           icon: Repeat,    labelKey: 'dex.title',      enabled: () => settings.dexMode },
+  { name: 'dex',      path: '/dex',           icon: CandlestickChart, labelKey: 'dex.title', enabled: () => settings.dexMode },
   { name: 'trade',    path: '/trade',         icon: ArrowLeftRight, labelKey: 'trade.title', enabled: () => settings.tradeMode },
   { name: 'chat',     path: '/chat',          icon: MessageCircle, labelKey: 'chat.title',  enabled: () => settings.chatMode },
   { name: 'settings', path: '/settings',      icon: Settings,  labelKey: 'settings.title' },
@@ -142,8 +145,8 @@ const pillStyle = ref({ opacity: 0 })
 
 const updatePill = async () => {
   await nextTick()
-  let activeIdx = fixedNavItems.findIndex(item => route.path === item.path)
-  if (activeIdx === -1 && isMoreActive.value) activeIdx = fixedNavItems.length
+  let activeIdx = fixedNavItems.value.findIndex(item => route.path === item.path)
+  if (activeIdx === -1 && isMoreActive.value) activeIdx = fixedNavItems.value.length
   if (activeIdx === -1) {
     pillStyle.value = { ...pillStyle.value, opacity: 0 }
     return

@@ -64,7 +64,7 @@ function usdcMarket(baseSymbol, baseTokenId) {
  * config.js's HL_TOKENS (balances / sell max on the market screen).
  */
 export const HL_SPOT_MARKETS = {
-  "NAV-USDC": { base: "NAV", quote: "USDC", name: "Wrapped Navio", logo: "wnav-light.svg", resolver: resolveNavUsdcMarket },
+  "NAV-USDC": { base: "NAV", quote: "USDC", name: "Navio", logo: "wnav-light.svg", resolver: resolveNavUsdcMarket },
   "BTC-USDC": { base: "BTC", quote: "USDC", name: "Bitcoin", logo: "btc.png", resolver: resolveBtcUsdcMarket },
   "HYPE-USDC": { base: "HYPE", quote: "USDC", name: "Hyperliquid", logo: "hype.jpg", resolver: resolveHypeUsdcMarket },
   "ETH-USDC": { base: "ETH", quote: "USDC", name: "Ethereum", logo: "eth.png", resolver: usdcMarket("ETH", "0xe1edd30daaf5caac3fe63569e24748da") },

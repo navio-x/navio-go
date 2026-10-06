@@ -35,13 +35,11 @@
       </div>
     </div>
 
-    <div class="px-4 pt-5 pb-6 space-y-6">
-      <!-- NATIVE NAV BALANCE -->
+    <div class="px-4 pt-5 pb-6 space-y-5">
+      <!-- HOW MUCH DO I HAVE -->
       <section>
         <div class="flex items-center justify-between gap-2">
-          <div class="flex items-center gap-1.5 text-xs text-gray-500 dark:text-gray-400">
-            {{ $t('home.navBalance') }}
-          </div>
+          <div class="text-xs text-gray-500 dark:text-gray-400">{{ $t('home.totalBalance') }}</div>
           <button
             @click="switchWallet"
             class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium transition-colors
@@ -52,23 +50,26 @@
             {{ $t('home.switchWallet') }}
           </button>
         </div>
-        <div class="mt-1 flex items-baseline gap-2">
-          <span :class="balanceFontClass" class="font-bold tracking-tight text-gray-900 dark:text-white">
-            {{ formattedBalance }}
-          </span>
-          <span class="text-base font-medium text-gray-500 dark:text-gray-400">NAV</span>
+        <!-- Held back until the exchange balances are in, so the total
+             doesn't appear wallet-only and then jump. -->
+        <div v-if="!totalReady" class="mt-1 h-10 flex items-center" role="status" :aria-label="$t('common.loading')">
+          <Loader2 class="w-5 h-5 animate-spin text-gray-400 dark:text-gray-500" />
         </div>
-        <div v-if="settings.showFiatValue" class="mt-1 min-h-[1.5rem] flex items-center gap-2">
-          <span v-if="fiatValue != null" class="text-sm text-gray-600 dark:text-gray-300">
-            ≈ {{ fiatValue }}
-          </span>
-          <span v-else-if="navPrice.loading" class="text-sm text-gray-400 dark:text-gray-500">···</span>
+        <div v-else class="mt-1 flex items-baseline gap-2">
+          <span :class="heroFontClass" class="font-bold tracking-tight tabular-nums text-gray-900 dark:text-white">{{ hero.value }}</span>
+          <span v-if="hero.unit" class="text-base font-medium text-gray-500 dark:text-gray-400">{{ hero.unit }}</span>
+          <!-- Showing the last known total while the current one loads -->
+          <Loader2 v-if="refreshing" class="w-4 h-4 self-center animate-spin text-gray-400 dark:text-gray-500" role="status" :aria-label="$t('common.loading')" />
+        </div>
+        <div class="mt-1 min-h-[1.25rem] flex items-center gap-2 text-sm">
+          <span v-if="totalReady && hero.sub" class="text-gray-600 dark:text-gray-300 tabular-nums">{{ hero.sub }}</span>
+          <span v-else-if="totalReady && settings.showFiatValue && navPrice.loading" class="text-gray-400 dark:text-gray-500">···</span>
           <span
-            v-if="navPrice.change24h != null && fiatValue != null"
+            v-if="totalReady && settings.showFiatValue && navPrice.change24h != null && hero.sub"
             class="text-xs font-medium"
             :class="navPrice.change24h >= 0 ? 'text-buy' : 'text-sell'"
           >
-            {{ navPrice.change24h > 0 ? '+' : '' }}{{ navPrice.change24h.toFixed(2) }}% (24h)
+            NAV {{ navPrice.change24h > 0 ? '+' : '' }}{{ navPrice.change24h.toFixed(2) }}% (24h)
           </span>
         </div>
       </section>
@@ -78,29 +79,63 @@
         <CircularProgress :value="percent" :label="$t('wallet.synced')" :size="160" :stroke-width="3" />
       </div>
 
-      <template v-if="settings.dexMode">
-        <!-- Hyperliquid assets + markets (shared with the DEX page) -->
-        <HlAssetsMarkets />
-      </template>
+      <!-- Anything in progress, or just finished -->
+      <OperationCard v-for="op in operations" :key="op.id" :op="op" />
+
+      <!-- Assets | Markets. The asset rows are the unified ones: NAV is a
+           single row, wherever it is held. -->
+      <HlAssetsMarkets v-if="settings.dexMode" :balances="portfolio.hl.balances.value">
+        <template #assets>
+          <button
+            v-for="asset in portfolio.assets.value"
+            :key="asset.symbol"
+            @click="router.push(asset.route)"
+            class="w-full py-3 flex items-center justify-between gap-3 text-left"
+          >
+            <div class="flex items-center gap-3 min-w-0">
+              <TokenIcon :symbol="asset.symbol" :logo="asset.logo" :size="32" />
+              <div class="min-w-0">
+                <p class="text-sm font-semibold text-gray-900 dark:text-white">{{ asset.symbol }}</p>
+                <p class="text-xs text-gray-400 dark:text-gray-500 truncate">{{ asset.name }}</p>
+              </div>
+            </div>
+            <div class="flex items-center gap-1 shrink-0">
+              <!-- The coins are always listed; only the amounts wait for data -->
+              <Loader2 v-if="!totalReady" class="w-4 h-4 animate-spin text-gray-300 dark:text-gray-600" role="status" :aria-label="$t('common.loading')" />
+              <div v-else class="text-right">
+                <p class="text-sm font-mono text-gray-900 dark:text-white">{{ formatAmount(asset.amount) }}</p>
+                <p v-if="settings.showFiatValue" class="text-xs text-gray-400 dark:text-gray-500">{{ formatFiatFromUsd(asset.usd) ?? '—' }}</p>
+              </div>
+              <ChevronRight class="w-4 h-4 text-gray-300 dark:text-gray-600" />
+            </div>
+          </button>
+        </template>
+      </HlAssetsMarkets>
     </div>
 
   </div>
 </template>
 <script setup>
-  import { onMounted, onUnmounted, computed, watch } from "vue";
+  import { ref, onMounted, onUnmounted, computed, watch } from "vue";
   import { useRouter } from "vue-router";
   import { settings } from "@/stores/settings";
   import { wallpapers } from "@/assets/wallpapers";
-  import { percent, balance, walletHeight, chainTip, getNavioClient, logoutWallet } from "@/stores/navio";
-  import { navPrice, getPriceIn, startPricePolling, stopPricePolling } from "@/stores/navPrice";
+  import { percent, walletHeight, chainTip, getNavioClient, logoutWallet } from "@/stores/navio";
+  import { navPrice, startPricePolling, stopPricePolling } from "@/stores/navPrice";
   import { evmAddress } from "@/stores/evm";
+  import { operations } from "@/stores/operations";
   import { deriveEvmAddress } from "@/composables/useEvmAccount";
+  import { usePortfolio } from "@/composables/usePortfolio";
+  import { formatAmount, formatFiatFromUsd } from "@/lib/displayFormat";
   import CircularProgress from '@/components/CircularProgress.vue'
   import HlAssetsMarkets from '@/components/HlAssetsMarkets.vue'
-  import { ArrowLeftRight } from 'lucide-vue-next'
+  import TokenIcon from '@/components/TokenIcon.vue'
+  import OperationCard from '@/components/tx/OperationCard.vue'
+  import { ArrowLeftRight, ChevronRight, Loader2 } from 'lucide-vue-next'
 
   const network = sessionStorage.getItem('network') ?? 'mainnet'
   const router = useRouter()
+  const portfolio = usePortfolio()
 
   // Closes this wallet (same as Settings → Log out) and returns to the
   // create/select screen.
@@ -126,39 +161,36 @@
     return { backgroundImage: isDark.value ? wp.dark : wp.light, backgroundSize: 'cover', backgroundPosition: 'center', backgroundRepeat: 'no-repeat' }
   })
 
-  const formattedBalance = computed(() => {
-    const nav = Number(balance.value)
-    if (!nav || isNaN(nav)) return '0'
-    return nav.toLocaleString(undefined, { maximumFractionDigits: 8 })
+  // One number for everything the user owns. With fiat values on (and every
+  // held asset priced) that is the total in their currency; otherwise it is
+  // the NAV total, which is all a wallet without other assets has anyway.
+  const hero = computed(() => {
+    const nav = portfolio.nav.value.total
+    const navLabel = `${formatAmount(nav, 8)} NAV`
+    const fiat = settings.showFiatValue ? formatFiatFromUsd(portfolio.totalUsd.value) : null
+    if (fiat && (nav > 0 || portfolio.totalUsd.value > 0)) {
+      const onlyNav = portfolio.assets.value.every((a) => a.symbol === 'NAV' || !(a.amount > 0))
+      return { value: fiat, unit: '', sub: onlyNav ? navLabel : '' }
+    }
+    return { value: formatAmount(nav, 8), unit: 'NAV', sub: '' }
   })
 
-  const balanceFontClass = computed(() => {
-    const len = formattedBalance.value.length
+  const heroFontClass = computed(() => {
+    const len = hero.value.value.length
     if (len <= 9)  return 'text-4xl'
     if (len <= 13) return 'text-3xl'
     return 'text-2xl'
   })
 
-  function formatFiat(value, currency = settings.currency ?? 'USD') {
-    return value.toLocaleString(undefined, {
-      style: 'currency',
-      currency,
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    })
-  }
-
-  const fiatValue = computed(() => {
-    const nav = Number(balance.value)
-    if (!nav || isNaN(nav)) return null
-    const price = getPriceIn(settings.currency ?? 'USD')
-    if (price == null) return null
-    return formatFiat(nav * price)
-  })
-
   // The home screen can mount before loadWallet() has set the Navio client
   // (deriveEvmAddress would throw wallet_not_ready), so derive once the
   // client actually exists — _navioClient is a ref, so this re-runs then.
+  // If the exchange account can't be derived (wallet locked) its balances
+  // will never arrive; show the wallet's own total rather than wait forever.
+  const exchangeUnavailable = ref(false)
+  const totalReady = computed(() => portfolio.hasData.value || exchangeUnavailable.value)
+  const refreshing = computed(() => totalReady.value && !portfolio.ready.value && !exchangeUnavailable.value)
+
   let deriving = false
   watch(
     () => settings.dexMode && !evmAddress.value && getNavioClient(),
@@ -171,6 +203,7 @@
         // Wallet locked — the Hyperliquid section just stays on its
         // skeleton; the DEX tab surfaces the actual error.
         console.error('[home] EVM derivation error:', e)
+        exchangeUnavailable.value = true
       } finally {
         deriving = false
       }

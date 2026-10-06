@@ -395,7 +395,7 @@
         <input
           v-model.trim="settings.faucetUrl"
           type="url"
-          placeholder="http://185.86.15.11:8787"
+          placeholder="https://go.nav.io/faucet/"
           class="w-full rounded-xl px-3 py-2.5 text-sm outline-none transition-colors
                  bg-gray-50 dark:bg-gh-700
                  text-gray-900 dark:text-white

@@ -704,6 +704,7 @@ export async function refreshHistory() {
           memos: [],
           outputCount: 0,
           spentCount: 0,
+          timestamp: null,
         };
         txMap.set(hash, rec);
       }
@@ -716,6 +717,8 @@ export async function refreshHistory() {
       const recv = getOrCreate(o.txHash, o.blockHeight);
       recv.received += amt;
       recv.outputCount++;
+      // An output carries its own block's time (unix seconds).
+      if (o.timestamp) recv.timestamp = Number(o.timestamp) * 1000;
       if (o.memo) recv.memos.push(o.memo);
 
       if (o.isSpent && o.spentTxHash) {
@@ -728,6 +731,22 @@ export async function refreshHistory() {
     const txList = [...txMap.values()].sort(
       (a, b) => b.blockHeight - a.blockHeight
       );
+
+    // A send that left no change output has no output of its own to read a
+    // time from; it takes the time of the nearest block the wallet knows.
+    const timed = txList.filter((tx) => tx.timestamp != null && tx.blockHeight > 0);
+    for (const tx of txList) {
+      if (tx.timestamp != null) continue;
+      if (!tx.blockHeight) {
+        tx.timestamp = Date.now();
+        continue;
+      }
+      let nearest = null;
+      for (const other of timed) {
+        if (!nearest || Math.abs(other.blockHeight - tx.blockHeight) < Math.abs(nearest.blockHeight - tx.blockHeight)) nearest = other;
+      }
+      tx.timestamp = nearest?.timestamp ?? null;
+    }
 
     txHistory.value = txList.map((tx) => {
       const net = tx.received - tx.spent;
@@ -747,6 +766,7 @@ export async function refreshHistory() {
       return {
         txHash: tx.txHash,
         blockHeight: tx.blockHeight,
+        timestamp: tx.timestamp, // ms, or null when unknown
         received: tx.received,
         spent: tx.spent,
         net,

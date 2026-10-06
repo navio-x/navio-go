@@ -32,3 +32,9 @@ export const HL_LOGOS = {
   USDC: "usdc.png", HYPE: "hype.jpg", NAV: "wnav-light.svg", BTC: "btc.png",
   ETH: "eth.png", SOL: "sol.png", ZEC: "zec.png", AVAX: "avax.png",
 };
+
+/** Display name per HL_TOKENS symbol. NAV is just "Navio": where it is held is a detail, not a different asset. */
+export const HL_NAMES = {
+  NAV: "Navio", USDC: "USD Coin", HYPE: "Hyperliquid", BTC: "Bitcoin",
+  ETH: "Ethereum", SOL: "Solana", ZEC: "Zcash", AVAX: "Avalanche",
+};

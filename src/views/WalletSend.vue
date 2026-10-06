@@ -1,172 +1,118 @@
 <template>
-  <div class="bg-gray-50 dark:bg-gh-900 p-5 pb-6 transition-colors duration-300">
+  <div class="bg-gray-50 dark:bg-gh-900 min-h-full flex flex-col">
+    <h1 class="text-xl font-bold text-gray-900 dark:text-white px-5 pt-5 pb-4">{{ $t('wallet.sendNav') }}</h1>
 
-    <h1 class="text-xl font-bold text-gray-900 dark:text-white mb-5">{{ $t('wallet.sendNav') }}</h1>
-
-    <div class="w-full max-w-md mx-auto flex flex-col gap-4">
-
-      <!-- Form Card -->
-      <div class="rounded-2xl border border-gray-200 dark:border-gh-700 bg-white dark:bg-gh-800 overflow-hidden">
-
-        <!-- Recipient -->
-        <div class="px-4 pt-4 pb-3">
-          <div class="flex items-center justify-between mb-1.5">
-            <label class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">
-              {{ $t('wallet.recipientAddress') }}
-            </label>
-            <button
-              @click="scanQR"
-              :disabled="isScanning"
-              class="flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-medium transition
-                     text-blue-600 dark:text-blue-400
-                     hover:bg-blue-50 dark:hover:bg-blue-900/20
-                     disabled:opacity-40 disabled:cursor-not-allowed"
-            >
-              <Loader2 v-if="isScanning" class="w-3.5 h-3.5 animate-spin" />
-              <QrCode v-else class="w-3.5 h-3.5" />
-              {{ $t('wallet.scanQR') }}
-            </button>
-          </div>
-          <textarea
-            rows="6"
-            v-model="recipient"
-            :placeholder="$t('wallet.navAddress')"
-            class="w-full rounded-xl px-3 py-2.5 text-sm resize-none outline-none transition-colors
-                   bg-gray-50 dark:bg-gh-700
-                   border border-gray-200 dark:border-gh-600
-                   text-gray-900 dark:text-white
-                   placeholder-gray-400 dark:placeholder-gray-500
-                   focus:border-blue-400 dark:focus:border-blue-500"
-          />
-        </div>
-
-        <div class="border-t border-gray-100 dark:border-gh-700 px-4 py-3">
-          <div class="flex items-center justify-between mb-1.5">
-            <label class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">
-              {{ $t('wallet.amount') }}
-            </label>
-            <button
-              v-if="availableBalance > 0"
-              @click="useAll"
-              class="flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-medium transition
-                     text-blue-600 dark:text-blue-400
-                     hover:bg-blue-50 dark:hover:bg-blue-900/20"
-            >
-              <span class="text-gray-400 dark:text-gray-500">{{ formattedBalance }} NAV</span>
-              <span class="mx-0.5 text-gray-300 dark:text-gray-600">·</span>
-              {{ $t('wallet.useAll') }}
-            </button>
-          </div>
-          <input
-            v-model.number="amount"
-            type="number"
-            min="0"
-            placeholder="0.00"
-            class="w-full rounded-xl px-3 py-2.5 text-sm outline-none transition-colors
-                   bg-gray-50 dark:bg-gh-700
-                   border border-gray-200 dark:border-gh-600
-                   text-gray-900 dark:text-white
-                   placeholder-gray-400 dark:placeholder-gray-500
-                   focus:border-blue-400 dark:focus:border-blue-500"
-          />
-          <p v-if="reservedNav > 0" class="mt-1.5 text-xs text-amber-600 dark:text-amber-400 leading-relaxed">
-            {{ $t('trade.reserved.warning', { amount: `${reservedNav} NAV` }) }}
-          </p>
-        </div>
-
-        <div class="border-t border-gray-100 dark:border-gh-700 px-4 py-3">
-          <div class="flex items-center gap-1.5 mb-1.5">
-            <label class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">
-              {{ $t('wallet.memoLabel') }}
-            </label>
-            <button
-              type="button"
-              @click="showMemoInfo = !showMemoInfo"
-              class="text-gray-400 dark:text-gray-500 transition-colors"
-              :class="showMemoInfo ? 'text-blue-500 dark:text-blue-400' : 'hover:text-blue-500 dark:hover:text-blue-400'"
-            >
-              <Info class="w-3.5 h-3.5" />
-            </button>
-          </div>
-
-          <Transition
-            enter-active-class="transition-all duration-200 ease-out"
-            enter-from-class="opacity-0 -translate-y-1"
-            enter-to-class="opacity-100 translate-y-0"
-            leave-active-class="transition-all duration-150 ease-in"
-            leave-from-class="opacity-100 translate-y-0"
-            leave-to-class="opacity-0 -translate-y-1"
-          >
-            <div
-              v-if="showMemoInfo"
-              class="mb-2.5 px-3 py-2.5 rounded-xl bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800/30 flex items-start gap-2"
-            >
-              <Info class="w-3.5 h-3.5 text-blue-500 dark:text-blue-400 mt-0.5 shrink-0" />
-              <p class="text-xs text-blue-700 dark:text-blue-300 leading-relaxed">{{ $t('wallet.memoInfo') }}</p>
-            </div>
-          </Transition>
-
-          <input
-            v-model="memo"
-            type="text"
-            :placeholder="$t('wallet.memoPlaceholder')"
-            class="w-full rounded-xl px-3 py-2.5 text-sm outline-none transition-colors
-                   bg-gray-50 dark:bg-gh-700
-                   border border-gray-200 dark:border-gh-600
-                   text-gray-900 dark:text-white
-                   placeholder-gray-400 dark:placeholder-gray-500
-                   focus:border-blue-400 dark:focus:border-blue-500"
-          />
-        </div>
-
-        <!-- Subtract fee toggle -->
-        <div class="border-t border-gray-100 dark:border-gh-700 px-4 py-3 flex items-center justify-between gap-3">
-          <div class="min-w-0">
-            <p class="text-sm font-medium text-gray-700 dark:text-gray-300 truncate">
-              {{ $t('wallet.subtractFeeFromAmount') }}
-            </p>
-            <p class="text-xs text-gray-400 dark:text-gray-500 mt-0.5 leading-snug">
-              {{ $t('wallet.subtractFeeFromAmountDesc') }}
-            </p>
-          </div>
+    <div class="w-full max-w-md mx-auto px-5 pb-6 flex flex-col gap-4">
+      <!-- Recipient -->
+      <div class="rounded-2xl bg-white dark:bg-gh-800 border border-gray-200 dark:border-gh-700 p-3.5">
+        <div class="flex items-center justify-between">
+          <label for="send-recipient" class="text-xs text-gray-400 dark:text-gray-500">{{ $t('tx.to') }}</label>
           <button
-            @click="subtractFeeFromAmount = !subtractFeeFromAmount"
-            :class="subtractFeeFromAmount
-              ? 'bg-blue-600'
-              : 'bg-gray-200 dark:bg-gh-600'"
-            class="relative shrink-0 w-11 h-6 rounded-full transition-colors duration-200 focus:outline-none"
-            role="switch"
-            :aria-checked="subtractFeeFromAmount"
+            @click="scanQR"
+            :disabled="isScanning"
+            class="flex items-center gap-1 py-0.5 text-xs font-semibold text-blue-600 dark:text-blue-400 disabled:opacity-40"
           >
-            <span
-              :class="subtractFeeFromAmount ? 'translate-x-5' : 'translate-x-0'"
-              class="absolute top-1 left-1 w-4 h-4 bg-white rounded-full shadow transition-transform duration-200"
-            />
+            <Loader2 v-if="isScanning" class="w-3.5 h-3.5 animate-spin" />
+            <QrCode v-else class="w-3.5 h-3.5" />
+            {{ $t('wallet.scanQR') }}
           </button>
         </div>
-
-        <div class="border-t border-gray-100 dark:border-gh-700 px-4 py-4">
-          <button
-            :disabled="!canSend"
-            @click="openConfirm"
-            class="w-full py-3 rounded-xl text-sm font-semibold transition-colors
-                   bg-blue-600 hover:bg-blue-700 text-white
-                   disabled:opacity-40 disabled:cursor-not-allowed"
-          >
-            {{ $t('wallet.send') }}
-          </button>
-        </div>
-
+        <textarea
+          id="send-recipient"
+          rows="3"
+          v-model.trim="recipient"
+          :placeholder="$t('wallet.navAddress')"
+          autocomplete="off"
+          spellcheck="false"
+          class="mt-1.5 w-full bg-transparent text-sm font-mono resize-none outline-none
+                 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
+        />
       </div>
-    </div>
 
-    <!-- Loading Overlay -->
-    <div
-      v-if="isLoading"
-      class="fixed inset-0 flex flex-col items-center justify-center bg-black/60 backdrop-blur-sm z-50"
-    >
-      <Loader2 class="w-12 h-12 text-blue-400 animate-spin mb-4" />
-      <p class="text-white text-base font-semibold">{{ $t('wallet.sendingTransaction') }}</p>
+      <AmountField
+        v-model="amountInput"
+        :label="$t('wallet.amount')"
+        symbol="NAV"
+        :logo="HL_LOGOS.NAV"
+        :balance="availableBalance"
+        :fiat="amountFiat"
+        @max="useAll"
+      />
+
+      <p v-if="reservedNav > 0" class="text-xs text-amber-600 dark:text-amber-400 leading-relaxed">
+        {{ $t('trade.reserved.warning', { amount: `${reservedNav} NAV` }) }}
+      </p>
+
+      <!-- More NAV exists, just not in the wallet: say where and offer the way -->
+      <div v-if="insufficient" class="rounded-xl bg-amber-50 dark:bg-amber-900/20 px-3 py-2.5 space-y-2">
+        <p class="text-xs text-amber-800 dark:text-amber-300 leading-snug">
+          {{ onExchange > 0
+            ? $t('send.insufficientWithExchange', { available: formatAmount(availableBalance, 8), exchange: formatAmount(onExchange, 8) })
+            : $t('send.insufficient', { available: formatAmount(availableBalance, 8) }) }}
+        </p>
+        <button
+          v-if="onExchange > 0"
+          @click="router.push('/asset/NAV')"
+          class="w-full py-2 rounded-lg text-xs font-semibold border border-amber-200 dark:border-amber-800/50 text-amber-800 dark:text-amber-300"
+        >
+          {{ $t('send.bringBack') }}
+        </button>
+      </div>
+
+      <!-- Optional extras, out of the way -->
+      <div>
+        <button
+          type="button"
+          @click="showOptions = !showOptions"
+          :aria-expanded="showOptions"
+          class="flex items-center gap-1 py-1 text-xs font-medium text-gray-500 dark:text-gray-400"
+        >
+          <ChevronDown class="w-3.5 h-3.5 transition-transform" :class="{ 'rotate-180': showOptions }" />
+          {{ $t('send.moreOptions') }}
+        </button>
+
+        <div v-if="showOptions" class="mt-2 rounded-2xl border border-gray-200 dark:border-gh-700 bg-white dark:bg-gh-800 overflow-hidden">
+          <div class="px-4 py-3">
+            <label for="send-memo" class="text-xs text-gray-400 dark:text-gray-500">{{ $t('wallet.memoLabel') }}</label>
+            <input
+              id="send-memo"
+              v-model="memo"
+              type="text"
+              :placeholder="$t('wallet.memoPlaceholder')"
+              class="mt-1 w-full bg-transparent text-sm outline-none text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
+            />
+            <p class="mt-1 text-xs text-gray-400 dark:text-gray-500 leading-snug">{{ $t('wallet.memoInfo') }}</p>
+          </div>
+          <div class="border-t border-gray-100 dark:border-gh-700 px-4 py-3 flex items-center justify-between gap-3">
+            <div class="min-w-0">
+              <p class="text-sm font-medium text-gray-700 dark:text-gray-300">{{ $t('wallet.subtractFeeFromAmount') }}</p>
+              <p class="text-xs text-gray-400 dark:text-gray-500 mt-0.5 leading-snug">{{ $t('wallet.subtractFeeFromAmountDesc') }}</p>
+            </div>
+            <button
+              @click="subtractFeeFromAmount = !subtractFeeFromAmount"
+              :class="subtractFeeFromAmount ? 'bg-blue-600' : 'bg-gray-200 dark:bg-gh-600'"
+              class="relative shrink-0 w-11 h-6 rounded-full transition-colors duration-200 focus:outline-none"
+              role="switch"
+              :aria-checked="subtractFeeFromAmount"
+            >
+              <span
+                :class="subtractFeeFromAmount ? 'translate-x-5' : 'translate-x-0'"
+                class="absolute top-1 left-1 w-4 h-4 bg-white rounded-full shadow transition-transform duration-200"
+              />
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <button
+        :disabled="!canSend"
+        @click="openConfirm"
+        class="w-full py-3.5 rounded-xl text-sm font-semibold transition-colors
+               bg-blue-600 hover:bg-blue-700 text-white
+               disabled:opacity-40 disabled:cursor-not-allowed"
+      >
+        {{ amount > 0 ? $t('tx.review') : $t('tx.enterAmount') }}
+      </button>
     </div>
 
     <!-- POS payment request review (scanned navio: URI) -->
@@ -278,90 +224,37 @@
       </div>
     </div>
 
-    <!-- Confirm Modal -->
-    <div
-      v-if="showConfirm"
-      class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-6"
-    >
-      <div class="bg-white dark:bg-gh-900 border border-gray-100 dark:border-gh-800 rounded-2xl p-6 w-full max-w-sm space-y-4 shadow-2xl">
-        <h2 class="text-base font-bold text-gray-900 dark:text-white">{{ $t('wallet.confirmTransaction') }}</h2>
-
-        <div class="space-y-2">
-          <div class="rounded-xl bg-gray-50 dark:bg-gh-800 px-3 py-2.5">
-            <p class="text-xs text-gray-400 dark:text-gray-500 mb-0.5">{{ $t('wallet.recipient') }}</p>
-            <p class="text-xs font-mono text-gray-800 dark:text-gray-200 break-all">{{ recipient }}</p>
-          </div>
-          <div class="rounded-xl bg-gray-50 dark:bg-gh-800 px-3 py-2.5">
-            <p class="text-xs text-gray-400 dark:text-gray-500 mb-0.5">{{ $t('wallet.amount') }}</p>
-            <p class="text-sm font-semibold text-gray-900 dark:text-white">{{ amount }} NAV</p>
-          </div>
-        </div>
-
-        <div class="flex gap-2 pt-1">
-          <button
-            @click="showConfirm = false"
-            class="flex-1 py-2.5 rounded-xl text-sm font-medium transition-colors
-                   bg-gray-100 hover:bg-gray-200 text-gray-700
-                   dark:bg-gh-800 dark:hover:bg-gh-700 dark:text-gray-300"
-          >
-            {{ $t('common.cancel') }}
-          </button>
-          <button
-            @click="sendTransaction"
-            class="flex-1 py-2.5 rounded-xl text-sm font-semibold transition-colors bg-blue-600 hover:bg-blue-700 text-white"
-          >
-            {{ $t('common.confirm') }}
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Success / Error Modal -->
-    <div
-      v-if="showResult"
-      class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-6"
-    >
-      <div class="bg-white dark:bg-gh-900 border border-gray-100 dark:border-gh-800 rounded-2xl p-6 w-full max-w-sm space-y-4 shadow-2xl text-center">
-
-        <div
-          class="flex items-center justify-center w-14 h-14 rounded-full mx-auto"
-          :class="resultSuccess ? 'bg-green-100 dark:bg-green-900/30' : 'bg-red-100 dark:bg-red-900/30'"
-        >
-          <Check v-if="resultSuccess" class="w-7 h-7 text-green-600 dark:text-green-400" />
-          <svg v-else xmlns="http://www.w3.org/2000/svg" class="w-7 h-7 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </div>
-
-        <div class="space-y-1">
-          <h2
-            class="text-base font-bold"
-            :class="resultSuccess ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'"
-          >
-            {{ resultSuccess ? $t('wallet.transactionSuccessful') : $t('wallet.transactionFailed') }}
-          </h2>
-          <p class="text-sm text-gray-500 dark:text-gray-400 break-all max-h-28 overflow-y-auto">
-            {{ resultSuccess ? $t('wallet.sentNavTo', { amount, address: recipient }) : errorMessage }}
-          </p>
-        </div>
-
-        <button
-          @click="closeResult"
-          class="w-full py-2.5 rounded-xl text-sm font-semibold bg-blue-600 hover:bg-blue-700 text-white transition-colors"
-        >
-          {{ $t('common.close') }}
-        </button>
-      </div>
-    </div>
-
+    <!-- Review -> sending -> outcome, in the one sheet every transaction uses -->
+    <ReviewSheet
+      :open="showConfirm || isLoading || showResult"
+      :title="$t('wallet.confirmTransaction')"
+      :from="{ amount: formatAmount(amount, 8), symbol: 'NAV', logo: HL_LOGOS.NAV }"
+      :destination="recipient"
+      :rows="reviewRows"
+      :notices="[{ tone: 'warn', text: $t('send.irreversible') }]"
+      :confirm-label="$t('send.confirm')"
+      :busy="isLoading"
+      :busy-label="$t('wallet.sendingTransaction')"
+      :result="sendResult"
+      @confirm="sendTransaction"
+      @close="closeSheet"
+    />
   </div>
 </template>
 
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from "vue";
+import { useRouter } from "vue-router";
+import { useI18n } from "vue-i18n";
 import { getNavioClient, balance } from "@/stores/navio";
 import { BarcodeScanner, BarcodeFormat } from "@capacitor-mlkit/barcode-scanning";
-import { QrCode, Loader2, Check, Info, Clock, ShieldAlert } from "lucide-vue-next";
+import { QrCode, Loader2, Clock, ShieldAlert, ChevronDown } from "lucide-vue-next";
+import ReviewSheet from "@/components/tx/ReviewSheet.vue";
+import AmountField from "@/components/tx/AmountField.vue";
+import { usePortfolio } from "@/composables/usePortfolio";
+import { HL_LOGOS } from "@/lib/hyperliquid/config";
+import { formatAmount, formatFiatFromUsd } from "@/lib/displayFormat";
+import { toDecimalString } from "@/lib/intent/quote";
 import { settings } from "@/stores/settings";
 import { getPriceIn } from "@/stores/navPrice";
 // Coin-locking safety net for the trade module (see stores/trade.js's Phase
@@ -377,10 +270,19 @@ import { getReservedAmount, getSendableUtxos, loadReservations } from "@/stores/
 // signing/storage code into the main bundle — only fetched the moment a
 // navio: QR is actually scanned/approved.
 
+const router = useRouter();
+const { t } = useI18n();
+const portfolio = usePortfolio();
+
 const recipient = ref("");
-const amount = ref(null);
+// The field holds text; `amount` is the number it parses to (null until valid).
+const amountInput = ref("");
+const amount = computed(() => {
+  const n = Number(amountInput.value);
+  return Number.isFinite(n) && n > 0 ? n : null;
+});
 const memo = ref("");
-const showMemoInfo = ref(false);
+const showOptions = ref(false);
 
 const subtractFeeFromAmount = ref(false)
 
@@ -457,7 +359,7 @@ async function onPosApprove() {
   }
 
   recipient.value = parsed.address;
-  amount.value = Number(parsed.amount);
+  amountInput.value = posDisplayAmount(parsed.amount);
   memo.value = "";
   posReview.value = null;
   openConfirm();
@@ -471,13 +373,46 @@ const reservedNav = computed(() => Number(getReservedAmount(null)) / 1e8)
 
 const availableBalance = computed(() => Math.max(0, (Number(balance.value) || 0) - reservedNav.value))
 
-const formattedBalance = computed(() =>
-  availableBalance.value.toLocaleString(undefined, { maximumFractionDigits: 8 })
-)
+// Sending everything leaves nothing to pay the fee with, so "Max" takes the
+// fee out of the amount; the review screen says so.
+const useAll = () => {
+  amountInput.value = toDecimalString(availableBalance.value, 8)
+  subtractFeeFromAmount.value = true
+}
 
-const useAll = () => { amount.value = availableBalance.value }
+// Only the wallet's own NAV can be sent directly; NAV held on the exchange
+// has to come back first (see NavAsset.vue's "Bring back to wallet").
+const insufficient = computed(() => amount.value > availableBalance.value);
+const onExchange = computed(() => portfolio.nav.value.exchangeAvailable);
 
-const canSend = computed(() => recipient.value && amount.value > 0);
+const canSend = computed(() => recipient.value && amount.value > 0 && !insufficient.value);
+
+const amountFiat = computed(() =>
+  settings.showFiatValue && amount.value > 0 && portfolio.navUsd.value != null
+    ? formatFiatFromUsd(amount.value * portfolio.navUsd.value)
+    : null
+);
+
+const reviewRows = computed(() => {
+  const rows = [{
+    label: t('wallet.networkFee'),
+    value: subtractFeeFromAmount.value ? t('send.feeFromAmount') : t('send.feeOnTop'),
+  }];
+  if (memo.value) rows.push({ label: t('wallet.memoLabel'), value: memo.value });
+  return rows;
+});
+
+const sendResult = computed(() => {
+  if (!showResult.value) return null;
+  return resultSuccess.value
+    ? { success: true, title: t('wallet.transactionSuccessful'), message: t('wallet.sentNavTo', { amount: formatAmount(amount.value, 8), address: recipient.value }) }
+    : { success: false, title: t('wallet.transactionFailed'), message: errorMessage.value };
+});
+
+function closeSheet() {
+  if (showResult.value) closeResult();
+  else showConfirm.value = false;
+}
 
 const openConfirm = () => { showConfirm.value = true; };
 
@@ -541,12 +476,14 @@ const sendTransaction = () => {
     .finally(() => { isLoading.value = false; });
 };
 
+// A failed send keeps the form, so the user can fix it and try again.
 const closeResult = () => {
   showResult.value = false;
+  if (!resultSuccess.value) return;
   recipient.value = "";
-  amount.value = null;
+  amountInput.value = "";
   memo.value = "";
-  showMemoInfo.value = false;
+  showOptions.value = false;
   subtractFeeFromAmount.value = false;
 };
 </script>

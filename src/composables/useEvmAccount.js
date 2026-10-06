@@ -1,3 +1,4 @@
+import { watch } from "vue";
 import { privateKeyToAccount } from "viem/accounts";
 import { getNavioClient } from "@/stores/navio";
 import { setEvmAddress } from "@/stores/evm";
@@ -67,3 +68,15 @@ export function getEvmAccount() {
 export function lockEvmAccount() {
   _privateKeyHex = null;
 }
+
+// Cüzdan kapatıldığında (çıkış / cüzdan değiştirme) anahtar da adres de
+// düşürülür — aksi halde bir sonraki açılan cüzdan, öncekinin EVM hesabını
+// görür ve onunla imzalar.
+watch(
+  () => getNavioClient(),
+  (client) => {
+    if (client) return;
+    lockEvmAccount();
+    setEvmAddress("");
+  },
+);

@@ -63,3 +63,13 @@ export function fetchUserFills(user) {
 export function fetchUserAbstraction(user) {
   return postInfo({ type: "userAbstraction", user });
 }
+
+/** { userSpotCrossRate, userSpotAddRate, … } — this user's fee rates as decimal strings (taker = "cross"). */
+export function fetchUserFees(user) {
+  return postInfo({ type: "userFees", user });
+}
+
+/** [{ time, hash, delta: { type, … } }] — deposits, withdrawals and transfers (everything that isn't a trade), oldest first. */
+export function fetchUserLedger(user, startTime = 0) {
+  return postInfo({ type: "userNonFundingLedgerUpdates", user, startTime });
+}

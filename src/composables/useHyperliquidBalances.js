@@ -18,6 +18,25 @@ export function useHyperliquidBalances(address) {
   const balances = ref(HL_TOKENS.map((t) => zeroRow(t.symbol)));
   const loading = ref(false);
   const error = ref(null);
+  // True once the first load for the current address has settled (either
+  // way) — lets a host hold back totals until they include these balances.
+  const loaded = ref(false);
+  // True while `balances` still holds the last values saved for this
+  // address rather than a fresh answer — shown at once so a screen never
+  // opens empty, then replaced by the first load.
+  const fromCache = ref(false);
+
+  const cacheKey = (addr) => `hlBalances:${addr.toLowerCase()}`;
+
+  // Storage can be unavailable (private mode), so every access is guarded.
+  function seedFromCache(addr) {
+    let cached = null;
+    try {
+      cached = addr ? JSON.parse(localStorage.getItem(cacheKey(addr)) || "null") : null;
+    } catch {}
+    fromCache.value = Array.isArray(cached) && cached.length > 0;
+    balances.value = fromCache.value ? cached : HL_TOKENS.map((t) => zeroRow(t.symbol));
+  }
 
   let pollTimer = null;
   let backgrounded = false;
@@ -68,6 +87,10 @@ export function useHyperliquidBalances(address) {
         };
       });
       error.value = null;
+      if (address.value === addr) {
+        fromCache.value = false;
+        try { localStorage.setItem(cacheKey(addr), JSON.stringify(balances.value)); } catch {}
+      }
     } catch (e) {
       console.error("[hyperliquid] balance refresh failed:", e);
       error.value = e?.message || "unknown";
@@ -75,6 +98,7 @@ export function useHyperliquidBalances(address) {
     } finally {
       loading.value = false;
       inFlight = false;
+      if (address.value === addr) loaded.value = true;
     }
   }
 
@@ -94,9 +118,13 @@ export function useHyperliquidBalances(address) {
   }
 
   watch(address, (addr) => {
+    loaded.value = false;
+    seedFromCache(addr);
     if (addr) startPolling();
     else stopPolling();
   });
+
+  if (address.value) seedFromCache(address.value);
 
   onMounted(async () => {
     if (address.value) startPolling();
@@ -137,5 +165,5 @@ export function useHyperliquidBalances(address) {
     await load();
   }
 
-  return { balances, loading, error, refresh };
+  return { balances, loading, error, loaded, fromCache, refresh };
 }

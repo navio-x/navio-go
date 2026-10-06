@@ -34,7 +34,7 @@
       </div>
 
       <!-- Actions -->
-      <div class="grid gap-2" :class="asset.marketPair ? 'grid-cols-3' : 'grid-cols-2'">
+      <div class="grid gap-2 grid-cols-3">
         <button
           v-for="m in ['deposit', 'withdraw']"
           :key="m"
@@ -47,11 +47,10 @@
           {{ $t('hlAsset.' + m) }}
         </button>
         <button
-          v-if="asset.marketPair"
-          @click="router.push(`/market/hl/${asset.marketPair}`)"
+          @click="router.push(`/swap?from=${symbol}`)"
           class="py-2.5 rounded-xl text-sm font-semibold bg-white dark:bg-gh-800 border border-gray-200 dark:border-gh-700 text-gray-700 dark:text-gray-300"
         >
-          {{ $t('hlAsset.trade') }}
+          {{ $t('swap.title') }}
         </button>
       </div>
 
@@ -84,17 +83,17 @@
           <p class="text-xs text-yellow-800 dark:text-yellow-300 leading-snug">{{ $t('hlAsset.depositWarning', { symbol }) }}</p>
         </div>
 
-        <!-- Wrapped NAV: native NAV can't be sent here — point at the bridge -->
+        <!-- NAV from the Navio network can't be sent here — point at the NAV page -->
         <div v-if="asset.viaBridge" class="w-full rounded-xl bg-red-50 dark:bg-red-900/20 px-3 py-2.5 space-y-2">
           <div class="flex gap-2">
             <AlertTriangle class="w-4 h-4 shrink-0 mt-0.5 text-red-600 dark:text-red-400" />
             <p class="text-xs text-red-800 dark:text-red-300 leading-snug">{{ $t('hlAsset.navBridgeWarning') }}</p>
           </div>
           <button
-            @click="router.push('/bridge/deposit')"
+            @click="router.push('/asset/NAV')"
             class="w-full py-2 rounded-lg text-xs font-semibold border border-red-200 dark:border-red-800/50 text-red-700 dark:text-red-300 hover:bg-red-100 dark:hover:bg-red-900/30"
           >
-            {{ $t('market.depositToBridge') }}
+            {{ $t('asset.openNav') }}
           </button>
         </div>
       </div>
@@ -253,7 +252,7 @@ import { getSpotMeta, resolveTokens } from '@/lib/hyperliquid/meta'
 // Navio bridge on its own account page (HlAccount.vue), which links here —
 // `viaBridge` adds the reminder to the deposit panel.
 const ASSETS = {
-  NAV: { name: 'Wrapped Navio', logo: 'wnav-light.svg', routes: ['hypercore'], marketPair: 'NAV-USDC', viaBridge: true },
+  NAV: { name: 'Navio', logo: 'wnav-light.svg', routes: ['hypercore'], marketPair: 'NAV-USDC', viaBridge: true },
   USDC: { name: 'USD Coin', logo: 'usdc.png', routes: ['hypercore', 'arbitrum'], marketPair: null },
   HYPE: { name: 'Hyperliquid', logo: 'hype.jpg', routes: ['hypercore'], marketPair: 'HYPE-USDC' },
   BTC: { name: 'Bitcoin', logo: 'btc.png', routes: ['hypercore'], marketPair: 'BTC-USDC' },

@@ -105,7 +105,7 @@ watch(() => settings.merchantMode, (enabled) => {
 
 // DEX modu Settings'ten kapatılırsa ve kullanıcı hâlâ /dex'teyse aynı anda dışarı çıkar.
 watch(() => settings.dexMode, (enabled) => {
-  if (!enabled && route.path.startsWith('/dex')) {
+  if (!enabled && (route.path.startsWith('/dex') || route.path.startsWith('/swap'))) {
     router.replace('/wallet/balance')
   }
 })

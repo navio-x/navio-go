@@ -1185,13 +1185,14 @@
     "addAsset": "Add asset",
     "addAssetTitle": "Assets",
     "hasBalance": "Has balance",
-    "switchWallet": "Switch wallet"
+    "switchWallet": "Switch wallet",
+    "totalBalance": "Total balance"
   },
   "hlAsset": {
     "balanceOnHyperliquid": "Balance on Hyperliquid",
     "inOrders": "In orders",
-    "deposit": "Deposit",
-    "withdraw": "Withdraw",
+    "deposit": "Receive",
+    "withdraw": "Send",
     "trade": "Trade",
     "depositWarning": "This is your Hyperliquid account address. Only send {symbol} to it on Hyperliquid (HyperCore) — funds sent from another network may be lost.",
     "network": "Network",
@@ -1209,7 +1210,7 @@
         "desc": "Hyperliquid bridge, 1 USDC fee, a few minutes"
       }
     },
-    "confirmTitle": "Confirm withdrawal",
+    "confirmTitle": "Review",
     "confirm": "Send",
     "confirmWarning": "Transfers can't be reversed. Double-check the address and network.",
     "sent": "Sent. The recipient's Hyperliquid balance updates within seconds.",
@@ -1223,6 +1224,233 @@
       "wallet_locked": "Wallet is locked — unlock it and try again.",
       "rejected": "Hyperliquid rejected the transfer."
     },
-    "navBridgeWarning": "NAV on the Navio network can't be sent to this address — it would not arrive. To bring NAV over from your wallet, deposit it to the bridge instead."
+    "navBridgeWarning": "NAV sent from a Navio wallet to this address would not arrive. To use the NAV in your wallet here, just swap it — or move it from the NAV page."
+  },
+  "tx": {
+    "available": "Available",
+    "max": "Max",
+    "youSend": "You send",
+    "youReceive": "You receive",
+    "to": "To",
+    "details": "Details",
+    "sending": "Sending…",
+    "review": "Review",
+    "enterAmount": "Enter an amount",
+    "amount": "Amount"
+  },
+  "swap": {
+    "title": "Swap",
+    "advanced": "Advanced trading",
+    "from": "From",
+    "to": "To",
+    "flip": "Switch direction",
+    "toWallet": "Send to my wallet",
+    "toWalletDesc": "The NAV you buy goes straight to your private wallet. Turn off to keep it on the exchange for faster swaps.",
+    "reviewTitle": "Review swap",
+    "route": "Route details",
+    "confirm": "Confirm swap",
+    "rate": "Rate",
+    "fee": "Exchange fee",
+    "minReceived": "Minimum received",
+    "maxSpent": "You pay at most",
+    "arrives": "Arrives",
+    "arrivesMinutes": "In about {minutes} min",
+    "arrivesWallet": "A few minutes",
+    "arrivesNow": "Right away",
+    "setup": "One-time setup",
+    "notice": {
+      "leavesWallet": "{amount} NAV leaves your private wallet for the exchange (Hyperliquid), where balances and trades are public.",
+      "setup": "First swap on this wallet: {amount} NAV sets up your exchange account once. You keep what it buys: {usdc} USDC and {hype} HYPE, used for network fees.",
+      "takesTime": "Moving NAV to the exchange takes about {minutes} min. The swap then runs on its own while Navio Go is open, and never for less than the minimum shown.",
+      "priceImpact": "This swap moves the price by about {percent}%. A smaller amount gets a better rate.",
+      "kept": {
+        "no_gas": "The NAV you buy will stay on the exchange: there is no HYPE to pay the fee for moving it to your wallet.",
+        "bridge_paused": "The NAV you buy will stay on the exchange: transfers to the wallet are paused right now.",
+        "below_minimum": "The NAV you buy will stay on the exchange: less than 1 NAV can't be moved to the wallet.",
+        "bridge_unavailable": "The NAV you buy will stay on the exchange: moving it to the wallet is only possible on mainnet.",
+        "no_destination": "The NAV you buy will stay on the exchange."
+      }
+    },
+    "routeStep": {
+      "faucet": "Buy the setup package (USDC + HYPE) with {amount} NAV",
+      "register": "Register this account with the Navio–Hyperliquid bridge (once)",
+      "deposit": "Move {amount} NAV from the wallet to Hyperliquid through the bridge",
+      "sell": "Sell {base} for USDC on Hyperliquid, at {price} or better",
+      "buy": "Buy {base} with USDC on Hyperliquid, at {price} or better",
+      "burn": "Move the NAV to your wallet through the bridge (destination encrypted)",
+      "roundedUp": "The bridge moves at least 1 NAV, so a little more than needed goes to the exchange and stays yours there.",
+      "slippage": "Price tolerance: {percent}% (change it in Settings)"
+    },
+    "errors": {
+      "busy": "Another operation is still in progress. Let it finish, or stop it, before starting a new one.",
+      "network_error": "Couldn't load prices — check your connection.",
+      "invalid_amount": "Enter a valid amount.",
+      "same_asset": "Choose two different assets.",
+      "no_market": "This pair can't be swapped here.",
+      "no_liquidity": "There are no offers for this pair right now.",
+      "insufficient_liquidity": "This amount is larger than the market can take right now. Try a smaller amount.",
+      "below_minimum": "Too small — the minimum is about 10 USDC worth (1 NAV when moving NAV).",
+      "insufficient_balance": "Not enough {symbol}. Available: {available}.",
+      "bridge_paused": "Moving NAV to the exchange is paused right now. NAV already there can still be swapped: {onExchange} NAV.",
+      "bridge_unavailable": "Moving NAV between the wallet and the exchange is only possible on mainnet.",
+      "no_gas": "Your exchange account has no HYPE for the one-time registration fee, and the setup package was already used. Swap a little USDC for HYPE first.",
+      "setup_unavailable": "The one-time account setup isn't available right now. Try again later.",
+      "wallet_locked": "Wallet is locked — unlock it to continue."
+    }
+  },
+  "ops": {
+    "title": {
+      "swap": "Swap {from} → {to}",
+      "toExchange": "Moving NAV to the exchange",
+      "toWallet": "Bringing NAV back to your wallet"
+    },
+    "status": {
+      "running": "In progress",
+      "attention": "Needs you",
+      "done": "Done",
+      "cancelled": "Stopped"
+    },
+    "stage": {
+      "setup": "One-time setup",
+      "prepare": "Preparing NAV",
+      "swap": "Swapping {from} → {to}",
+      "deliver": "Sending NAV to your wallet"
+    },
+    "hint": {
+      "waitCredit": "Waiting for the network — usually about {minutes} min. You can leave this screen; it continues while Navio Go is open. Your funds are safe.",
+      "waitAccount": "Setting up your exchange account — usually a few minutes. You can leave this screen.",
+      "working": "Working… this takes a few seconds."
+    },
+    "retry": "Try again",
+    "stop": "Stop",
+    "dismiss": "OK",
+    "requote": {
+      "get": "Swap at current price",
+      "keepWaiting": "Try the same price again",
+      "offer": "At the current price you would receive at least {amount} {symbol}.",
+      "accept": "Swap"
+    },
+    "interrupted": {
+      "wentThrough": "It went through",
+      "sendAgain": "Send again"
+    },
+    "outcome": {
+      "swap": "You received {amount} {symbol}.",
+      "partial": "Only part of the amount could be swapped at your price; the rest is still yours.",
+      "toWallet": "NAV arrives in your wallet in a few minutes.",
+      "toExchange": "Your NAV is now on the exchange.",
+      "keptOnExchange": "It is on the exchange — bring it to your wallet any time from the NAV page.",
+      "cancelled": "Stopped. Nothing is lost: any NAV already moved is on the exchange, shown on the NAV page."
+    },
+    "errors": {
+      "price_moved": "The price moved, and the swap would have paid less than your minimum, so nothing was swapped.",
+      "interrupted": "The app closed while a step was being sent, so it's unclear whether it went out. Check your balance and history before sending again.",
+      "wallet_locked": "Wallet is locked — unlock it, then try again.",
+      "network_error": "Network error — check your connection and try again.",
+      "http_error": "The exchange didn't respond — try again in a moment.",
+      "rate_limited": "Too many requests — try again in a moment.",
+      "bridge_paused": "Transfers between the wallet and the exchange are paused right now. Try again later.",
+      "bridge_unavailable": "Moving NAV between the wallet and the exchange is only possible on mainnet.",
+      "no_hype_for_gas": "There is no HYPE to pay the network fee. Swap a little USDC for HYPE, then try again.",
+      "hype_move_timeout": "HYPE for the network fee is on its way but hasn't arrived yet. Wait a minute and try again.",
+      "below_minimum": "The amount is below the 1 NAV minimum for moving NAV.",
+      "insufficient_balance": "The balance for this step isn't there (it may have been used elsewhere).",
+      "insufficient_wallet": "Your wallet no longer has enough NAV for this.",
+      "send_failed": "The wallet couldn't send this transaction.",
+      "setup_unavailable": "The one-time account setup isn't available right now. Try again later.",
+      "setup_price_changed": "The setup price changed since you reviewed it, so nothing was sent.",
+      "SenderNotActivated": "Your exchange account isn't ready yet.",
+      "BurnerNotActivated": "Your exchange account isn't registered for moving NAV yet.",
+      "order_too_small": "The amount is below the exchange's minimum (about 10 USDC).",
+      "exchange_rejected": "The exchange rejected this step.",
+      "no_market": "This market isn't available right now.",
+      "user_rejected": "The transaction was cancelled.",
+      "unknown": "Something went wrong with this step."
+    }
+  },
+  "asset": {
+    "total": "Total",
+    "advanced": "Advanced",
+    "openNav": "Open NAV",
+    "moveDesc": "Swap moves NAV for you when needed. Move it yourself only if you want it in a specific place.",
+    "move": {
+      "toExchange": "Move to exchange",
+      "toWallet": "Bring back to wallet",
+      "from": "From",
+      "to": "To",
+      "walletAddress": "Your wallet address",
+      "privateAgain": "Back in your wallet, this NAV is private again."
+    },
+    "where": {
+      "wallet": "In your wallet",
+      "walletHint": "Private. Ready to send.",
+      "exchange": "On the exchange",
+      "exchangeHint": "Hyperliquid. Public. Ready to swap.",
+      "exchangeHintOrders": "Hyperliquid. Public. {amount} in open orders.",
+      "moving": "On the way",
+      "movingHint": "Moving between the two."
+    },
+    "links": {
+      "trade": "Order book",
+      "tradeHint": "Limit orders and the live NAV/USDC market",
+      "hlTransfer": "Hyperliquid transfer",
+      "hlTransferHint": "Send to or receive from another Hyperliquid account",
+      "depositAddress": "Bridge deposit address",
+      "depositAddressHint": "Fund the exchange from another Navio wallet",
+      "manualWithdraw": "Manual bridge withdrawal",
+      "manualWithdrawHint": "Withdraw to any Navio address, step by step"
+    },
+    "explain": "NAV on the exchange is NAV held for you by the Navio–Hyperliquid bridge, one to one, as a token called Wrapped Navio. The bridge is custodial, and unlike NAV in your wallet, balances and trades on Hyperliquid are public."
+  },
+  "send": {
+    "insufficient": "Not enough NAV in your wallet. Available: {available} NAV.",
+    "insufficientWithExchange": "Your wallet has {available} NAV. Another {exchange} NAV is on the exchange and has to come back to the wallet before it can be sent (a few minutes).",
+    "bringBack": "Bring NAV back to wallet",
+    "moreOptions": "More options",
+    "irreversible": "Sent NAV can't be taken back. Check the address.",
+    "confirm": "Send",
+    "feeFromAmount": "Taken from the amount",
+    "feeOnTop": "Added on top (small)"
+  },
+  "receive": {
+    "nav": "NAV",
+    "other": "USDC & others",
+    "navHint": "Your Navio address. Share it to receive NAV.",
+    "otherWarning": "This is your Hyperliquid account address. Only send to it from another Hyperliquid account — funds sent from another network, or NAV sent from a Navio wallet, may be lost."
+  },
+  "history": {
+    "filters": {
+      "all": "All",
+      "navio": "Navio",
+      "hl": "Hyperliquid",
+      "bsc": "BNB Chain"
+    },
+    "today": "Today",
+    "yesterday": "Yesterday",
+    "unknownDate": "Date unknown",
+    "bought": "Bought {symbol}",
+    "sold": "Sold {symbol}",
+    "swapped": "Swapped {from} → {to}",
+    "fromWallet": "From wallet (bridge)",
+    "toWallet": "To wallet (bridge)",
+    "gasTopUp": "Network fee top-up",
+    "arbDeposit": "Deposit from Arbitrum",
+    "arbWithdraw": "Withdrawal to Arbitrum",
+    "other": {
+      "accountClassTransfer": "Spot ↔ Perp transfer",
+      "spotGenesis": "Token distribution",
+      "vaultDeposit": "Vault deposit",
+      "vaultWithdraw": "Vault withdrawal",
+      "cStakingTransfer": "Staking transfer",
+      "borrowLend": "Borrow / lend"
+    },
+    "network": "Network",
+    "price": "Price",
+    "from": "From",
+    "to": "To",
+    "txHash": "Transaction",
+    "copyHash": "Copy ID",
+    "emptyFilter": "Nothing on this network yet.",
+    "bscNote": "BNB Chain shows swaps made in this app on this device. Other activity is on the explorer."
   }
 }

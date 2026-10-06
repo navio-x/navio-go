@@ -175,16 +175,25 @@ const router = createRouter({
       },
     },
     {
-      // Hyperliquid account for a spot pair's base token (balances,
-      // deposit/withdraw, open on Hyperliquid) — reached from the home
-      // screen's Wrapped Navio row. Gated by dexMode like /market/hl.
-      path: "/market/hl/:pair/account",
-      component: () => import("../views/market/HlAccount.vue"),
+      // Swap: from / to / amount. Moving NAV between the wallet and the
+      // exchange is worked out by lib/intent, not asked of the user.
+      path: "/swap",
+      component: () => import("../views/SwapView.vue"),
       meta: { showNavbar: true },
       beforeEnter: (to, from, next) => {
         next(settings.dexMode ? true : "/wallet/balance");
       },
     },
+    {
+      // NAV as one asset (wallet + exchange), with the explicit move
+      // between the two under Advanced. Works with dexMode off too — it
+      // then simply shows the wallet.
+      path: "/asset/NAV",
+      component: () => import("../views/NavAsset.vue"),
+      meta: { showNavbar: true },
+    },
+    // Old "Wrapped Navio" account page — now part of the NAV page.
+    { path: "/market/hl/:pair/account", redirect: "/asset/NAV" },
     {
       // Candlestick price chart for a Hyperliquid spot pair — reached from
       // the market screen's header icon. Gated by dexMode like /market/hl.

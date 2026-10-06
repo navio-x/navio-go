@@ -1,7 +1,6 @@
 import { reactive, watch } from 'vue'
 import { setSystemBarColors, syncSystemBarsToPage } from '../lib/systemBars'
 import { UNLOCK_DURATIONS, forgetAllPasswords } from '../lib/unlockCache'
-import { HL_TOKENS } from '../lib/hyperliquid/config'
 import { HL_SPOT_MARKETS } from '../lib/hyperliquid/market'
 
 function readStringList(key, fallback) {
@@ -38,7 +37,7 @@ export const settings = reactive({
   // Ana sayfadaki "Varlıklar" listesinde her zaman gösterilen Hyperliquid
   // tokenları (HL_TOKENS sembolleri). Bakiyesi olan tokenlar bu listede
   // olmasa da gösterilir — bkz. WalletBalance.vue.
-  homeAssets:      readStringList('homeAssets', HL_TOKENS.map((t) => t.symbol)),
+  homeAssets:      readStringList('homeAssets', ['NAV', 'USDC']),
   syncIndicator:   localStorage.getItem('syncIndicator') === 'circle' ? 'circle' : 'bar',
   // Off by default: batch payroll/freelance payouts. Purely a UI/routing
   // toggle — no payroll code is imported until this is true (see router).
@@ -102,7 +101,7 @@ export const settings = reactive({
   chatNickname:    localStorage.getItem('chatNickname')     || '',
   // navio-hl-faucet servisinin adresi (NAV karşılığında Hyperliquid'de
   // USDC + HYPE). /quote ve /health uç noktaları bu adresin altında.
-  faucetUrl:       localStorage.getItem('faucetUrl')        || 'http://185.86.15.11:8787',
+  faucetUrl:       localStorage.getItem('faucetUrl')        || 'https://go.nav.io/faucet/',
   // Off by default: şifreli cüzdanın şifresini bu cihazda belirli bir süre
   // hatırlar ('off' | '1h' | '24h' | '7d' | '30d' — bkz. lib/unlockCache.js).
   // Süre, şifrenin en son elle girildiği andan itibaren sayılır.

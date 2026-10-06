@@ -1,6 +1,5 @@
 import { ref } from "vue";
-import { settings } from "@/stores/settings";
-import { getNavioClient } from "@/stores/navio";
+import { fetchFaucetQuote, isFaucetQuoteExpired, sendFaucetPayment } from "@/lib/hyperliquid/faucet";
 
 /**
  * navio-hl-faucet: NAV gönder, HyperCore'da USDC + HYPE al. Servis teklifi
@@ -14,60 +13,29 @@ export function useHlFaucet() {
   const errorCode = ref("");
   const txId = ref("");
 
-  function baseUrl() {
-    return (settings.faucetUrl || "").trim().replace(/\/+$/, "");
-  }
-
   async function fetchQuote(evmAddress) {
     errorCode.value = "";
     quote.value = null;
-    if (!baseUrl()) {
-      errorCode.value = "no_url";
-      return null;
-    }
     loading.value = true;
     try {
-      const res = await fetch(`${baseUrl()}/quote?address=${encodeURIComponent(evmAddress)}`);
-      const body = await res.json().catch(() => ({}));
-      if (!res.ok) {
-        errorCode.value =
-          res.status === 409 ? "already_claimed"
-          : res.status === 403 ? "not_allowed"
-          : res.status === 400 ? "invalid_address"
-          : "unavailable";
-        return null;
-      }
-      // Sunucunun memo'daki adresi bizim adresimizle eşleşmeli; aksi halde
-      // USDC/HYPE başka bir adrese gider.
-      if (!body.memo || !body.memo.toLowerCase().endsWith(evmAddress.toLowerCase())) {
-        errorCode.value = "bad_quote";
-        return null;
-      }
-      quote.value = body;
-      return body;
+      quote.value = await fetchFaucetQuote(evmAddress);
+      return quote.value;
     } catch (e) {
-      console.error("[faucet] quote failed:", e);
-      errorCode.value = "network_error";
+      errorCode.value = e.message;
       return null;
     } finally {
       loading.value = false;
     }
   }
 
-  const isExpired = () => !quote.value || Date.now() >= quote.value.expiresAt;
+  const isExpired = () => isFaucetQuoteExpired(quote.value);
 
   async function send() {
     if (!quote.value) return null;
     errorCode.value = "";
     sending.value = true;
     try {
-      const result = await getNavioClient().sendTransaction({
-        address: quote.value.navAddress,
-        amount: BigInt(quote.value.amountSats),
-        memo: quote.value.memo,
-        // Servis tam teklif tutarını bekler; ağ ücreti tutardan düşülmemeli.
-        subtractFeeFromAmount: false,
-      });
+      const result = await sendFaucetPayment(quote.value);
       txId.value = result?.txId || "";
       return result;
     } catch (e) {

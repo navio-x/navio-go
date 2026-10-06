@@ -1185,13 +1185,14 @@
     "addAsset": "Varlık ekle",
     "addAssetTitle": "Varlıklar",
     "hasBalance": "Bakiye var",
-    "switchWallet": "Cüzdan değiştir"
+    "switchWallet": "Cüzdan değiştir",
+    "totalBalance": "Toplam bakiye"
   },
   "hlAsset": {
     "balanceOnHyperliquid": "Hyperliquid bakiyesi",
     "inOrders": "Emirlerde",
-    "deposit": "Yatır",
-    "withdraw": "Çek",
+    "deposit": "Al",
+    "withdraw": "Gönder",
     "trade": "Al/Sat",
     "depositWarning": "Bu, Hyperliquid hesap adresiniz. Bu adrese yalnızca Hyperliquid (HyperCore) üzerinden {symbol} gönderin — başka bir ağdan gönderilen varlıklar kaybolabilir.",
     "network": "Ağ",
@@ -1209,7 +1210,7 @@
         "desc": "Hyperliquid köprüsü, 1 USDC ücret, birkaç dakika"
       }
     },
-    "confirmTitle": "Çekimi onayla",
+    "confirmTitle": "İncele",
     "confirm": "Gönder",
     "confirmWarning": "Transferler geri alınamaz. Adresi ve ağı tekrar kontrol edin.",
     "sent": "Gönderildi. Alıcının Hyperliquid bakiyesi birkaç saniye içinde güncellenir.",
@@ -1223,6 +1224,233 @@
       "wallet_locked": "Cüzdan kilitli — kilidi açıp tekrar deneyin.",
       "rejected": "Hyperliquid transferi reddetti."
     },
-    "navBridgeWarning": "Navio ağındaki NAV bu adrese gönderilemez — ulaşmaz. Cüzdanınızdaki NAV'ı aktarmak için köprüye yatırın."
+    "navBridgeWarning": "Bir Navio cüzdanından bu adrese gönderilen NAV ulaşmaz. Cüzdanınızdaki NAV'ı burada kullanmak için doğrudan takas edin ya da NAV sayfasından taşıyın."
+  },
+  "tx": {
+    "available": "Kullanılabilir",
+    "max": "Maks",
+    "youSend": "Gönderdiğiniz",
+    "youReceive": "Alacağınız",
+    "to": "Alıcı",
+    "details": "Detaylar",
+    "sending": "Gönderiliyor…",
+    "review": "İncele",
+    "enterAmount": "Tutar girin",
+    "amount": "Tutar"
+  },
+  "swap": {
+    "title": "Takas",
+    "advanced": "Gelişmiş alım-satım",
+    "from": "Verilen",
+    "to": "Alınan",
+    "flip": "Yönü değiştir",
+    "toWallet": "Cüzdanıma gönder",
+    "toWalletDesc": "Aldığınız NAV doğrudan gizli cüzdanınıza gelir. Sonraki takaslar hızlı olsun diye borsada tutmak için kapatın.",
+    "reviewTitle": "Takası incele",
+    "route": "Rota detayları",
+    "confirm": "Takası onayla",
+    "rate": "Kur",
+    "fee": "Borsa ücreti",
+    "minReceived": "En az alınacak",
+    "maxSpent": "En fazla ödeyeceğiniz",
+    "arrives": "Ulaşma süresi",
+    "arrivesMinutes": "Yaklaşık {minutes} dk",
+    "arrivesWallet": "Birkaç dakika",
+    "arrivesNow": "Hemen",
+    "setup": "Tek seferlik kurulum",
+    "notice": {
+      "leavesWallet": "{amount} NAV gizli cüzdanınızdan borsaya (Hyperliquid) geçer; orada bakiyeler ve işlemler herkese açıktır.",
+      "setup": "Bu cüzdanla ilk takas: {amount} NAV ile borsa hesabınız bir kez kurulur. Karşılığı sizde kalır: {usdc} USDC ve ağ ücretleri için {hype} HYPE.",
+      "takesTime": "NAV'ın borsaya geçmesi yaklaşık {minutes} dk sürer. Takas, Navio Go açıkken kendiliğinden tamamlanır ve gösterilen en az tutarın altında asla yapılmaz.",
+      "priceImpact": "Bu takas fiyatı yaklaşık yüzde {percent} oynatıyor. Daha küçük bir tutar daha iyi kur alır.",
+      "kept": {
+        "no_gas": "Aldığınız NAV borsada kalacak: cüzdana taşıma ücretini ödeyecek HYPE yok.",
+        "bridge_paused": "Aldığınız NAV borsada kalacak: cüzdana aktarımlar şu an duraklatılmış.",
+        "below_minimum": "Aldığınız NAV borsada kalacak: 1 NAV'dan azı cüzdana taşınamıyor.",
+        "bridge_unavailable": "Aldığınız NAV borsada kalacak: cüzdana taşıma yalnızca ana ağda mümkün.",
+        "no_destination": "Aldığınız NAV borsada kalacak."
+      }
+    },
+    "routeStep": {
+      "faucet": "{amount} NAV ile kurulum paketini (USDC + HYPE) al",
+      "register": "Hesabı Navio–Hyperliquid köprüsüne kaydet (bir kez)",
+      "deposit": "{amount} NAV'ı köprü üzerinden cüzdandan Hyperliquid'e taşı",
+      "sell": "Hyperliquid'de {base} sat, USDC al — {price} veya daha iyi fiyattan",
+      "buy": "Hyperliquid'de USDC ile {base} al — {price} veya daha iyi fiyattan",
+      "burn": "NAV'ı köprü üzerinden cüzdanına taşı (hedef adres şifreli)",
+      "roundedUp": "Köprü en az 1 NAV taşıdığı için gerekenden biraz fazlası borsaya geçer ve orada sizin olarak kalır.",
+      "slippage": "Fiyat toleransı: yüzde {percent} (Ayarlar'dan değiştirilebilir)"
+    },
+    "errors": {
+      "busy": "Devam eden bir işlem var. Yenisini başlatmadan önce bitmesini bekleyin ya da durdurun.",
+      "network_error": "Fiyatlar yüklenemedi — bağlantınızı kontrol edin.",
+      "invalid_amount": "Geçerli bir tutar girin.",
+      "same_asset": "İki farklı varlık seçin.",
+      "no_market": "Bu çift burada takas edilemiyor.",
+      "no_liquidity": "Bu çift için şu an teklif yok.",
+      "insufficient_liquidity": "Bu tutar piyasanın şu an karşılayabileceğinden büyük. Daha küçük bir tutar deneyin.",
+      "below_minimum": "Çok küçük — en az yaklaşık 10 USDC değerinde olmalı (NAV taşırken 1 NAV).",
+      "insufficient_balance": "Yeterli {symbol} yok. Kullanılabilir: {available}.",
+      "bridge_paused": "NAV'ın borsaya taşınması şu an duraklatılmış. Zaten borsada olan NAV takas edilebilir: {onExchange} NAV.",
+      "bridge_unavailable": "NAV'ın cüzdan ile borsa arasında taşınması yalnızca ana ağda mümkün.",
+      "no_gas": "Borsa hesabınızda tek seferlik kayıt ücreti için HYPE yok ve kurulum paketi daha önce kullanılmış. Önce biraz USDC'yi HYPE'a çevirin.",
+      "setup_unavailable": "Tek seferlik hesap kurulumu şu an yapılamıyor. Daha sonra tekrar deneyin.",
+      "wallet_locked": "Cüzdan kilitli — devam etmek için kilidini açın."
+    }
+  },
+  "ops": {
+    "title": {
+      "swap": "Takas {from} → {to}",
+      "toExchange": "NAV borsaya taşınıyor",
+      "toWallet": "NAV cüzdana geri getiriliyor"
+    },
+    "status": {
+      "running": "Sürüyor",
+      "attention": "Sizi bekliyor",
+      "done": "Tamamlandı",
+      "cancelled": "Durduruldu"
+    },
+    "stage": {
+      "setup": "Tek seferlik kurulum",
+      "prepare": "NAV hazırlanıyor",
+      "swap": "Takas yapılıyor: {from} → {to}",
+      "deliver": "NAV cüzdanınıza gönderiliyor"
+    },
+    "hint": {
+      "waitCredit": "Ağ bekleniyor — genellikle yaklaşık {minutes} dk. Bu ekrandan çıkabilirsiniz; Navio Go açıkken devam eder. Varlıklarınız güvende.",
+      "waitAccount": "Borsa hesabınız kuruluyor — genellikle birkaç dakika. Bu ekrandan çıkabilirsiniz.",
+      "working": "İşleniyor… birkaç saniye sürer."
+    },
+    "retry": "Tekrar dene",
+    "stop": "Durdur",
+    "dismiss": "Tamam",
+    "requote": {
+      "get": "Güncel fiyattan takas et",
+      "keepWaiting": "Aynı fiyatı tekrar dene",
+      "offer": "Güncel fiyattan en az {amount} {symbol} alırsınız.",
+      "accept": "Takas et"
+    },
+    "interrupted": {
+      "wentThrough": "İşlem gitti",
+      "sendAgain": "Tekrar gönder"
+    },
+    "outcome": {
+      "swap": "{amount} {symbol} aldınız.",
+      "partial": "Tutarın yalnızca bir kısmı belirlediğiniz fiyattan takas edilebildi; kalanı hâlâ sizde.",
+      "toWallet": "NAV birkaç dakika içinde cüzdanınıza ulaşır.",
+      "toExchange": "NAV'ınız artık borsada.",
+      "keptOnExchange": "NAV borsada — dilediğiniz zaman NAV sayfasından cüzdanınıza getirebilirsiniz.",
+      "cancelled": "Durduruldu. Hiçbir şey kaybolmadı: taşınmış olan NAV borsada, NAV sayfasında görünür."
+    },
+    "errors": {
+      "price_moved": "Fiyat değişti ve takas, belirlediğiniz en az tutarın altında kalacaktı; bu yüzden takas yapılmadı.",
+      "interrupted": "Bir adım gönderilirken uygulama kapandı; gidip gitmediği belli değil. Tekrar göndermeden önce bakiyenizi ve geçmişi kontrol edin.",
+      "wallet_locked": "Cüzdan kilitli — kilidini açıp tekrar deneyin.",
+      "network_error": "Ağ hatası — bağlantınızı kontrol edip tekrar deneyin.",
+      "http_error": "Borsa yanıt vermedi — biraz sonra tekrar deneyin.",
+      "rate_limited": "Çok fazla istek — biraz sonra tekrar deneyin.",
+      "bridge_paused": "Cüzdan ile borsa arasındaki aktarımlar şu an duraklatılmış. Daha sonra tekrar deneyin.",
+      "bridge_unavailable": "NAV'ın cüzdan ile borsa arasında taşınması yalnızca ana ağda mümkün.",
+      "no_hype_for_gas": "Ağ ücretini ödeyecek HYPE yok. Biraz USDC'yi HYPE'a çevirip tekrar deneyin.",
+      "hype_move_timeout": "Ağ ücreti için HYPE yolda ama henüz ulaşmadı. Bir dakika bekleyip tekrar deneyin.",
+      "below_minimum": "Tutar, NAV taşıma için en az 1 NAV sınırının altında.",
+      "insufficient_balance": "Bu adım için gereken bakiye yok (başka bir yerde kullanılmış olabilir).",
+      "insufficient_wallet": "Cüzdanınızda bunun için artık yeterli NAV yok.",
+      "send_failed": "Cüzdan bu işlemi gönderemedi.",
+      "setup_unavailable": "Tek seferlik hesap kurulumu şu an yapılamıyor. Daha sonra tekrar deneyin.",
+      "setup_price_changed": "Kurulum fiyatı incelemenizden sonra değişti; bu yüzden hiçbir şey gönderilmedi.",
+      "SenderNotActivated": "Borsa hesabınız henüz hazır değil.",
+      "BurnerNotActivated": "Borsa hesabınız NAV taşıma için henüz kayıtlı değil.",
+      "order_too_small": "Tutar borsanın alt sınırının (yaklaşık 10 USDC) altında.",
+      "exchange_rejected": "Borsa bu adımı reddetti.",
+      "no_market": "Bu piyasa şu an kullanılamıyor.",
+      "user_rejected": "İşlem iptal edildi.",
+      "unknown": "Bu adımda bir şeyler ters gitti."
+    }
+  },
+  "asset": {
+    "total": "Toplam",
+    "advanced": "Gelişmiş",
+    "openNav": "NAV sayfasını aç",
+    "moveDesc": "Takas, gerektiğinde NAV'ı sizin yerinize taşır. Yalnızca belirli bir yerde durmasını istiyorsanız kendiniz taşıyın.",
+    "move": {
+      "toExchange": "Borsaya taşı",
+      "toWallet": "Cüzdana geri getir",
+      "from": "Nereden",
+      "to": "Nereye",
+      "walletAddress": "Cüzdan adresiniz",
+      "privateAgain": "Cüzdanınıza dönen NAV yeniden gizlidir."
+    },
+    "where": {
+      "wallet": "Cüzdanınızda",
+      "walletHint": "Gizli. Göndermeye hazır.",
+      "exchange": "Borsada",
+      "exchangeHint": "Hyperliquid. Herkese açık. Takasa hazır.",
+      "exchangeHintOrders": "Hyperliquid. Herkese açık. {amount} açık emirlerde.",
+      "moving": "Yolda",
+      "movingHint": "İkisi arasında taşınıyor."
+    },
+    "links": {
+      "trade": "Emir defteri",
+      "tradeHint": "Limit emirler ve canlı NAV/USDC piyasası",
+      "hlTransfer": "Hyperliquid transferi",
+      "hlTransferHint": "Başka bir Hyperliquid hesabına gönder veya ondan al",
+      "depositAddress": "Köprü yatırma adresi",
+      "depositAddressHint": "Borsayı başka bir Navio cüzdanından fonla",
+      "manualWithdraw": "Elle köprü çekimi",
+      "manualWithdrawHint": "Herhangi bir Navio adresine adım adım çek"
+    },
+    "explain": "Borsadaki NAV, Navio–Hyperliquid köprüsünün sizin adınıza bire bir tuttuğu NAV'dır; Wrapped Navio adlı bir token olarak durur. Köprü emanetçidir ve cüzdanınızdaki NAV'ın aksine Hyperliquid'deki bakiyeler ve işlemler herkese açıktır."
+  },
+  "send": {
+    "insufficient": "Cüzdanınızda yeterli NAV yok. Kullanılabilir: {available} NAV.",
+    "insufficientWithExchange": "Cüzdanınızda {available} NAV var. {exchange} NAV daha borsada duruyor; gönderilebilmesi için önce cüzdana geri gelmesi gerekir (birkaç dakika).",
+    "bringBack": "NAV'ı cüzdana geri getir",
+    "moreOptions": "Diğer seçenekler",
+    "irreversible": "Gönderilen NAV geri alınamaz. Adresi kontrol edin.",
+    "confirm": "Gönder",
+    "feeFromAmount": "Tutardan düşülür",
+    "feeOnTop": "Üstüne eklenir (küçük)"
+  },
+  "receive": {
+    "nav": "NAV",
+    "other": "USDC ve diğerleri",
+    "navHint": "Navio adresiniz. NAV almak için paylaşın.",
+    "otherWarning": "Bu, Hyperliquid hesap adresiniz. Buraya yalnızca başka bir Hyperliquid hesabından gönderin — başka bir ağdan gönderilen varlıklar veya bir Navio cüzdanından gönderilen NAV kaybolabilir."
+  },
+  "history": {
+    "filters": {
+      "all": "Tümü",
+      "navio": "Navio",
+      "hl": "Hyperliquid",
+      "bsc": "BNB Chain"
+    },
+    "today": "Bugün",
+    "yesterday": "Dün",
+    "unknownDate": "Tarih bilinmiyor",
+    "bought": "{symbol} alındı",
+    "sold": "{symbol} satıldı",
+    "swapped": "{from} → {to} takası",
+    "fromWallet": "Cüzdandan (köprü)",
+    "toWallet": "Cüzdana (köprü)",
+    "gasTopUp": "Ağ ücreti için aktarım",
+    "arbDeposit": "Arbitrum'dan yatırma",
+    "arbWithdraw": "Arbitrum'a çekim",
+    "other": {
+      "accountClassTransfer": "Spot ↔ Perp transferi",
+      "spotGenesis": "Token dağıtımı",
+      "vaultDeposit": "Kasa yatırma",
+      "vaultWithdraw": "Kasa çekimi",
+      "cStakingTransfer": "Stake transferi",
+      "borrowLend": "Borç alma / verme"
+    },
+    "network": "Ağ",
+    "price": "Fiyat",
+    "from": "Gönderen",
+    "to": "Alıcı",
+    "txHash": "İşlem",
+    "copyHash": "Kimliği kopyala",
+    "emptyFilter": "Bu ağda henüz işlem yok.",
+    "bscNote": "BNB Chain'de yalnızca bu cihazda, bu uygulamadan yapılan takaslar listelenir. Diğer hareketler için gezgine bakın."
   }
 }
