@@ -77,6 +77,8 @@
         </button>
       </label>
 
+      <p v-if="walletHint && !problem" class="text-xs text-gray-500 dark:text-gray-400 leading-snug">{{ walletHint }}</p>
+
       <p v-if="problem" class="rounded-xl bg-amber-50 dark:bg-amber-900/20 px-3 py-2.5 text-xs text-amber-800 dark:text-amber-300 leading-snug">
         {{ problem }}
       </p>
@@ -182,7 +184,20 @@ const amount = computed(() => {
 
 // The wallet balance is live; the rest of the snapshot is polled.
 const liveState = computed(() => state.value && { ...state.value, navWallet: Number(balance.value) || 0 })
-const fromBalance = computed(() => (liveState.value ? spendable(from.value, liveState.value) : 0))
+// "Available" and Max are what can be swapped right now: the balance on the
+// exchange. NAV still in the wallet is not counted here — a larger amount
+// can be entered and the router moves the difference over (see walletHint),
+// but that takes minutes, so it is never presented as available.
+const onExchange = (symbol, state) => (symbol === 'NAV' ? state.navExchange : Number(state.balances?.[symbol] ?? 0))
+const fromBalance = computed(() => (liveState.value ? onExchange(from.value, liveState.value) : 0))
+// Everything a swap could draw on, wallet included — the real upper limit.
+const fromLimit = computed(() => (liveState.value ? spendable(from.value, liveState.value) : 0))
+const walletExtra = computed(() => Math.max(0, fromLimit.value - fromBalance.value))
+const walletHint = computed(() =>
+  from.value === 'NAV' && walletExtra.value >= 1 && !liveState.value.bridgeUnavailable
+    ? t('swap.walletHint', { amount: formatAmount(walletExtra.value) })
+    : ''
+)
 
 const quote = computed(() => {
   if (!(amount.value > 0)) return null
@@ -220,7 +235,7 @@ const problem = computed(() => {
   if (!(amount.value > 0)) return ''
   const code = quote.value?.error || plan.value?.blocker
   if (!code) return ''
-  const params = { symbol: from.value, available: formatAmount(fromBalance.value), onExchange: formatAmount(liveState.value?.navExchange ?? 0) }
+  const params = { symbol: from.value, available: formatAmount(fromLimit.value), onExchange: formatAmount(liveState.value?.navExchange ?? 0) }
   return te(`swap.errors.${code}`) ? t(`swap.errors.${code}`, params) : t('ops.errors.unknown')
 })
 
@@ -245,7 +260,7 @@ const pickerAssets = computed(() =>
     symbol,
     name: HL_NAMES[symbol] ?? symbol,
     logo: HL_LOGOS[symbol],
-    balance: liveState.value ? spendable(symbol, liveState.value) : 0,
+    balance: liveState.value ? onExchange(symbol, liveState.value) : 0,
   }))
 )
 

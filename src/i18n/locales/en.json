@@ -814,6 +814,8 @@
     },
     "change24h": "24h",
     "bookBoth": "Bids and asks",
+    "bookGrouping": "Price grouping",
+    "bookRatio": "Buy / sell ratio",
     "sizePercent": "Share of available balance",
     "chart": "Price chart",
     "noChartData": "No price data for this interval yet.",
@@ -1183,6 +1185,13 @@
     "addPair": "Add pair",
     "addPairTitle": "Markets",
     "addAsset": "Add asset",
+    "noNfts": "No NFTs yet",
+    "noNftsDesc": "NFTs held by this wallet will appear here. You can also create a collection of your own.",
+    "privateTokens": "Private tokens",
+    "privateNfts": "Private NFTs",
+    "noPrivateTokens": "No private tokens yet",
+    "createPrivateToken": "Create private token",
+    "createNftCollection": "Create NFT collection",
     "addAssetTitle": "Assets",
     "hasBalance": "Has balance",
     "switchWallet": "Switch wallet",
@@ -1296,7 +1305,8 @@
       "no_gas": "Your exchange account has no HYPE for the one-time registration fee, and the setup package was already used. Swap a little USDC for HYPE first.",
       "setup_unavailable": "The one-time account setup isn't available right now. Try again later.",
       "wallet_locked": "Wallet is locked — unlock it to continue."
-    }
+    },
+    "walletHint": "Another {amount} NAV is in your wallet. Enter more than the available amount and Swap moves it to the exchange first (takes a few minutes)."
   },
   "ops": {
     "title": {

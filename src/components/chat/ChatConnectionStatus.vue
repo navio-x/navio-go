@@ -7,12 +7,38 @@
   >
     <span
       class="w-1.5 h-1.5 rounded-full"
-      :class="chatState.connected ? 'bg-green-500' : 'bg-gray-400 dark:bg-gray-500'"
+      :class="[
+        chatState.connected ? 'bg-green-500' : 'bg-gray-400 dark:bg-gray-500',
+        { 'animate-pulse': !chatState.connected && pending },
+      ]"
     />
-    {{ chatState.connected ? $t('chat.connected') : $t('chat.notConnected') }}
+    {{ chatState.connected ? $t('chat.connected') : pending ? $t('chat.connecting') : $t('chat.notConnected') }}
   </span>
 </template>
 
-<script setup>
+<script>
+import { computed, ref, watch } from "vue";
 import { chatState } from "@/lib/chat/client.js";
+
+// `ready` comes before the first relay peer is actually up (see chatState in
+// client.js), so right after it the honest label is still "Connecting…", not
+// "Not connected" for a second and then "Connected". Past this grace period
+// with no peer, it really is not connected. Tracked here, once for every
+// badge, because a badge may only mount after `ready` has already flipped.
+const FIRST_PEER_GRACE_MS = 8000;
+const awaitingFirstPeer = ref(false);
+let graceTimer = null;
+watch(() => chatState.ready, (ready) => {
+  clearTimeout(graceTimer);
+  awaitingFirstPeer.value = ready && !chatState.connected;
+  if (awaitingFirstPeer.value) graceTimer = setTimeout(() => { awaitingFirstPeer.value = false; }, FIRST_PEER_GRACE_MS);
+});
+watch(() => chatState.connected, (connected) => {
+  if (connected) awaitingFirstPeer.value = false;
+});
+
+const pending = computed(() => chatState.connecting || awaitingFirstPeer.value);
+</script>
+
+<script setup>
 </script>

@@ -34,9 +34,9 @@ export function fetchSpotMetaAndAssetCtxs() {
   return postInfo({ type: "spotMetaAndAssetCtxs" });
 }
 
-/** { levels: [bids[], asks[]] } — each level is { px, sz, n } (strings). */
-export function fetchL2Book(coin) {
-  return postInfo({ type: "l2Book", coin });
+/** { levels: [bids[], asks[]] } — each level is { px, sz, n } (strings). `nSigFigs` (2–4) has the exchange aggregate levels to that many significant figures; omitted = full precision. */
+export function fetchL2Book(coin, nSigFigs = null) {
+  return postInfo({ type: "l2Book", coin, ...(nSigFigs ? { nSigFigs } : {}) });
 }
 
 /** [{ t, T, s, i, o, c, h, l, v, n }] — OHLCV candles oldest first; t/T are open/close ms, prices are strings. `interval` e.g. "15m" | "1h" | "4h" | "1d". */

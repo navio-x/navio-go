@@ -814,6 +814,8 @@
     },
     "change24h": "24s",
     "bookBoth": "Alış ve satış",
+    "bookGrouping": "Fiyat gruplama",
+    "bookRatio": "Alış / satış oranı",
     "sizePercent": "Kullanılabilir bakiyenin oranı",
     "chart": "Fiyat grafiği",
     "noChartData": "Bu aralık için henüz fiyat verisi yok.",
@@ -1183,6 +1185,13 @@
     "addPair": "Çift ekle",
     "addPairTitle": "Piyasalar",
     "addAsset": "Varlık ekle",
+    "noNfts": "Henüz NFT yok",
+    "noNftsDesc": "Bu cüzdana ait NFT'ler burada görünecek. Kendi koleksiyonunu da oluşturabilirsin.",
+    "privateTokens": "Private token'lar",
+    "privateNfts": "Private NFT'ler",
+    "noPrivateTokens": "Henüz private token yok",
+    "createPrivateToken": "Private token oluştur",
+    "createNftCollection": "NFT koleksiyonu oluştur",
     "addAssetTitle": "Varlıklar",
     "hasBalance": "Bakiye var",
     "switchWallet": "Cüzdan değiştir",
@@ -1296,7 +1305,8 @@
       "no_gas": "Borsa hesabınızda tek seferlik kayıt ücreti için HYPE yok ve kurulum paketi daha önce kullanılmış. Önce biraz USDC'yi HYPE'a çevirin.",
       "setup_unavailable": "Tek seferlik hesap kurulumu şu an yapılamıyor. Daha sonra tekrar deneyin.",
       "wallet_locked": "Cüzdan kilitli — devam etmek için kilidini açın."
-    }
+    },
+    "walletHint": "Cüzdanınızda {amount} NAV daha var. Kullanılabilir tutardan fazlasını girerseniz Takas önce onu borsaya taşır (birkaç dakika sürer)."
   },
   "ops": {
     "title": {

@@ -1,4 +1,4 @@
-import { ref, watch, onMounted, onUnmounted } from "vue";
+import { ref, watch, toValue, onMounted, onUnmounted } from "vue";
 import { App as CapApp } from "@capacitor/app";
 import { formatUnits } from "viem";
 import { HL_WS_URL } from "@/lib/hyperliquid/config";
@@ -11,9 +11,34 @@ const PING_INTERVAL_MS = 30_000;
 const FALLBACK_POLL_MS = 5_000;
 const DEFAULT_SIZE_DECIMALS = 8;
 
-function buildLevels(rawLevels, count, decimals) {
+// Spot prices never carry more fractional digits than this.
+const PX_DECIMALS = 8;
+
+// Merges levels into price buckets of 10^stepExp, best price first as they
+// arrive: a bid counts at the bucket's lower edge and an ask at its upper
+// one, so a grouped row never shows a better price than the orders in it.
+function groupLevels(rawLevels, stepExp, isBid, decimals) {
+  const unit = 10n ** BigInt(Math.max(0, PX_DECIMALS + stepExp));
+  const grouped = [];
+  for (const lvl of rawLevels) {
+    const px = safeParseUnits(lvl.px, PX_DECIMALS);
+    const rem = px % unit;
+    const bucket = rem === 0n ? px : isBid ? px - rem : px - rem + unit;
+    const last = grouped[grouped.length - 1];
+    if (last && last.bucket === bucket) {
+      last.szRaw += safeParseUnits(lvl.sz, decimals);
+      last.n += lvl.n;
+    } else {
+      grouped.push({ bucket, szRaw: safeParseUnits(lvl.sz, decimals), n: lvl.n });
+    }
+  }
+  return grouped.map((g) => ({ px: formatUnits(g.bucket, PX_DECIMALS), sz: formatUnits(g.szRaw, decimals), n: g.n }));
+}
+
+function buildLevels(rawLevels, count, decimals, stepExp, isBid) {
+  const levels = stepExp == null ? rawLevels || [] : groupLevels(rawLevels || [], stepExp, isBid, decimals);
   let cumRaw = 0n;
-  return (rawLevels || []).slice(0, count).map((lvl) => {
+  return levels.slice(0, count).map((lvl) => {
     cumRaw += safeParseUnits(lvl.sz, decimals);
     return { px: lvl.px, sz: lvl.sz, n: lvl.n, total: formatUnits(cumRaw, decimals) };
   });
@@ -43,8 +68,13 @@ async function resolveSizeDecimals(coinStr) {
  * snapshot, not a diff); falls back to 5s REST polling if the socket can't
  * stay up. Only ever runs while the owning component is mounted and the app
  * is foregrounded.
+ *
+ * Price grouping (both optional, plain values or refs): `stepExp` merges
+ * levels into buckets of 10^stepExp, and `nSigFigs` (2–4) asks the exchange
+ * for a book already aggregated to that precision — it only sends ~20 levels
+ * a side, so a coarse step needs the coarser book to have any depth to show.
  */
-export function useHyperliquidOrderBook(coin, { levels = 10 } = {}) {
+export function useHyperliquidOrderBook(coin, { levels = 10, nSigFigs = null, stepExp = null } = {}) {
   const bids = ref([]);
   const asks = ref([]);
   const mid = ref(null);
@@ -63,12 +93,14 @@ export function useHyperliquidOrderBook(coin, { levels = 10 } = {}) {
   let unmounted = false;
   let appListener = null;
   let sizeDecimals = DEFAULT_SIZE_DECIMALS;
+  let lastSnapshot = null;
 
   function applySnapshot(data) {
+    lastSnapshot = data;
     const rawBids = data?.levels?.[0] || [];
     const rawAsks = data?.levels?.[1] || [];
-    bids.value = buildLevels(rawBids, levels, sizeDecimals);
-    asks.value = buildLevels(rawAsks, levels, sizeDecimals);
+    bids.value = buildLevels(rawBids, levels, sizeDecimals, toValue(stepExp), true);
+    asks.value = buildLevels(rawAsks, levels, sizeDecimals, toValue(stepExp), false);
 
     const bestBid = rawBids[0] ? Number(rawBids[0].px) : null;
     const bestAsk = rawAsks[0] ? Number(rawAsks[0].px) : null;
@@ -89,7 +121,11 @@ export function useHyperliquidOrderBook(coin, { levels = 10 } = {}) {
     if (!c) return;
     loading.value = true;
     try {
-      applySnapshot(await fetchL2Book(c));
+      const sigFigs = toValue(nSigFigs);
+      const data = await fetchL2Book(c, sigFigs);
+      // Ignore an answer for a market / precision that was switched away from meanwhile.
+      if (coin.value !== c || toValue(nSigFigs) !== sigFigs) return;
+      applySnapshot(data);
     } catch (e) {
       console.error("[hyperliquid] order book snapshot failed:", e);
       error.value = e?.message || "unknown";
@@ -180,7 +216,8 @@ export function useHyperliquidOrderBook(coin, { levels = 10 } = {}) {
       reconnectDelay = 1000;
       connected.value = true;
       stopPolling(); // socket is live — stop the REST fallback
-      ws.send(JSON.stringify({ method: "subscribe", subscription: { type: "l2Book", coin: c } }));
+      const sigFigs = toValue(nSigFigs);
+      ws.send(JSON.stringify({ method: "subscribe", subscription: { type: "l2Book", coin: c, ...(sigFigs ? { nSigFigs: sigFigs } : {}) } }));
       pingTimer = setInterval(() => {
         if (ws?.readyState === WebSocket.OPEN) ws.send(JSON.stringify({ method: "ping" }));
       }, PING_INTERVAL_MS);
@@ -224,16 +261,34 @@ export function useHyperliquidOrderBook(coin, { levels = 10 } = {}) {
     stopPolling();
   }
 
-  watch(coin, (c, prev) => {
-    if (c === prev) return;
+  function reset() {
     reconnectDelay = 1000;
+    lastSnapshot = null;
     bids.value = [];
     asks.value = [];
     mid.value = null;
     spread.value = null;
     spreadPct.value = null;
+  }
+
+  watch(coin, (c, prev) => {
+    if (c === prev) return;
+    reset();
     if (c) start();
     else stop();
+  });
+
+  // A different precision is a different subscription: start over.
+  watch(() => toValue(nSigFigs), () => {
+    if (!coin.value) return;
+    stop();
+    reset();
+    start();
+  });
+
+  // The step alone only changes how the levels already here are merged.
+  watch(() => toValue(stepExp), () => {
+    if (lastSnapshot) applySnapshot(lastSnapshot);
   });
 
   onMounted(async () => {

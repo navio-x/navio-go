@@ -207,7 +207,7 @@
 
           <!-- Asks (red) — best ask nearest the mid -->
           <div v-if="bookView !== 'bids'" class="flex-1 flex flex-col justify-end">
-            <p v-if="book.asks.value.length === 0" class="py-3 text-[11px] text-gray-400 dark:text-gray-500 text-center">
+            <p v-if="shownBook.asks.value.length === 0" class="py-3 text-[11px] text-gray-400 dark:text-gray-500 text-center">
               {{ $t('market.noOrders') }}
             </p>
             <button
@@ -226,7 +226,7 @@
 
           <!-- Bids (green) — best bid nearest the mid -->
           <div v-if="bookView !== 'asks'" class="flex-1">
-            <p v-if="book.bids.value.length === 0" class="py-3 text-[11px] text-gray-400 dark:text-gray-500 text-center">
+            <p v-if="shownBook.bids.value.length === 0" class="py-3 text-[11px] text-gray-400 dark:text-gray-500 text-center">
               {{ $t('market.noOrders') }}
             </p>
             <button
@@ -241,8 +241,32 @@
             </button>
           </div>
 
-          <!-- Which side(s) of the book to show -->
-          <div class="pt-2 flex justify-end gap-1">
+          <!-- Buy vs sell: each side's share of the size resting in the book -->
+          <div
+            v-if="bookRatio"
+            class="pt-2 flex items-center gap-1.5 text-[10px] tabular-nums"
+            :title="$t('market.bookRatio')"
+            :aria-label="$t('market.bookRatio')"
+          >
+            <span class="text-buy">{{ bookRatio.buy.toFixed(2) }}%</span>
+            <div class="flex-1 min-w-0 flex gap-[2px] h-1">
+              <div class="rounded-full bg-buy" :style="{ width: bookRatio.buy + '%' }" />
+              <div class="flex-1 rounded-full bg-sell" />
+            </div>
+            <span class="text-sell">{{ bookRatio.sell.toFixed(2) }}%</span>
+          </div>
+
+          <!-- Price grouping, and which side(s) of the book to show -->
+          <div class="pt-2 flex items-center justify-end gap-1">
+            <select
+              v-if="groupOptions.length > 1"
+              v-model="groupExp"
+              :title="$t('market.bookGrouping')"
+              :aria-label="$t('market.bookGrouping')"
+              class="mr-auto min-w-0 h-6 px-1 rounded-md text-[11px] tabular-nums bg-gray-100 dark:bg-gh-700 text-gray-700 dark:text-gray-200 border-0 focus:outline-none"
+            >
+              <option v-for="opt in groupOptions" :key="opt.label" :value="opt.exp">{{ opt.label }}</option>
+            </select>
             <button
               v-for="view in BOOK_VIEWS"
               :key="view.id"
@@ -410,7 +434,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { ChevronLeft, Loader2, X, AlertTriangle, ChartCandlestick } from 'lucide-vue-next'
@@ -474,10 +498,68 @@ const BOOK_VIEWS = [
   { id: 'bids', label: 'market.bids', bars: ['bg-buy', 'bg-buy', 'bg-buy', 'bg-buy'] },
   { id: 'asks', label: 'market.asks', bars: ['bg-sell', 'bg-sell', 'bg-sell', 'bg-sell'] },
 ]
+// --- Order book price grouping ---
+// Steps are powers of ten above the market's own tick, so they follow the
+// price: 0.00001 / 0.0001 / 0.001 for a market trading around 0.05. `exp` is
+// the step's exponent; null is the book as the exchange lists it.
+const groupExp = ref(null)
+// Remembered per market on this device (a step only means something at that
+// market's price) — a convenience only, so storage failures are ignored.
+const groupKey = computed(() => (coin.value ? `hlBookGroup:${coin.value}` : null))
+watch(groupKey, (key) => {
+  let saved = null
+  try { saved = key ? localStorage.getItem(key) : null } catch {}
+  groupExp.value = saved != null && Number.isInteger(Number(saved)) ? Number(saved) : null
+}, { immediate: true })
+watch(groupExp, (exp) => {
+  if (!groupKey.value) return
+  try {
+    if (exp == null) localStorage.removeItem(groupKey.value)
+    else localStorage.setItem(groupKey.value, String(exp))
+  } catch {}
+})
+const priceExp = computed(() => (book.mid.value > 0 ? Math.floor(Math.log10(book.mid.value)) : null))
+// Prices carry 5 significant figures, and at most 8 decimals less the size decimals.
+const tickExp = computed(() =>
+  priceExp.value == null ? null : Math.max(priceExp.value - 4, (market.value?.baseSzDecimals ?? 0) - 8)
+)
+const stepLabel = (exp) => (exp < 0 ? (10 ** exp).toFixed(-exp) : String(10 ** exp))
+const groupOptions = computed(() => {
+  if (tickExp.value == null) return []
+  const steps = [3, 2, 1].map((back) => priceExp.value - back).filter((exp) => exp > tickExp.value)
+  return [{ exp: null, label: stepLabel(tickExp.value) }, ...steps.map((exp) => ({ exp, label: stepLabel(exp) }))]
+})
+// Back to ungrouped if the price moved so far that the chosen step is gone.
+const activeGroupExp = computed(() =>
+  groupOptions.value.some((o) => o.exp === groupExp.value) ? groupExp.value : null
+)
+// The exchange sends only ~20 levels a side, so a grouped book is read from
+// its own feed, already aggregated to the step's precision. It is for
+// display only: `book` stays at full precision for the mid and for pricing
+// orders, and this second connection exists only while a step is chosen.
+const groupSigFigs = computed(() => (activeGroupExp.value == null ? null : priceExp.value - activeGroupExp.value + 1))
+const groupCoin = computed(() => (activeGroupExp.value == null ? null : coin.value))
+const groupedBook = useHyperliquidOrderBook(groupCoin, {
+  levels: BOOK_LEVELS_SINGLE,
+  nSigFigs: groupSigFigs,
+  stepExp: activeGroupExp,
+})
+const shownBook = computed(() => (activeGroupExp.value == null ? book : groupedBook))
+
 const shownLevelCount = computed(() => (bookView.value === 'both' ? BOOK_LEVELS_BOTH : BOOK_LEVELS_SINGLE))
-const shownBids = computed(() => book.bids.value.slice(0, shownLevelCount.value))
+const shownBids = computed(() => shownBook.value.bids.value.slice(0, shownLevelCount.value))
 // Reversed so the best ask sits nearest the mid price.
-const shownAsks = computed(() => book.asks.value.slice(0, shownLevelCount.value).reverse())
+const shownAsks = computed(() => shownBook.value.asks.value.slice(0, shownLevelCount.value).reverse())
+
+// Over every level held (not just the rows on screen), so switching the
+// side filter doesn't change it. Grouped, the same rows reach further out.
+const bookRatio = computed(() => {
+  const { bids, asks } = shownBook.value
+  const buy = Number(bids.value[bids.value.length - 1]?.total ?? 0)
+  const sell = Number(asks.value[asks.value.length - 1]?.total ?? 0)
+  if (!(buy + sell > 0)) return null
+  return { buy: (buy / (buy + sell)) * 100, sell: (sell / (buy + sell)) * 100 }
+})
 
 const maxDepth = computed(() => {
   const bidsMax = bookView.value === 'asks' ? 0 : Number(shownBids.value[shownBids.value.length - 1]?.total ?? 0)

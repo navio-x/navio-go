@@ -3,7 +3,7 @@
     <div class="flex items-center justify-between mb-5">
       <div class="flex items-center gap-2 min-w-0">
         <h1 class="text-xl font-bold text-gray-900 dark:text-white truncate">{{ $t('chat.title') }}</h1>
-        <ChatConnectionStatus v-if="chatState.ready" />
+        <ChatConnectionStatus v-if="chatState.ready || chatState.connecting" />
       </div>
       <button
         @click="router.push('/chat/contacts/new')"
@@ -17,12 +17,17 @@
 
     <div class="w-full max-w-md mx-auto flex flex-col gap-3">
 
-      <!-- My own p2p address -->
-      <div v-if="chatState.bundle" class="rounded-2xl border border-gray-200 dark:border-gh-700 bg-white dark:bg-gh-800 p-4">
+      <!-- My own p2p address. The card is there from the start, with a
+           placeholder line until the client has the address, so nothing is
+           swapped in and out while connecting. -->
+      <div v-if="chatState.bundle || chatState.connecting" class="rounded-2xl border border-gray-200 dark:border-gh-700 bg-white dark:bg-gh-800 p-4">
         <p class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500 mb-1.5">
           {{ $t('chat.myAddress') }}
         </p>
-        <div class="flex items-center gap-2">
+        <div v-if="!chatState.bundle" class="h-7 flex items-center" role="status" :aria-label="$t('chat.connecting')">
+          <div class="h-3 w-2/3 rounded bg-gray-100 dark:bg-gh-700 animate-pulse" />
+        </div>
+        <div v-else class="flex items-center gap-2">
           <p class="text-xs font-mono text-gray-600 dark:text-gray-300 truncate flex-1">{{ chatState.bundle }}</p>
           <button
             @click="showQr = true"
@@ -40,10 +45,6 @@
             <Copy v-else class="w-4 h-4" />
           </button>
         </div>
-      </div>
-
-      <div v-else-if="chatState.connecting" class="rounded-2xl border border-gray-200 dark:border-gh-700 bg-white dark:bg-gh-800 p-4 text-sm text-gray-400 dark:text-gray-500 text-center">
-        {{ $t('chat.connecting') }}
       </div>
 
       <div v-if="chatState.error" class="rounded-2xl border border-red-200 dark:border-red-900/50 bg-white dark:bg-gh-800 p-4 text-sm text-red-500 dark:text-red-400">
@@ -131,7 +132,7 @@
           <div class="min-w-0 flex-1">
             <p class="text-sm font-medium text-gray-900 dark:text-white truncate">{{ g.name }}</p>
             <p class="text-xs text-gray-400 dark:text-gray-500 truncate">
-              {{ groupPreviews[g.id]?.text || $t('chat.noMessagesYet') }}
+              {{ g.id in groupPreviews ? (groupPreviews[g.id]?.text || $t('chat.noMessagesYet')) : '\u00A0' }}
             </p>
           </div>
           <span v-if="groupPreviews[g.id]" class="shrink-0 text-[10px] text-gray-400 dark:text-gray-500">
@@ -157,9 +158,9 @@
         />
       </div>
 
-      <div v-if="loading" class="text-center py-10 text-sm text-gray-400 dark:text-gray-500">
-        {{ $t('common.loading') }}
-      </div>
+      <!-- The contacts are a local read: nothing is shown for the moment it
+           takes rather than a label that flashes by. -->
+      <div v-if="loading" />
 
       <div v-else-if="filteredContacts.length === 0" class="text-center py-14">
         <MessageCircle class="w-10 h-10 mx-auto mb-3 text-gray-300 dark:text-gray-600" />
@@ -186,7 +187,7 @@
               </span>
             </div>
             <p class="text-xs text-gray-400 dark:text-gray-500 truncate">
-              {{ c.p2pAddress ? (previews[c.id]?.text || $t('chat.noMessagesYet')) : (c.phone || c.email || '') }}
+              {{ c.p2pAddress ? (c.id in previews ? (previews[c.id]?.text || $t('chat.noMessagesYet')) : '\u00A0') : (c.phone || c.email || '') }}
             </p>
           </div>
           <span v-if="c.p2pAddress && previews[c.id]" class="shrink-0 text-[10px] text-gray-400 dark:text-gray-500">
@@ -327,8 +328,12 @@ import {
 
 const router = useRouter();
 
+// True only until the contacts are first read — later refreshes update the
+// list in place.
 const loading = ref(true);
 const contacts = ref([]);
+// A key is missing until that preview has been looked up (the row's second
+// line stays blank meanwhile); null once it has and there are no messages.
 const previews = reactive({});
 const groups = ref([]);
 const groupPreviews = reactive({});
@@ -423,7 +428,8 @@ async function loadPreviews() {
     try {
       previews[c.id] = await conversationPreview(c.p2pAddress);
     } catch {
-      // contact bundle couldn't be resolved yet (e.g. malformed) — leave blank
+      // contact bundle couldn't be resolved yet (e.g. malformed) — no preview
+      previews[c.id] = null;
     }
   }
 }
@@ -445,13 +451,12 @@ async function loadRequests() {
 }
 
 async function load() {
-  loading.value = true;
   try {
     contacts.value = await listContacts();
-    await Promise.all([loadPreviews(), loadGroups(), loadRequests()]);
   } finally {
     loading.value = false;
   }
+  await Promise.all([loadPreviews(), loadGroups(), loadRequests()]);
 }
 
 onMounted(load);

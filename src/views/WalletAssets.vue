@@ -691,8 +691,11 @@ import { getReservedAmount, getSendableUtxos, loadReservations } from "@/stores/
 import { Loader2, Layers, Coins, Image, Copy, Plus, Send } from "lucide-vue-next";
 import copy from "copy-to-clipboard";
 import { useI18n } from "vue-i18n";
+import { useRoute, useRouter } from "vue-router";
 
 const { locale, t } = useI18n();
+const route = useRoute();
+const router = useRouter();
 
 const loading = ref(true);
 let pollTimer = null;
@@ -742,6 +745,13 @@ const filteredCollections = computed(() =>
 );
 
 onMounted(async () => {
+  // The home screen's create buttons land here with ?create=token|nft:
+  // open the form on that kind, and drop the query so a reload doesn't.
+  if (route.query.create === "token" || route.query.create === "nft") {
+    openCreate();
+    createKind.value = route.query.create;
+    router.replace({ query: {} });
+  }
   await refreshAll();
   loading.value = false;
   pollTimer = setInterval(refreshAll, 10000);

@@ -2,29 +2,31 @@
      wallet's Hyperliquid balances and the spot pairs it follows, each with an
      add/remove picker. Shared by the home screen and the DEX page's
      Hyperliquid tab; both read the same settings.homeAssets / homePairs.
-     Renders nothing network-side while dexMode is off. -->
+     Renders nothing network-side while dexMode is off — only the Assets tab
+     (the host's own rows) is left then. A host that shows NFTs gets a
+     third tab for them (`nfts` + the #nfts slot). -->
 <template>
   <div>
-    <!-- Segment tabs (Binance-style): Assets | Markets -->
+    <!-- Segment tabs (Binance-style): Assets | Markets | NFTs -->
     <div>
     <div class="flex gap-5 border-b border-gray-200 dark:border-gh-700" role="tablist">
       <button
-        v-for="tab in ['assets', 'markets']"
+        v-for="tab in tabs"
         :key="tab"
         role="tab"
-        :aria-selected="homeTab === tab"
+        :aria-selected="activeTab === tab"
         @click="setHomeTab(tab)"
         class="relative -mb-px pb-2 text-sm font-semibold transition-colors"
-        :class="homeTab === tab
+        :class="activeTab === tab
           ? 'text-gray-900 dark:text-white border-b-2 border-blue-500'
           : 'text-gray-400 dark:text-gray-500 border-b-2 border-transparent'"
       >
-        {{ $t(tab === 'assets' ? 'home.hyperliquidAssets' : 'home.markets') }}
+        {{ $t(TAB_LABELS[tab]) }}
       </button>
     </div>
 
     <!-- HYPERLIQUID ASSETS -->
-    <section v-if="homeTab === 'assets'" class="pt-1">
+    <section v-if="activeTab === 'assets'" class="pt-1">
       <slot v-if="$slots.assets" name="assets" />
       <div v-else-if="!evmAddress" class="space-y-3 py-2">
         <div v-for="i in 4" :key="i" class="h-9 rounded-lg bg-gray-100 dark:bg-gh-800 animate-pulse" />
@@ -56,6 +58,7 @@
       </component>
 
       <button
+        v-if="settings.dexMode"
         @click="showAssetPicker = true"
         class="mt-2 w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-medium transition-colors
                border border-dashed border-gray-300 dark:border-gh-600 text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gh-800"
@@ -66,7 +69,7 @@
     </section>
 
     <!-- MARKETS: user-chosen Hyperliquid pairs (settings.homePairs) -->
-    <section v-else class="pt-1">
+    <section v-else-if="activeTab === 'markets'" class="pt-1">
       <button
         v-for="m in homeMarkets"
         :key="m.pair"
@@ -104,6 +107,11 @@
         <Plus class="w-4 h-4" />
         {{ $t('home.addPair') }}
       </button>
+    </section>
+
+    <!-- NFTS: the host's rows -->
+    <section v-else class="pt-1">
+      <slot name="nfts" />
     </section>
     </div>
 
@@ -230,6 +238,8 @@ const props = defineProps({
   // Balance rows from a host that already loads them; when given, this
   // panel doesn't poll for its own.
   balances: { type: Array, default: null },
+  // Adds the NFTs tab, filled by the host's #nfts slot.
+  nfts: { type: Boolean, default: false },
 })
 
 const router = useRouter()
@@ -307,10 +317,22 @@ const homeMarkets = computed(() =>
 
 // Last-picked tab is a per-device convenience only — storage can be
 // unavailable (private mode), so every access is guarded.
+const TAB_LABELS = { assets: 'home.hyperliquidAssets', markets: 'home.markets', nfts: 'assets.nfts' }
 const readTab = () => {
-  try { return localStorage.getItem(props.storageKey) === 'markets' ? 'markets' : 'assets' } catch { return 'assets' }
+  try {
+    const saved = localStorage.getItem(props.storageKey)
+    return TAB_LABELS[saved] ? saved : 'assets'
+  } catch { return 'assets' }
 }
 const homeTab = ref(readTab())
+// Markets is a Hyperliquid thing; NFTs only exists where the host has some.
+const tabs = computed(() => [
+  'assets',
+  ...(settings.dexMode ? ['markets'] : []),
+  ...(props.nfts ? ['nfts'] : []),
+])
+// Falls back to Assets while the remembered tab isn't on offer.
+const activeTab = computed(() => (tabs.value.includes(homeTab.value) ? homeTab.value : 'assets'))
 function setHomeTab(tab) {
   homeTab.value = tab
   try { localStorage.setItem(props.storageKey, tab) } catch {}
