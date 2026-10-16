@@ -1235,6 +1235,32 @@
     },
     "navBridgeWarning": "Bir Navio cüzdanından bu adrese gönderilen NAV ulaşmaz. Cüzdanınızdaki NAV'ı burada kullanmak için doğrudan takas edin ya da NAV sayfasından taşıyın."
   },
+  "addressBook": {
+    "title": "Adres defteri",
+    "add": "Adres ekle",
+    "editTitle": "Adresi düzenle",
+    "label": "Etiket",
+    "labelPlaceholder": "örn. Arbitrum cüzdanım",
+    "save": "Kaydet",
+    "edit": "Düzenle",
+    "delete": "Sil",
+    "all": "Tümü",
+    "empty": "Henüz kayıtlı adres yok.",
+    "deleteConfirm": "\"{label}\" silinsin mi?",
+    "savedAs": "Kayıtlı: {label}",
+    "otherNetwork": "{network} için \"{label}\" olarak kayıtlı — ağı kontrol edin.",
+    "saveForNetwork": "Bu adresi {network} için kaydet",
+    "addTitle": "Adres ekle",
+    "checksumNote": "Checksum biçiminde kaydedilir (bazı harfler büyük) — aynı adrestir:",
+    "errors": {
+      "label_required": "Bir etiket girin.",
+      "invalid_address": "Geçerli bir EVM adresi değil.",
+      "invalid_network": "Bir ağ seçin.",
+      "duplicate": "Bu adres bu ağ için zaten kayıtlı.",
+      "load_failed": "Kayıtlı adresler yüklenemedi — cüzdanın kilidini açıp tekrar deneyin.",
+      "save_failed": "Değişiklik kaydedilemedi."
+    }
+  },
   "tx": {
     "available": "Kullanılabilir",
     "max": "Maks",

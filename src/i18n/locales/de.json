@@ -1235,6 +1235,32 @@
     },
     "navBridgeWarning": "NAV, das aus einer Navio-Wallet an diese Adresse gesendet wird, würde nicht ankommen. Um das NAV aus deiner Wallet hier zu nutzen, tausche es einfach – oder verschiebe es über die NAV-Seite."
   },
+  "addressBook": {
+    "title": "Adressbuch",
+    "add": "Adresse hinzufügen",
+    "editTitle": "Adresse bearbeiten",
+    "label": "Bezeichnung",
+    "labelPlaceholder": "z. B. Mein Arbitrum-Wallet",
+    "save": "Speichern",
+    "edit": "Bearbeiten",
+    "delete": "Löschen",
+    "all": "Alle",
+    "empty": "Noch keine gespeicherten Adressen.",
+    "deleteConfirm": "„{label}“ löschen?",
+    "savedAs": "Gespeichert als {label}",
+    "otherNetwork": "Als „{label}“ für {network} gespeichert — Netzwerk prüfen.",
+    "saveForNetwork": "Diese Adresse für {network} speichern",
+    "addTitle": "Adresse hinzufügen",
+    "checksumNote": "Wird im Prüfsummenformat gespeichert (einige Buchstaben groß) — es ist dieselbe Adresse:",
+    "errors": {
+      "label_required": "Bezeichnung eingeben.",
+      "invalid_address": "Keine gültige EVM-Adresse.",
+      "invalid_network": "Netzwerk wählen.",
+      "duplicate": "Diese Adresse ist für dieses Netzwerk bereits gespeichert.",
+      "load_failed": "Gespeicherte Adressen konnten nicht geladen werden — Wallet entsperren und erneut versuchen.",
+      "save_failed": "Änderung konnte nicht gespeichert werden."
+    }
+  },
   "tx": {
     "available": "Verfügbar",
     "max": "Max",

@@ -1235,6 +1235,32 @@
     },
     "navBridgeWarning": "从 Navio 钱包向此地址发送的 NAV 不会到账。要在这里使用钱包中的 NAV，直接兑换即可——或者从 NAV 页面转移。"
   },
+  "addressBook": {
+    "title": "地址簿",
+    "add": "添加地址",
+    "editTitle": "编辑地址",
+    "label": "标签",
+    "labelPlaceholder": "例如：我的 Arbitrum 钱包",
+    "save": "保存",
+    "edit": "编辑",
+    "delete": "删除",
+    "all": "全部",
+    "empty": "暂无已保存的地址。",
+    "deleteConfirm": "删除“{label}”？",
+    "savedAs": "已保存为 {label}",
+    "otherNetwork": "已作为 {network} 的“{label}”保存 — 请检查网络。",
+    "saveForNetwork": "为 {network} 保存此地址",
+    "addTitle": "添加地址",
+    "checksumNote": "将以校验和格式保存（部分字母大写）— 地址相同：",
+    "errors": {
+      "label_required": "请输入标签。",
+      "invalid_address": "不是有效的 EVM 地址。",
+      "invalid_network": "请选择网络。",
+      "duplicate": "此地址已为该网络保存。",
+      "load_failed": "无法加载已保存的地址 — 请解锁钱包后重试。",
+      "save_failed": "无法保存更改。"
+    }
+  },
   "tx": {
     "available": "可用",
     "max": "最大",

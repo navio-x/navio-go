@@ -1235,6 +1235,32 @@
     },
     "navBridgeWarning": "NAV enviado de uma carteira Navio para este endereço não chegaria. Para usar aqui o NAV da sua carteira, basta trocá-lo, ou movê-lo pela página do NAV."
   },
+  "addressBook": {
+    "title": "Agenda de endereços",
+    "add": "Adicionar endereço",
+    "editTitle": "Editar endereço",
+    "label": "Rótulo",
+    "labelPlaceholder": "ex.: Minha carteira Arbitrum",
+    "save": "Salvar",
+    "edit": "Editar",
+    "delete": "Excluir",
+    "all": "Todos",
+    "empty": "Nenhum endereço salvo ainda.",
+    "deleteConfirm": "Excluir \"{label}\"?",
+    "savedAs": "Salvo como {label}",
+    "otherNetwork": "Salvo como \"{label}\" para {network} — confira a rede.",
+    "saveForNetwork": "Salvar este endereço para {network}",
+    "addTitle": "Adicionar endereço",
+    "checksumNote": "Salvo no formato checksum (algumas letras maiúsculas) — é o mesmo endereço:",
+    "errors": {
+      "label_required": "Informe um rótulo.",
+      "invalid_address": "Endereço EVM inválido.",
+      "invalid_network": "Escolha uma rede.",
+      "duplicate": "Este endereço já está salvo para esta rede.",
+      "load_failed": "Não foi possível carregar os endereços salvos — desbloqueie a carteira e tente novamente.",
+      "save_failed": "Não foi possível salvar a alteração."
+    }
+  },
   "tx": {
     "available": "Disponível",
     "max": "Máx.",

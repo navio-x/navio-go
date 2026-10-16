@@ -1235,6 +1235,32 @@
     },
     "navBridgeWarning": "Navio ウォレットからこのアドレスに送った NAV は届きません。ウォレットの NAV をここで使うには、スワップするか、NAV ページから移動してください。"
   },
+  "addressBook": {
+    "title": "アドレス帳",
+    "add": "アドレスを追加",
+    "editTitle": "アドレスを編集",
+    "label": "ラベル",
+    "labelPlaceholder": "例：自分の Arbitrum ウォレット",
+    "save": "保存",
+    "edit": "編集",
+    "delete": "削除",
+    "all": "すべて",
+    "empty": "保存されたアドレスはまだありません。",
+    "deleteConfirm": "「{label}」を削除しますか？",
+    "savedAs": "{label} として保存済み",
+    "otherNetwork": "{network} 用に「{label}」として保存されています — ネットワークを確認してください。",
+    "saveForNetwork": "このアドレスを {network} 用に保存",
+    "addTitle": "アドレスを追加",
+    "checksumNote": "チェックサム形式（一部の文字が大文字）で保存されます — 同じアドレスです：",
+    "errors": {
+      "label_required": "ラベルを入力してください。",
+      "invalid_address": "有効な EVM アドレスではありません。",
+      "invalid_network": "ネットワークを選択してください。",
+      "duplicate": "このアドレスはこのネットワーク用に既に保存されています。",
+      "load_failed": "保存済みアドレスを読み込めません — ウォレットのロックを解除して再試行してください。",
+      "save_failed": "変更を保存できませんでした。"
+    }
+  },
   "tx": {
     "available": "利用可能",
     "max": "最大",

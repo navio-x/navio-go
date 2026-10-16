@@ -1235,6 +1235,32 @@
     },
     "navBridgeWarning": "Des NAV envoyés depuis un portefeuille Navio à cette adresse n'arriveraient pas. Pour utiliser ici les NAV de votre portefeuille, échangez-les simplement, ou déplacez-les depuis la page NAV."
   },
+  "addressBook": {
+    "title": "Carnet d'adresses",
+    "add": "Ajouter une adresse",
+    "editTitle": "Modifier l'adresse",
+    "label": "Libellé",
+    "labelPlaceholder": "ex. Mon portefeuille Arbitrum",
+    "save": "Enregistrer",
+    "edit": "Modifier",
+    "delete": "Supprimer",
+    "all": "Toutes",
+    "empty": "Aucune adresse enregistrée.",
+    "deleteConfirm": "Supprimer « {label} » ?",
+    "savedAs": "Enregistrée sous {label}",
+    "otherNetwork": "Enregistrée sous « {label} » pour {network} — vérifiez le réseau.",
+    "saveForNetwork": "Enregistrer cette adresse pour {network}",
+    "addTitle": "Ajouter une adresse",
+    "checksumNote": "Enregistrée au format checksum (certaines lettres en majuscules) — c'est la même adresse :",
+    "errors": {
+      "label_required": "Saisissez un libellé.",
+      "invalid_address": "Adresse EVM invalide.",
+      "invalid_network": "Choisissez un réseau.",
+      "duplicate": "Cette adresse est déjà enregistrée pour ce réseau.",
+      "load_failed": "Impossible de charger les adresses — déverrouillez le portefeuille et réessayez.",
+      "save_failed": "Impossible d'enregistrer la modification."
+    }
+  },
   "tx": {
     "available": "Disponible",
     "max": "Max",

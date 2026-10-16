@@ -8,8 +8,10 @@
  * blob from crypto.js — never plaintext.
  */
 
-const RECORD_TYPES = ["contacts"];
-const DB_VERSION = 1;
+// v2 adds "evmAddresses" (saved Hyperliquid/Arbitrum send destinations,
+// see ../evmAddresses.js); onupgradeneeded only creates missing stores.
+const RECORD_TYPES = ["contacts", "evmAddresses"];
+const DB_VERSION = 2;
 
 function dbNameFor(walletId) {
   return `navio-contacts-${walletId}`;

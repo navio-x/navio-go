@@ -1235,6 +1235,32 @@
     },
     "navBridgeWarning": "El NAV enviado desde una billetera Navio a esta dirección no llegaría. Para usar aquí el NAV de tu billetera, simplemente intercámbialo, o muévelo desde la página de NAV."
   },
+  "addressBook": {
+    "title": "Libreta de direcciones",
+    "add": "Añadir dirección",
+    "editTitle": "Editar dirección",
+    "label": "Etiqueta",
+    "labelPlaceholder": "p. ej. Mi billetera de Arbitrum",
+    "save": "Guardar",
+    "edit": "Editar",
+    "delete": "Eliminar",
+    "all": "Todas",
+    "empty": "Aún no hay direcciones guardadas.",
+    "deleteConfirm": "¿Eliminar \"{label}\"?",
+    "savedAs": "Guardada como {label}",
+    "otherNetwork": "Guardada como \"{label}\" para {network}: revisa la red.",
+    "saveForNetwork": "Guardar esta dirección para {network}",
+    "addTitle": "Añadir dirección",
+    "checksumNote": "Se guarda en formato checksum (algunas letras en mayúscula); es la misma dirección:",
+    "errors": {
+      "label_required": "Introduce una etiqueta.",
+      "invalid_address": "No es una dirección EVM válida.",
+      "invalid_network": "Elige una red.",
+      "duplicate": "Esta dirección ya está guardada para esta red.",
+      "load_failed": "No se pudieron cargar las direcciones guardadas: desbloquea la billetera e inténtalo de nuevo.",
+      "save_failed": "No se pudo guardar el cambio."
+    }
+  },
   "tx": {
     "available": "Disponible",
     "max": "Máx.",

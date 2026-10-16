@@ -119,7 +119,16 @@
         </div>
 
         <div class="rounded-xl bg-gray-50 dark:bg-gh-700 p-3">
-          <p class="text-xs text-gray-400 dark:text-gray-500">{{ $t('hlAsset.recipient') }}</p>
+          <div class="flex items-center justify-between gap-2">
+            <p class="text-xs text-gray-400 dark:text-gray-500">{{ $t('hlAsset.recipient') }}</p>
+            <button
+              @click="showAddressBook = true"
+              class="flex items-center gap-1 text-xs font-semibold text-blue-600 dark:text-blue-400"
+            >
+              <BookUser class="w-3.5 h-3.5" />
+              {{ $t('addressBook.title') }}
+            </button>
+          </div>
           <input
             v-model.trim="destinationInput"
             type="text"
@@ -128,8 +137,34 @@
             placeholder="0x…"
             class="w-full bg-transparent font-mono text-sm text-gray-900 dark:text-white outline-none"
           />
+          <p v-if="savedMatch" class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+            {{ $t('addressBook.savedAs', { label: savedMatch.label }) }}
+          </p>
         </div>
         <p v-if="destinationError" class="-mt-1 text-xs text-red-600 dark:text-red-400">{{ $t('hlAsset.errors.' + destinationError) }}</p>
+        <p v-else-if="otherNetworkMatch" class="-mt-1 text-xs text-yellow-700 dark:text-yellow-400">
+          {{ $t('addressBook.otherNetwork', { label: otherNetworkMatch.label, network: $t('hlAsset.routes.' + otherNetworkMatch.network + '.name') }) }}
+        </p>
+
+        <!-- Offer to save a new valid destination; it's stored once the send succeeds -->
+        <div v-if="canOfferSave" class="rounded-xl border border-gray-200 dark:border-gh-600 p-3 space-y-2">
+          <label class="flex items-center gap-2 text-xs font-medium text-gray-700 dark:text-gray-300">
+            <input v-model="saveAddress" type="checkbox" class="rounded" />
+            {{ $t('addressBook.saveForNetwork', { network: $t('hlAsset.routes.' + route + '.name') }) }}
+          </label>
+          <input
+            v-if="saveAddress"
+            v-model="saveLabel"
+            type="text"
+            maxlength="40"
+            :placeholder="$t('addressBook.labelPlaceholder')"
+            class="w-full rounded-lg bg-gray-50 dark:bg-gh-700 px-3 py-2 text-sm text-gray-900 dark:text-white outline-none"
+          />
+          <p v-if="saveAddress && destinationChecksum" class="text-xs text-gray-500 dark:text-gray-400">
+            {{ $t('addressBook.checksumNote') }}
+            <span class="block font-mono text-[11px] break-all">{{ destinationChecksum }}</span>
+          </p>
+        </div>
 
         <div class="rounded-xl bg-gray-50 dark:bg-gh-700 p-3">
           <div class="flex items-center justify-between text-xs text-gray-400 dark:text-gray-500">
@@ -197,7 +232,10 @@
           </div>
           <div class="flex justify-between gap-3">
             <span class="text-gray-400 dark:text-gray-500">{{ $t('hlAsset.recipient') }}</span>
-            <span class="font-mono text-xs text-gray-800 dark:text-gray-100 break-all text-right">{{ destinationInput }}</span>
+            <span class="text-right min-w-0">
+              <span v-if="savedMatch" class="block text-xs font-semibold text-gray-800 dark:text-gray-100">{{ savedMatch.label }}</span>
+              <span class="font-mono text-xs text-gray-800 dark:text-gray-100 break-all">{{ destinationInput }}</span>
+            </span>
           </div>
           <div class="flex justify-between gap-3">
             <span class="text-gray-400 dark:text-gray-500">{{ $t('market.sizeLabel') }}</span>
@@ -225,6 +263,15 @@
         </div>
       </div>
     </div>
+
+    <EvmAddressBookSheet
+      :open="showAddressBook"
+      :networks="routes"
+      :network="route"
+      @close="showAddressBook = false"
+      @select="selectSaved"
+      @changed="loadSaved"
+    />
   </div>
 </template>
 
@@ -232,11 +279,12 @@
 import { ref, computed, watch, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
-import { ChevronLeft, Copy, Check, Loader2, AlertTriangle } from 'lucide-vue-next'
+import { ChevronLeft, Copy, Check, Loader2, AlertTriangle, BookUser } from 'lucide-vue-next'
 import QRCode from 'qrcode.vue'
 import copy from 'copy-to-clipboard'
 import { isAddress } from 'viem'
 import TokenIcon from '@/components/TokenIcon.vue'
+import EvmAddressBookSheet from '@/components/tx/EvmAddressBookSheet.vue'
 import { settings } from '@/stores/settings'
 import { navPrice } from '@/stores/navPrice'
 import { evmAddress } from '@/stores/evm'
@@ -245,6 +293,7 @@ import { deriveEvmAddress } from '@/composables/useEvmAccount'
 import { useHyperliquidBalances } from '@/composables/useHyperliquidBalances'
 import { useHyperliquidTransfer, ARBITRUM_WITHDRAW_FEE_USDC } from '@/composables/useHyperliquidTransfer'
 import { getSpotMeta, resolveTokens } from '@/lib/hyperliquid/meta'
+import { listEvmAddresses, saveEvmAddress, touchEvmAddress, checksumIfChanged } from '@/lib/contacts/evmAddresses'
 
 // Arbitrum is only offered for USDC — it's the one token Hyperliquid's own
 // bridge (withdraw3) can send there. NAV here is wrapped NAV moving between
@@ -354,11 +403,46 @@ function setMax() {
   amountInput.value = avail && Number(avail) > 0 ? trimDecimals(avail, maxDecimals.value) : ''
 }
 
+// --- Address book ---
+const savedAddresses = ref([])
+const showAddressBook = ref(false)
+const saveAddress = ref(false)
+const saveLabel = ref('')
+
+async function loadSaved() {
+  try {
+    savedAddresses.value = await listEvmAddresses()
+  } catch (e) {
+    console.error('[hl-asset] failed to load address book:', e)
+  }
+}
+
+const sameAddress = (e) => e.address.toLowerCase() === destinationInput.value.toLowerCase()
+const savedMatch = computed(() =>
+  destinationInput.value ? savedAddresses.value.find((e) => e.network === route.value && sameAddress(e)) ?? null : null
+)
+// Saved for the other network only — worth a heads-up before sending.
+const otherNetworkMatch = computed(() =>
+  destinationInput.value && !savedMatch.value ? savedAddresses.value.find(sameAddress) ?? null : null
+)
+const destinationChecksum = computed(() => checksumIfChanged(destinationInput.value))
+const canOfferSave = computed(() => !!destinationInput.value && !destinationError.value && !savedMatch.value)
+
+function selectSaved(entry) {
+  if (routes.includes(entry.network)) route.value = entry.network
+  destinationInput.value = entry.address
+  showAddressBook.value = false
+}
+
+watch(destinationInput, () => { saveAddress.value = false; saveLabel.value = '' })
+watch(mode, (m) => { if (m === 'withdraw') loadSaved() }, { immediate: true })
+
 const canSubmit = computed(() =>
   !!evmAddress.value &&
   !!tokenInfo.value &&
   transfer.status.value !== 'sending' &&
   !!destinationInput.value && !destinationError.value &&
+  !(saveAddress.value && canOfferSave.value && !saveLabel.value.trim()) &&
   !!amountStr.value && !amountError.value
 )
 
@@ -374,6 +458,25 @@ async function confirmSend() {
   if (transfer.status.value === 'sent') {
     amountInput.value = ''
     hl.refresh()
+    rememberDestination()
+  }
+}
+
+// After a successful send: store the address if asked, or bump its
+// last-used time so the picker lists it first. Failures here never affect
+// the transfer, which has already gone through.
+async function rememberDestination() {
+  try {
+    if (savedMatch.value) {
+      await touchEvmAddress(savedMatch.value.id)
+    } else if (saveAddress.value && saveLabel.value.trim()) {
+      await saveEvmAddress({ label: saveLabel.value, address: destinationInput.value, network: route.value })
+      saveAddress.value = false
+      saveLabel.value = ''
+    }
+    await loadSaved()
+  } catch (e) {
+    console.error('[hl-asset] failed to update address book:', e)
   }
 }
 

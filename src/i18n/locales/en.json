@@ -1235,6 +1235,32 @@
     },
     "navBridgeWarning": "NAV sent from a Navio wallet to this address would not arrive. To use the NAV in your wallet here, just swap it — or move it from the NAV page."
   },
+  "addressBook": {
+    "title": "Address book",
+    "add": "Add address",
+    "editTitle": "Edit address",
+    "label": "Label",
+    "labelPlaceholder": "e.g. My Arbitrum wallet",
+    "save": "Save",
+    "edit": "Edit",
+    "delete": "Delete",
+    "all": "All",
+    "empty": "No saved addresses yet.",
+    "deleteConfirm": "Delete \"{label}\"?",
+    "savedAs": "Saved as {label}",
+    "otherNetwork": "Saved as \"{label}\" for {network} — check the network.",
+    "saveForNetwork": "Save this address for {network}",
+    "addTitle": "Add address",
+    "checksumNote": "Saved in checksum format (some letters uppercase) — it's the same address:",
+    "errors": {
+      "label_required": "Enter a label.",
+      "invalid_address": "Not a valid EVM address.",
+      "invalid_network": "Choose a network.",
+      "duplicate": "This address is already saved for this network.",
+      "load_failed": "Couldn't load saved addresses — unlock the wallet and try again.",
+      "save_failed": "Couldn't save the change."
+    }
+  },
   "tx": {
     "available": "Available",
     "max": "Max",
