@@ -180,7 +180,7 @@ export function sortOperators(list) {
 }
 
 // --- Operator directory ----------------------------------------------------
-// A public JSON list of staking operators (see go.nav.io/staking/operators.json).
+// A public JSON list of staking operators (staking/operators.json in this repo).
 // It is remote, untrusted input: every field is checked, anything malformed
 // is dropped rather than shown, and only https links survive.
 

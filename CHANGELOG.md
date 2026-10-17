@@ -9,7 +9,7 @@
   - Rewards view: 24H / 7D / 30D / 90D / 180D / 1Y ranges, total earned and a rewards chart
   - Delegations list showing each staked commitment's status (active / confirming), its operator, fee and website
   - Staked balance shown in the NAV balance breakdown
-- **Staking operators directory**, loaded from `go.nav.io/staking/operators.json`
+- **Staking operators directory** in `staking/operators.json`, read from GitHub so operators can be added by pull request
   - Operator picker with name, fee, networks and website
   - The default operator is listed first and preselected when staking
   - The `enabled` flag hides an operator; operators are filtered by network

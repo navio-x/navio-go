@@ -2,10 +2,11 @@ import { ref, computed } from "vue";
 import { walletNetwork } from "@/stores/network";
 import { parseOperators, sortOperators } from "@/lib/staking";
 
-// The public staking operator directory. Overridable for local testing with
-// VITE_STAKING_OPERATORS_URL.
+// The public staking operator directory, staking/operators.json in this repo,
+// read from GitHub so operators can be added by pull request. Overridable for
+// local testing with VITE_STAKING_OPERATORS_URL.
 export const STAKING_OPERATORS_URL =
-  import.meta.env.VITE_STAKING_OPERATORS_URL || "https://go.nav.io/staking/operators.json";
+  import.meta.env.VITE_STAKING_OPERATORS_URL || "https://raw.githubusercontent.com/navio-x/navio-go/refs/heads/main/staking/operators.json";
 
 const CACHE_KEY = "staking.operators";
 const FRESH_MS = 5 * 60_000;

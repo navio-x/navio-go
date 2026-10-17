@@ -1,0 +1,51 @@
+{
+  "schema": 1,
+  "updatedAt": "2026-10-17T00:00:00Z",
+  "notice": "Notice here...",
+  "operators": [
+    {
+      "id": "navio-go",
+      "name": "Navio Go #1",
+      "enabled": true,
+      "default": true,
+      "delegationKey": "b0349444798ef33ba225bfcd30ef8bcc39ca30449721b2554681ac9fc6297ae151038601eb0324132f06818aebdc5cab",
+      "feeBps": 500,
+      "networks": [
+        "mainnet",
+        "testnet"
+      ],
+      "createdAt": "2026-06-02",
+      "website": "https://go.nav.io",
+      "description": "Navio Go Operator #1"
+    },
+    {
+      "id": "harbor-stake",
+      "name": "Harbor Stake",
+      "enabled": false,
+      "default": false,
+      "delegationKey": "aa88060b7c53b0805420c6a2c6c2e639d6963a8fc2f22fb3581b1ae3efadf56a5afc6695cef2ecca23a5e0de91e05cbd",
+      "feeBps": 1000,
+      "networks": [
+        "mainnet",
+        "testnet"
+      ],
+      "createdAt": "2026-08-14",
+      "website": "https://example.com/harbor",
+      "description": "Demo operator. Pays rewards to the address you choose."
+    },
+    {
+      "id": "polaris-validators",
+      "name": "Polaris Validators",
+      "enabled": false,
+      "default": false,
+      "delegationKey": "b0f40f79ed9bf17300bfa64f8f44ca4e58ab84d9acf71d62248b21eb8929ad3cc3f377c60dc10ce43c1bed31fdf69362",
+      "feeBps": 0,
+      "networks": [
+        "testnet"
+      ],
+      "createdAt": "2026-09-30",
+      "website": "https://example.com/polaris",
+      "description": "Demo operator for testnet. No fee."
+    }
+  ]
+}

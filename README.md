@@ -26,7 +26,7 @@ No account, no sign-up, no backend and no telemetry. Navio Go talks directly to 
 
 ### Cold staking
 - Delegate NAV to a staking operator and earn rewards without running a node. The NAV stays in your wallet, and you can unstake all or part of it at any time.
-- **Operator directory** loaded from [go.nav.io/staking/operators.json](https://go.nav.io/staking/operators.json). It shows each operator's name, fee and website, with the default operator preselected. A delegation key can also be pasted or scanned.
+- **Operator directory** read from [staking/operators.json](staking/operators.json) in this repo, so anyone can list an operator by pull request (see [staking/README.md](staking/README.md)). It shows each operator's name, fee and website, with the default operator preselected. A delegation key can also be pasted or scanned.
 - **Staking Rewards** for 24H, 7D, 30D, 90D, 180D and 1Y, with totals and a chart.
 - **Delegations:** every staked commitment with its status, operator and fee.
 - **"How staking works" guide** covering rewards, delegation keys and the trust model, with a reward estimator.
@@ -91,7 +91,7 @@ npm run zip:extension:chrome       # or zip:extension:firefox
 
 | Variable | Purpose |
 |---|---|
-| `VITE_STAKING_OPERATORS_URL` | Overrides the staking operators directory (default `https://go.nav.io/staking/operators.json`) |
+| `VITE_STAKING_OPERATORS_URL` | Overrides the staking operators directory (default: `staking/operators.json` on `main`, from `raw.githubusercontent.com`) |
 
 ## Built with
 
