@@ -1,4 +1,4 @@
-import { ref } from "vue";
+import { ref, computed } from "vue";
 import blsctWasmUrl from "@nav-io/navio-blsct/wasm/blsct.wasm?url";
 import blsctJsUrl from "@nav-io/navio-blsct/wasm/blsct.js?url";
 import blsctModuleUrl from "@nav-io/navio-blsct/wasm/blsct.mjs?url";
@@ -14,6 +14,8 @@ import {
 } from './wallet_management.js';
 import { publishWalletSession, clearWalletSession } from "@/lib/extensionSession.js";
 import { forgetPassword } from "@/lib/unlockCache.js";
+import { setWalletNetwork } from "@/stores/network";
+import { trackTransactions, baselineTransactions, isTxTrackingArmed, resetTxTracking } from "@/stores/txNotifications";
 
 // Name of the most recently opened wallet — read by WalletHome.vue for the
 // optional "auto-open last wallet" setting.
@@ -234,14 +236,35 @@ export async function initNavioSDK() {
   return { NavioClient, blsctLib };
 }
 
+// A cheap fingerprint of the wallet's outputs: changes whenever one is
+// added, spent, or confirmed. The local watch below only does the full
+// refresh when it moves.
+function outputsSignature(outputs) {
+  let sig = `${outputs.length}`;
+  for (const o of outputs) sig += `|${o.outputHash}:${o.isSpent ? 1 : 0}:${o.blockHeight}:${o.spentBlockHeight ?? ""}`;
+  return sig;
+}
+let _outputsSig = "";
+
+/**
+ * Transactions still waiting for a block, from the outputs: those that paid
+ * the wallet and those that spent from it (a send, until it confirms).
+ */
+export const pendingTxCount = computed(() => {
+  const hashes = new Set();
+  for (const o of utxos.value) {
+    if (!(o.blockHeight > 0) && o.txHash) hashes.add(o.txHash);
+    if (o.isSpent && o.spentTxHash && !(o.spentBlockHeight > 0)) hashes.add(o.spentTxHash);
+  }
+  return hashes.size;
+});
+
 async function updateWalletInfo() {
   if (!_navioClient.value) return;
 
   _navioClient.value.getBalanceNav()
   .then((raw) => {
-    console.log(raw);
     const nav = Number(raw);
-    console.log("Balance is : " + raw);
     if (!Number.isFinite(nav) || nav === 0) {
       balance.value = "0";
     } else {
@@ -255,16 +278,20 @@ async function updateWalletInfo() {
 
   _navioClient.value.getAllOutputs()
   .then((data) => {
+    _outputsSig = outputsSignature(data);
     utxos.value = data.map((utxo) => ({
       ...utxo,
       amount: Number(utxo.amount),
       blockHeight: Number(utxo.blockHeight),
     }));
-    console.log(utxos.value);
+    // New transactions become toasts (once the baseline below is taken).
+    trackTransactions(utxos.value);
   })
   .catch((error) => {
     console.error("getUnspentOutputs hatası:", error);
   });
+
+  refreshStaking();
 }
 
 function updateReceiveAddress(network, password) {
@@ -281,28 +308,51 @@ function updateReceiveAddress(network, password) {
   }
 }
 
-function formatNAV(raw, decimals = 8) {
-  const big = BigInt(raw)
-  const divisor = BigInt(10) ** BigInt(decimals)
-
-  const integer = big / divisor
-  const fraction = big % divisor
-
-  const fractionStr = fraction
-  .toString()
-  .padStart(decimals, "0")
-  .replace(/0+$/, "")
-
-  return fractionStr
-  ? `${integer}.${fractionStr} NAV`
-  : `${integer} NAV`
+let _baselining = false;
+async function takeTxBaseline() {
+  const client = _navioClient.value;
+  if (!client || _baselining) return;
+  _baselining = true;
+  try {
+    const outputs = await client.getAllOutputs();
+    if (client === _navioClient.value) baselineTransactions(outputs);
+  } catch (e) {
+    console.error("tx notification baseline failed:", e);
+  } finally {
+    _baselining = false;
+  }
 }
 
 /* ---------- SYNC ---------- */
+// Between blocks, a transaction this wallet sends (from any screen, the
+// extension included) lands in the local database the moment it is
+// broadcast. Watching that database — a local read, no network — shows it,
+// its toast and its pending badge at once instead of at the next block.
+const LOCAL_WATCH_MS = 5000;
+let _localWatch = null;
+function startLocalWatch() {
+  stopLocalWatch();
+  _localWatch = setInterval(async () => {
+    const client = _navioClient.value;
+    if (!client || document.visibilityState !== "visible") return;
+    try {
+      const outputs = await client.getAllOutputs();
+      if (client === _navioClient.value && outputsSignature(outputs) !== _outputsSig) updateWalletInfo();
+    } catch (e) {
+      console.error("local output watch failed:", e);
+    }
+  }, LOCAL_WATCH_MS);
+}
+function stopLocalWatch() {
+  clearInterval(_localWatch);
+  _localWatch = null;
+}
+
 async function startSync() {
   syncing.value = true;
   console.log("Starting background sync...");
   updateWalletInfo();
+  startLocalWatch();
   try {
     await _navioClient.value.startBackgroundSync({
       pollInterval: 10000,
@@ -318,6 +368,10 @@ async function startSync() {
           percent.value = 0;
         }
 
+        // Caught up for the first time: what the wallet holds now is the
+        // baseline, so the next new block's transactions become toasts.
+        if (tip > 0 && currentHeight >= tip && !isTxTrackingArmed()) takeTxBaseline();
+
         console.log(
       `Syncing ${currentHeight}/${tip} (${percent.value}%) - ${blocksProcessed} blocks`
       );
@@ -326,13 +380,6 @@ async function startSync() {
       onNewBlock: (height, hash) => {
         console.log(`New block ${height}: ${hash.slice(0, 16)}...`);
         updateWalletInfo();
-      },
-
-      onBalanceChange: (newB, oldB) =>
-      {
-        const diff = Number(newB - oldB) / 1e8;
-        console.log("Old balance is : " + formatNAV(oldB));
-        console.log("New balance is : " + formatNAV(newB));
       },
 
       onError: (e) => {
@@ -349,6 +396,7 @@ async function startSync() {
 async function stopSync() {
   if (!_navioClient.value || !syncing.value) return;
   await _navioClient.value.stopBackgroundSync();
+  stopLocalWatch();
   syncing.value = false;
   console.log("Sync stopped");
 }
@@ -362,6 +410,11 @@ export async function disconnectWallet() {
   }
   _navioClient.value = null;
   syncing.value = false;
+  resetStaking();
+  resetTxTracking();
+  stopLocalWatch();
+  _outputsSig = "";
+  setWalletNetwork("");
   await clearWalletSession();
 }
 
@@ -380,6 +433,7 @@ export async function logoutWallet() {
   txHistory.value = [];
   tokenBalances.value = [];
   nftBalances.value = [];
+  resetStaking();
 }
 
 export { stopSync };
@@ -409,6 +463,7 @@ export async function createWallet({
 
   // initialize önce — başarısız olursa registry'e eklenmez
   await client.initialize();
+  setWalletNetwork(network);
 
   _navioClient.value = client;
   walletName.value=wallet_name;
@@ -482,12 +537,12 @@ export async function loadWallet({
     createWalletIfNotExists: false
   });
   await client.initialize();
+  setWalletNetwork(network);
   const keyManager = client.getKeyManager();
   const walletDb = client.getWalletDB();
   const encMeta = await new Promise((resolve) => {
     resolve(walletDb.getEncryptionMetadata());
   });
-  console.log(encMeta);
   if (encMeta) {
     keyManager.setEncryptionParams(encMeta.salt, encMeta.verificationHash);
     keyManager.lock();
@@ -520,7 +575,8 @@ export async function restoreWallet({ wallet_name, network, mnemonic, startHeigh
   ? parseInt(startHeight, 10)
   : undefined;
 
-  console.log(`Restoring wallet from mnemonic '${mnemonic}' (network: ${network} height: ${restoreHeight ?? "genesis"})...`);
+  // Never log the mnemonic, or clientConfig, which carries it.
+  console.log(`Restoring wallet (network: ${network} height: ${restoreHeight ?? "genesis"})...`);
 
   const clientConfig = {
     network,
@@ -536,11 +592,10 @@ export async function restoreWallet({ wallet_name, network, mnemonic, startHeigh
     restoreFromMnemonic: mnemonic,
   };
 
-  console.log(clientConfig);
-
   const client = new NavioClient(clientConfig);
 
   await client.initialize();
+  setWalletNetwork(network);
 
   _navioClient.value = client;
 
@@ -679,13 +734,88 @@ export async function sendNftAsset({ address, tokenId, memo }) {
   return result;
 }
 
+/* ---------- STAKING (cold staking via a delegated staker) ---------- */
+// NAV locked in staked commitments: never part of `balance`, never picked
+// for a send. `stakedOutputs` holds every unspent commitment (confirmed and
+// in the mempool); `stakeDelegations` only the confirmed, readable ones.
+export const stakedBalance = ref(0);
+export const stakedOutputs = ref([]);
+export const stakeDelegations = ref([]);
+export const stakingLoaded = ref(false);
+
+export function getMinStakeNav() {
+  const sats = _navioClient.value?.getMinStakeAmount?.();
+  return sats != null ? Number(sats) / 1e8 : 10000;
+}
+
+let _stakingRefresh = null;
+export function refreshStaking() {
+  const client = _navioClient.value;
+  if (!client?.getStakedOutputs) return Promise.resolve();
+  // Every new block asks again; one read in flight at a time is enough.
+  if (_stakingRefresh) return _stakingRefresh;
+  _stakingRefresh = (async () => {
+    try {
+      const [outputs, delegations] = await Promise.all([
+        client.getStakedOutputs(),
+        client.getStakeDelegations(),
+      ]);
+      if (client !== _navioClient.value) return;
+      stakedOutputs.value = outputs.map((o) => ({ ...o, amountNav: Number(o.amount) / 1e8 }));
+      stakeDelegations.value = delegations.map((d) => ({ ...d, amountNav: Number(d.amount) / 1e8 }));
+      stakedBalance.value = stakedOutputs.value.reduce((sum, o) => sum + o.amountNav, 0);
+      stakingLoaded.value = true;
+    } catch (e) {
+      console.error("refreshStaking error:", e);
+    } finally {
+      _stakingRefresh = null;
+    }
+  })();
+  return _stakingRefresh;
+}
+
+function resetStaking() {
+  stakedBalance.value = 0;
+  stakedOutputs.value = [];
+  stakeDelegations.value = [];
+  stakingLoaded.value = false;
+}
+
+/** Stake `amountNav` with the operator behind `delegateKey`. The fee is paid on top. */
+export async function delegateStake({ amountNav, delegateKey, rewardAddress, selectedUtxos }) {
+  if (!_navioClient.value) throw new Error("Wallet not ready");
+  const result = await _navioClient.value.delegateStake({
+    amount: BigInt(Math.round(amountNav * 1e8)),
+    delegateKey: delegateKey.trim().toLowerCase(),
+    ...(rewardAddress ? { rewardAddress: rewardAddress.trim() } : {}),
+    ...(selectedUtxos ? { selectedUtxos } : {}),
+  });
+  updateWalletInfo();
+  await refreshStaking();
+  return result;
+}
+
+/**
+ * Unstake. `amountNav` is what leaves staking, fee included; omitted, the
+ * whole of `stakedOutputs` (or of every confirmed commitment) is unlocked.
+ */
+export async function unstakeNav({ stakedOutputs: hashes, amountNav } = {}) {
+  if (!_navioClient.value) throw new Error("Wallet not ready");
+  const result = await _navioClient.value.unstake({
+    ...(hashes ? { stakedOutputs: hashes } : {}),
+    ...(amountNav != null ? { amount: BigInt(Math.round(amountNav * 1e8)) } : {}),
+  });
+  updateWalletInfo();
+  await refreshStaking();
+  return result;
+}
+
 export const txHistory = ref([]);
 export async function refreshHistory() {
   if (!_navioClient.value) return;
 
   try {
     const outputs = await _navioClient.value.getAllOutputs();
-    console.log(outputs);
     if (outputs.length === 0) {
       txHistory.value = [];
       return;

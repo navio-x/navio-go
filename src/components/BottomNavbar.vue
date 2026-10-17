@@ -27,7 +27,16 @@
         ? 'text-blue-600 dark:text-blue-400'
         : 'text-black/50 dark:text-white/50'"
     >
-      <component :is="item.icon" class="w-[22px] h-[22px]" :stroke-width="route.path === item.path ? 2.25 : 1.75" />
+      <span class="relative">
+        <component :is="item.icon" class="w-[22px] h-[22px]" :stroke-width="route.path === item.path ? 2.25 : 1.75" />
+        <!-- Transactions waiting for a block -->
+        <span
+          v-if="item.name === 'history' && pendingTxCount > 0"
+          class="absolute -top-1.5 -right-2.5 min-w-[18px] h-[18px] px-1 rounded-full flex items-center justify-center
+                 text-[10px] font-bold leading-none tabular-nums bg-amber-400 text-amber-950 ring-2 ring-white dark:ring-gh-900"
+          :aria-label="$t('wallet.pendingCount', { n: pendingTxCount }, pendingTxCount)"
+        >{{ pendingTxCount > 9 ? '9+' : pendingTxCount }}</span>
+      </span>
       <span
         class="max-w-full px-0.5 text-[10px] leading-tight truncate"
         :class="route.path === item.path ? 'font-semibold' : 'font-medium'"
@@ -96,6 +105,8 @@ import { useRoute, useRouter } from 'vue-router'
 import { Wallet, ArrowDownLeft, ArrowUpRight, Layers, History, Settings, Briefcase, Store, Repeat, ArrowLeftRight, MessageCircle, MoreHorizontal, CandlestickChart } from 'lucide-vue-next'
 import { Capacitor } from '@capacitor/core'
 import { settings } from '@/stores/settings'
+import { hlEnabled } from '@/stores/network'
+import { pendingTxCount } from '@/stores/navio'
 
 const isIosNative = Capacitor.getPlatform() === 'ios'
 const isIosPwa = /iphone|ipad|ipod/i.test(navigator.userAgent) && !window.MSStream && window.navigator.standalone === true
@@ -115,7 +126,7 @@ const fixedNavItems = computed(() => [
   { name: 'wallet',  path: '/wallet/balance', icon: Wallet,  labelKey: 'wallet.home' },
   { name: 'receive', path: '/wallet/receive', icon: ArrowDownLeft, labelKey: 'wallet.receive' },
   { name: 'send',    path: '/wallet/send',    icon: ArrowUpRight, labelKey: 'wallet.send' },
-  ...(settings.dexMode ? [{ name: 'swap', path: '/swap', icon: Repeat, labelKey: 'swap.title' }] : []),
+  ...(hlEnabled.value ? [{ name: 'swap', path: '/swap', icon: Repeat, labelKey: 'swap.title' }] : []),
   { name: 'history', path: '/wallet/history', icon: History, labelKey: 'wallet.history' },
 ])
 
@@ -173,7 +184,7 @@ const updatePill = async () => {
 watch(() => route.path, updatePill)
 watch(() => settings.employerMode, updatePill)
 watch(() => settings.merchantMode, updatePill)
-watch(() => settings.dexMode, updatePill)
+watch(() => [settings.dexMode, hlEnabled.value], updatePill)
 watch(() => settings.tradeMode, updatePill)
 watch(() => settings.chatMode, updatePill)
 // The pill is positioned from measured pixels, so it has to be re-measured

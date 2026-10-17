@@ -29,6 +29,8 @@ export const settings = reactive({
   wallpaper:       localStorage.getItem('wallpaper')       || 'default',
   showBlockNumber: localStorage.getItem('showBlockNumber') !== 'false',
   showFiatValue:   localStorage.getItem('showFiatValue')   !== 'false',
+  // On by default: a short chime with each new-transaction toast.
+  txSound:         localStorage.getItem('txSound')         !== 'false',
   // Ana sayfadaki senkronizasyon göstergesi: 'bar' (en üstte ince, tam
   // genişlik çubuk — varsayılan) veya 'circle' (eski dairesel gösterge).
   // Ana sayfadaki "Piyasalar" listesinde gösterilen Hyperliquid spot
@@ -136,6 +138,10 @@ watch(() => settings.showBlockNumber, (val) => {
 
 watch(() => settings.showFiatValue, (val) => {
   localStorage.setItem('showFiatValue', val)
+})
+
+watch(() => settings.txSound, (val) => {
+  localStorage.setItem('txSound', val)
 })
 
 watch(() => settings.homePairs, (val) => {

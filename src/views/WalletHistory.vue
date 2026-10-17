@@ -163,6 +163,7 @@ import {
   Loader2, History, ArrowDownLeft, ArrowUpRight, Repeat, RefreshCw, Circle, Copy, Check, ExternalLink,
 } from "lucide-vue-next";
 import { settings } from "@/stores/settings";
+import { hlEnabled } from "@/stores/network";
 import { txHistory, refreshHistory, getNavioClient } from "@/stores/navio";
 import { evmAddress } from "@/stores/evm";
 import { deriveEvmAddress } from "@/composables/useEvmAccount";
@@ -182,12 +183,14 @@ const NETWORKS = {
   hl: { logo: "hype.jpg" },
   bsc: { logo: "wbnb.webp" },
 };
-const FILTERS = [
+const ALL_FILTERS = [
   { id: "all", label: "history.filters.all", logo: null },
   { id: "navio", label: "history.filters.navio", logo: NETWORKS.navio.logo },
   { id: "hl", label: "history.filters.hl", logo: NETWORKS.hl.logo },
   { id: "bsc", label: "history.filters.bsc", logo: NETWORKS.bsc.logo },
 ];
+// Hyperliquid is mainnet only; its filter goes with it.
+const FILTERS = computed(() => ALL_FILTERS.filter((f) => f.id !== "hl" || hlEnabled.value));
 const NAVIO_POLL_MS = 10_000;
 const EXCHANGE_POLL_MS = 30_000;
 
@@ -409,6 +412,10 @@ async function loadExchange() {
     return;
   }
   bscSwaps.value = readSwapLog(address);
+  if (!hlEnabled.value) {
+    hlActivity.value = [];
+    return;
+  }
   exchangeLoading.value = hlActivity.value.length === 0;
   try {
     const [fills, ledger, meta] = await Promise.all([fetchUserFills(address), fetchUserLedger(address), getSpotMeta()]);
@@ -422,7 +429,7 @@ async function loadExchange() {
   }
 }
 
-watch(() => (settings.dexMode ? evmAddress.value : ""), loadExchange);
+watch(() => [settings.dexMode ? evmAddress.value : "", hlEnabled.value], loadExchange);
 
 onMounted(async () => {
   loadExchange();

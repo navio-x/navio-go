@@ -18,6 +18,7 @@ import About from "../views/About.vue";
 import WallpaperPicker from "../views/WallpaperPicker.vue";
 import NetworkStatus from "../views/NetworkStatus.vue";
 import { settings } from "../stores/settings";
+import { hlEnabled } from "../stores/network";
 import { isSdkReady } from "../stores/navio";
 
 const router = createRouter({
@@ -171,7 +172,7 @@ const router = createRouter({
       component: () => import("../views/market/HlAsset.vue"),
       meta: { showNavbar: true },
       beforeEnter: (to, from, next) => {
-        next(settings.dexMode ? true : "/wallet/balance");
+        next(hlEnabled.value ? true : "/wallet/balance");
       },
     },
     {
@@ -181,7 +182,7 @@ const router = createRouter({
       component: () => import("../views/SwapView.vue"),
       meta: { showNavbar: true },
       beforeEnter: (to, from, next) => {
-        next(settings.dexMode ? true : "/wallet/balance");
+        next(hlEnabled.value ? true : "/wallet/balance");
       },
     },
     {
@@ -190,6 +191,13 @@ const router = createRouter({
       // then simply shows the wallet.
       path: "/asset/NAV",
       component: () => import("../views/NavAsset.vue"),
+      meta: { showNavbar: true },
+    },
+    {
+      // How cold staking works — linked from the staking card and the stake
+      // sheet; ?section=key|rewards opens it at that section.
+      path: "/asset/NAV/staking",
+      component: () => import("../views/StakingGuide.vue"),
       meta: { showNavbar: true },
     },
     // Old "Wrapped Navio" account page — now part of the NAV page.
@@ -201,7 +209,7 @@ const router = createRouter({
       component: () => import("../views/market/MarketChart.vue"),
       meta: { showNavbar: true },
       beforeEnter: (to, from, next) => {
-        next(settings.dexMode ? true : "/wallet/balance");
+        next(hlEnabled.value ? true : "/wallet/balance");
       },
     },
     {
@@ -212,7 +220,7 @@ const router = createRouter({
       component: () => import("../views/market/MarketScreen.vue"),
       meta: { showNavbar: true },
       beforeEnter: (to, from, next) => {
-        next(settings.dexMode ? true : "/wallet/balance");
+        next(hlEnabled.value ? true : "/wallet/balance");
       },
     },
     {
@@ -223,7 +231,7 @@ const router = createRouter({
       component: () => import("../views/bridge/BridgeDeposit.vue"),
       meta: { showNavbar: true },
       beforeEnter: (to, from, next) => {
-        next(settings.dexMode ? true : "/wallet/balance");
+        next(hlEnabled.value ? true : "/wallet/balance");
       },
     },
     {
@@ -231,7 +239,7 @@ const router = createRouter({
       component: () => import("../views/bridge/BridgeWithdraw.vue"),
       meta: { showNavbar: true },
       beforeEnter: (to, from, next) => {
-        next(settings.dexMode ? true : "/wallet/balance");
+        next(hlEnabled.value ? true : "/wallet/balance");
       },
     },
     {

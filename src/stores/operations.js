@@ -1,5 +1,6 @@
 import { ref, computed, watch } from "vue";
 import { settings } from "@/stores/settings";
+import { hlEnabled } from "@/stores/network";
 import { evmAddress } from "@/stores/evm";
 import { balance } from "@/stores/navio";
 import { createEngine } from "@/lib/intent/engine";
@@ -62,10 +63,10 @@ const engine = createEngine({
   },
 });
 
-// Gated on dexMode like every other Hyperliquid feature: with it off (or
-// no wallet open) nothing is loaded and no request is made.
+// Gated on hlEnabled like every other Hyperliquid feature: with it off
+// (dexMode off, not on mainnet, or no wallet open) nothing is loaded and no request is made.
 watch(
-  () => (settings.dexMode ? evmAddress.value : ""),
+  () => (hlEnabled.value ? evmAddress.value : ""),
   (address) => {
     if (!address) {
       storageKey = null;

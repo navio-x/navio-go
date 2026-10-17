@@ -63,6 +63,8 @@
     "fiat": "법정화폐",
     "wallpaper": "Wallpaper",
     "showFiatValue": "법정화폐 가치 표시",
+    "txSound": "거래 알림음",
+    "txSoundDesc": "NAV를 받거나 보낼 때, 스테이킹 보상이 들어올 때 짧은 소리를 냅니다.",
     "showBlockNumber": "블록 번호 표시",
     "syncIndicator": "동기화 표시",
     "syncIndicatorBar": "얇은 막대",
@@ -106,6 +108,7 @@
     "merchantRequiredConfirmationsDesc": "즉시 승인 한도를 넘는 결제가 결제 완료로 처리되려면 몇 개의 블록에서 확인되어야 하는지 정합니다. 확인 수가 많을수록 블록체인 재구성에 더 안전하지만, 고객이 계산대에서 더 오래 기다리게 됩니다.",
     "dexMode": "DEX / EVM 모드",
     "dexModeDesc": "이 지갑의 복구 구문에서 파생된 BSC(EVM) 계정을 선택적으로 추가해 PancakeSwap에서 스왑할 수 있게 합니다. 꺼져 있는 동안에는 네트워크 호출이 없습니다.",
+    "hlMainnetOnly": "Hyperliquid(브리지, 스왑, NAV 거래)는 메인넷에서만 사용할 수 있습니다. 이 지갑은 다른 네트워크에 있습니다.",
     "tradeMode": "거래",
     "tradeModeDesc": "Navio 자체 암호화 p2p 버스를 통한 P2P RFQ 거래로, 위의 DEX/EVM과는 별개입니다. 트레이딩 브리지를 지원하는 서버가 필요합니다. 기본값은 꺼짐이며, 켜기 전에는 네트워크 호출이 없습니다.",
     "chatMode": "채팅(베타)",
@@ -279,7 +282,8 @@
     "synced": "동기화됨",
     "useAll": "전액 사용",
     "subtractFeeFromAmount": "수수료를 금액에서 차감",
-    "subtractFeeFromAmountDesc": "네트워크 수수료가 전송 금액에서 차감됩니다"
+    "subtractFeeFromAmountDesc": "네트워크 수수료가 전송 금액에서 차감됩니다",
+    "pendingCount": "대기 중인 거래 {n}건"
   },
   "wizard": {
     "walletName": "지갑 이름",
@@ -1424,7 +1428,9 @@
       "exchangeHint": "Hyperliquid. 공개. 스왑할 수 있습니다.",
       "exchangeHintOrders": "Hyperliquid. 공개. 미체결 주문에 {amount}.",
       "moving": "이동 중",
-      "movingHint": "둘 사이를 이동하는 중입니다."
+      "movingHint": "둘 사이를 이동하는 중입니다.",
+      "staked": "스테이킹 중",
+      "stakedHint": "스테이커에게 위임됨. 사용하려면 스테이킹을 해제하세요."
     },
     "links": {
       "trade": "호가창",
@@ -1437,6 +1443,232 @@
       "manualWithdrawHint": "원하는 Navio 주소로 단계별 출금"
     },
     "explain": "거래소의 NAV는 Navio–Hyperliquid 브리지가 1:1로 대신 보관하는 NAV이며, Wrapped Navio라는 토큰 형태입니다. 이 브리지는 수탁형이고, 지갑의 NAV와 달리 Hyperliquid의 잔액과 거래는 공개됩니다."
+  },
+  "staking": {
+    "title": "스테이킹",
+    "staked": "스테이킹 중",
+    "staker": "스테이커",
+    "summary": "위임 {count}건",
+    "stakeMore": "추가 스테이킹",
+    "unstake": "해제",
+    "start": "스테이킹 시작",
+    "needMin": "스테이킹은 {min} NAV부터 가능합니다. 사용 가능: {available} NAV.",
+    "positions": "위임",
+    "waitingConfirm": "확인 대기 중",
+    "sinceBlock": "블록 {height}부터",
+    "howItWorks": "스테이킹 작동 방식",
+    "status": {
+      "active": "스테이킹 중",
+      "confirming": "확인 중",
+      "unknown": "스테이커 알 수 없음"
+    },
+    "hero": {
+      "title": "NAV로 수익을 만드세요",
+      "subtitle": "스테이커를 통해 Navio 보안에 기여하고 보상을 받으세요. 키는 절대 이 지갑을 떠나지 않습니다."
+    },
+    "perks": {
+      "keys": "키는 언제나 내 것",
+      "anytime": "언제든 해제",
+      "min": "{amount} NAV부터"
+    },
+    "steps": {
+      "pick": "스테이킹 운영자를 선택하고 스테이커 키를 복사하세요.",
+      "lock": "NAV는 스테이킹 커밋먼트에 잠깁니다. 스테이커는 이를 블록 생성에 쓸 수 있지만 사용할 수는 없습니다.",
+      "earn": "스테이커가 보상을 내 주소로 지급합니다. 언제든 해제하면 NAV를 다시 사용할 수 있습니다."
+    },
+    "notice": {
+      "custody": "스테이커는 이 NAV를 스테이킹할 수 있지만 절대 사용할 수 없습니다. 해제는 이 지갑만 할 수 있습니다.",
+      "rewards": "보상은 네트워크가 아닌 스테이커가 지급합니다. 신뢰할 수 있는 운영자를 선택하세요.",
+      "locked": "스테이킹된 NAV는 해제하기 전까지 사용할 수 없습니다."
+    },
+    "position": {
+      "title": "위임",
+      "stakerKey": "스테이커 키",
+      "since": "확인된 블록",
+      "tx": "거래",
+      "unknownHint": "이 NAV가 누구에게 위임되었는지 읽을 수 없어 스테이킹되지 않고 있을 수 있습니다. 해제한 뒤 아는 스테이커로 다시 스테이킹하세요."
+    },
+    "form": {
+      "title": "NAV 스테이킹",
+      "minHint": "최소 {min} NAV. 네트워크 수수료는 별도로 지불됩니다.",
+      "stakerKey": "스테이커 키",
+      "stakerKeyPlaceholder": "스테이커의 위임 키를 붙여넣으세요",
+      "stakerKeyHelp": "스테이킹 운영자가 공개하는 96자 키입니다. 운영자는 NAV를 스테이킹할 수 있지만 사용할 수는 없습니다.",
+      "paste": "붙여넣기",
+      "scan": "스캔",
+      "keyValid": "유효한 스테이커 키",
+      "keyInvalid": "스테이커 키는 16진수 96자입니다.",
+      "recent": "내 스테이커",
+      "rewardsTo": "보상 받을 곳",
+      "rewardsWallet": "이 지갑",
+      "rewardsCustom": "다른 주소",
+      "rewardsAddress": "보상용 Navio 주소",
+      "belowMin": "최소 {min} NAV를 스테이킹하세요.",
+      "insufficient": "스테이킹 가능 잔액은 {available} NAV입니다.",
+      "whatIsKey": "스테이커 키란?"
+    },
+    "review": {
+      "title": "스테이킹 확인",
+      "confirm": "{amount} NAV 스테이킹",
+      "busy": "스테이킹 중…",
+      "fee": "네트워크 수수료",
+      "feeValue": "잔액에서 지불",
+      "anyTime": "언제든",
+      "successTitle": "스테이킹 전송됨",
+      "successMessage": "{amount} NAV를 스테이킹하고 있습니다. 거래가 확인되면 스테이킹 중으로 표시됩니다.",
+      "failed": "스테이킹 실패"
+    },
+    "unstakeForm": {
+      "title": "스테이킹 해제",
+      "reviewTitle": "해제 확인",
+      "nothing": "아직 해제할 수 있는 확인된 위임이 없습니다.",
+      "all": "전체",
+      "part": "일부",
+      "amountLabel": "해제할 금액",
+      "toWallet": "해제되는 금액",
+      "remains": "계속 스테이킹",
+      "feeHint": "네트워크 수수료는 해제 금액에서 차감됩니다.",
+      "partOnlySingle": "일부를 해제하려면 개별 위임을 여세요.",
+      "partUnknown": "이 위임은 전체만 해제할 수 있습니다.",
+      "tooMuch": "여기서는 최대 {max} NAV까지 해제할 수 있습니다.",
+      "tooLittle": "네트워크 수수료보다 많이 해제하세요.",
+      "remainderTooSmall": "남는 스테이킹 금액은 최소 {min} NAV여야 합니다. 더 적게 해제하거나 전체를 해제하세요.",
+      "arrives": "도착",
+      "arrivesValue": "확인 후 지갑으로",
+      "feeValue": "해제 금액에서 차감",
+      "revokes": "해제하면 이 NAV의 위임이 종료되어 스테이커가 더 이상 스테이킹할 수 없습니다.",
+      "keepsStaker": "나머지는 같은 스테이커에게 계속 스테이킹됩니다. 확인 후 다시 해제할 수 있습니다.",
+      "confirm": "{amount} NAV 해제",
+      "busy": "해제 중…",
+      "successTitle": "해제 전송됨",
+      "successMessage": "거래가 확인되면 {amount} NAV를 지갑에서 사용할 수 있습니다.",
+      "failed": "해제 실패"
+    },
+    "rewards": {
+      "title": "보상",
+      "range": "기간",
+      "earned": "{range} 동안 받은 보상",
+      "count": "보상 {count}건",
+      "empty": "이 기간에 받은 보상이 없습니다",
+      "none": "스테이커가 내 스테이크로 블록을 생성할 때마다 보상이 \"Reward\" 메모와 함께 지갑으로 들어옵니다.",
+      "period": "기간"
+    },
+    "operators": {
+      "choose": "선택",
+      "title": "스테이커 선택",
+      "operator": "운영자",
+      "fee": "수수료 {fee}%",
+      "noFee": "수수료 없음",
+      "feeLabel": "수수료",
+      "since": "{date}부터 등록",
+      "website": "웹사이트",
+      "error": "운영자 목록을 불러오지 못했습니다. 연결을 확인하세요.",
+      "retry": "다시 시도",
+      "empty": "{network}에 등록된 운영자가 아직 없습니다. 스테이커 키를 직접 붙여넣을 수도 있습니다.",
+      "disclaimer": "go.nav.io에서 제공하는 목록입니다. 등록이 추천을 뜻하지는 않습니다. 수수료와 보상 지급은 운영자의 약속이며 네트워크가 강제하지 않습니다.",
+      "default": "기본"
+    }
+  },
+  "stakingGuide": {
+    "title": "스테이킹 작동 방식",
+    "intro": "Navio는 지분 증명(PoS) 네트워크입니다. 블록은 스테이킹을 위해 잠긴 NAV로 생성됩니다. 이런 경량 지갑은 직접 블록을 만들 수 없으므로, 24시간 돌아가는 노드인 스테이커에게 스테이크를 위임합니다. NAV를 쓸 수 있는 키는 이 지갑에 그대로 남습니다.",
+    "facts": {
+      "blockReward": "블록 보상",
+      "blockTime": "블록 시간",
+      "minStake": "최소 스테이크",
+      "maturity": "보상 사용 가능",
+      "minutes": "{n}분",
+      "blocks": "{n}블록 후"
+    },
+    "flow": {
+      "title": "지갑에서 블록까지",
+      "wallet": {
+        "title": "내 지갑",
+        "body": "NAV를 스테이킹 커밋먼트에 잠그고, 그 공개 정보를 선택한 스테이커용으로 암호화합니다."
+      },
+      "staker": {
+        "title": "스테이커",
+        "body": "자신의 키로 위임된 커밋먼트를 찾아 블록마다 스테이킹합니다."
+      },
+      "network": {
+        "title": "네트워크",
+        "body": "각 블록을 누가 생성할지, 뒤에 있는 스테이크에 비례해 선택합니다."
+      },
+      "reward": {
+        "title": "내 보상",
+        "body": "스테이커가 블록 보상을 내 주소로 지급합니다. 기록에는 \"Reward\" 메모로 표시됩니다."
+      }
+    },
+    "rewards": {
+      "title": "얼마나 받나요",
+      "body": "모든 블록은 반감기 없이 고정 {reward} NAV를 지급합니다. 네트워크 전체로 하루 약 {perDay} NAV입니다. 나는 그중 내 몫, 즉 전체 스테이크 중 내 비율만큼을 받고, 스테이커 수수료가 차감됩니다.",
+      "formula": "하루 ≈ {blocks}블록 × {reward} NAV × (내 스테이크 ÷ 전체 스테이크) × (1 − 수수료)",
+      "luck": "블록마다 추첨이므로 보상은 불규칙하게 옵니다. 작은 스테이크는 며칠을 기다렸다가 연달아 두 번 받을 수도 있습니다. 시간이 지나면 평균은 공식에 가까워집니다.",
+      "maturity": "보상은 {blocks}번 확인 후(약 {hours}시간) 사용할 수 있습니다. 보상은 스테이크에 자동으로 더해지지 않으니 \"추가 스테이킹\"으로 다시 굴리세요."
+    },
+    "estimator": {
+      "title": "보상 예상",
+      "yourStake": "내 스테이크",
+      "totalStaked": "네트워크 전체 스테이크",
+      "totalHint": "지갑에서는 알 수 없습니다. 블록 탐색기나 스테이커에게서 확인하세요.",
+      "fee": "스테이커 수수료",
+      "perDay": "하루",
+      "perMonth": "한 달",
+      "perYear": "1년",
+      "apr": "연 수익률",
+      "every": "평균 {time}마다 보상 1회.",
+      "note": "약속이 아닌 평균입니다. 전체 스테이크가 그대로이고 스테이커가 온라인 상태로 정직하게 운영된다고 가정합니다.",
+      "enterTotal": "예상치를 보려면 네트워크 전체 스테이크를 입력하세요."
+    },
+    "units": {
+      "days": "{n}일",
+      "hours": "{n}시간",
+      "minutes": "{n}분"
+    },
+    "key": {
+      "title": "위임 키",
+      "body": "스테이커는 위임 키로 식별됩니다. 이는 16진수 96자로 표기되는 48바이트 BLS12-381 공개 키입니다. 운영자가 {cmd}로 생성해 공개합니다. 짝이 되는 개인 키는 스테이킹 서버 밖으로 나가지 않습니다.",
+      "example": "예시",
+      "payload": "스테이킹하면 이 지갑은 커밋먼트의 공개 정보와 보상 주소를 그 키로 암호화합니다(ECDH + ChaCha20-Poly1305, 매번 새 키). 그 스테이커만 읽을 수 있으며, 그것도 위임한 NAV에 한해서입니다.",
+      "network": "키는 무작위이며 네트워크 정보를 담지 않습니다. 같은 키가 메인넷과 테스트넷 모두에서 유효합니다. 운영자가 이 지갑과 같은 네트워크에서 스테이커를 돌리는지 확인하세요. 그렇지 않으면 아무도 내 NAV를 스테이킹하지 않습니다."
+    },
+    "trust": {
+      "title": "스테이커가 할 수 있는 것과 없는 것",
+      "can": "할 수 있음",
+      "cannot": "할 수 없음",
+      "can1": "내 스테이크로 블록 생성",
+      "can2": "위임받은 금액 확인",
+      "can3": "향후 보상을 다른 곳으로 보내기",
+      "cannot1": "내 NAV 사용 또는 해제",
+      "cannot2": "지갑의 다른 정보 보기",
+      "cannot3": "내 해제 막기"
+    },
+    "fee": {
+      "title": "스테이커 수수료와 보상 경로",
+      "body": "운영자는 각 보상의 일부를 베이시스 포인트(1000 = 10%)로 정해 가져갈 수 있습니다. 이는 같은 블록에서 별도의 \"Operator Fee\" 출력으로 지급되며, 나머지가 나에게 옵니다.",
+      "advisory": "경로는 규칙이 아니라 요청입니다. 스테이커가 직접 블록을 만들고, 체인에는 지급을 강제하는 장치가 없습니다. 보상 패널을 지켜보다가 보상이 멈추면 해제하고 다른 스테이커를 선택하세요."
+    },
+    "unstake": {
+      "title": "스테이킹 해제",
+      "body": "스테이커에게 묻지 않고 언제든 해제할 수 있습니다. 확인된 위임만 해제할 수 있습니다. 네트워크 수수료는 해제 금액에서 차감되며, 거래가 확인되는 즉시 NAV를 사용할 수 있습니다.",
+      "partial": "일부 해제 시 나머지는 같은 스테이커에게 계속 스테이킹됩니다. 남는 금액은 최소 {min} NAV여야 합니다."
+    },
+    "privacy": {
+      "title": "개인정보 보호",
+      "body": "위임된 스테이크는 체인에서 위임된 것으로 식별되지만, 금액과 뒤의 스테이커는 다른 모두에게 숨겨집니다. 보기 키는 공유되지 않으며, 스테이커는 위임받은 출력의 금액만 알 수 있습니다."
+    },
+    "restore": {
+      "title": "복구 문구로 복원",
+      "body": "위임 정보는 스테이커용과 이 지갑용으로 암호화되어 체인에 저장됩니다. 복구 문구로 복원하면 다른 모든 것과 함께 돌아옵니다."
+    },
+    "self": {
+      "title": "직접 스테이커 운영하기",
+      "body": "제3자가 필요 없습니다. 내 서버에서 navio-staker를 실행하고 내 키로 위임하세요. 서버에는 위임 키만 있으므로, 서버가 침해되어도 NAV와 지난 보상은 안전합니다.",
+      "step1": "서버에서 키 쌍 생성",
+      "step2": "이 지갑의 NAV 스테이킹에 공개 키 붙여넣기",
+      "step3": "개인 키 파일로 스테이커 시작"
+    },
+    "docs": "콜드 스테이킹 전체 문서"
   },
   "send": {
     "insufficient": "지갑에 NAV가 부족합니다. 사용 가능: {available} NAV.",
@@ -1488,5 +1720,10 @@
     "copyHash": "ID 복사",
     "emptyFilter": "이 네트워크에는 아직 내역이 없습니다.",
     "bscNote": "BNB Chain은 이 기기의 이 앱에서 한 스왑만 보여 줍니다. 그 외 활동은 탐색기에서 확인하세요."
+  },
+  "toast": {
+    "received": "NAV 받음",
+    "sent": "NAV 보냄",
+    "reward": "스테이킹 보상"
   }
 }

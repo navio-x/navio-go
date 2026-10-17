@@ -57,6 +57,25 @@
         </button>
       </div>
 
+      <div class="border-t border-gray-200 dark:border-gh-700 px-4 py-3 flex items-center justify-between gap-3">
+        <div class="min-w-0">
+          <p class="text-sm text-gray-700 dark:text-gray-300">{{ $t('settings.txSound') }}</p>
+          <p class="text-xs text-gray-400 dark:text-gray-500 mt-0.5 leading-snug">{{ $t('settings.txSoundDesc') }}</p>
+        </div>
+        <button
+          @click="settings.txSound = !settings.txSound"
+          class="relative inline-flex h-6 w-11 items-center rounded-full transition-colors shrink-0"
+          :class="settings.txSound ? 'bg-blue-500' : 'bg-gray-300 dark:bg-gh-600'"
+          role="switch"
+          :aria-checked="settings.txSound"
+        >
+          <span
+            class="inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform"
+            :class="settings.txSound ? 'translate-x-6' : 'translate-x-1'"
+          />
+        </button>
+      </div>
+
       <div class="border-t border-gray-200 dark:border-gh-700 px-4 py-3 flex items-center justify-between">
         <label class="text-sm text-gray-700 dark:text-gray-300">{{ $t('settings.showBlockNumber') }}</label>
         <button
@@ -204,6 +223,9 @@
         <div class="min-w-0">
           <p class="text-sm text-gray-700 dark:text-gray-300 truncate">{{ $t('settings.dexMode') }}</p>
           <p class="text-xs text-gray-400 dark:text-gray-500 mt-0.5 leading-snug">{{ $t('settings.dexModeDesc') }}</p>
+          <p v-if="settings.dexMode && walletNetwork && !isMainnet" class="mt-1 text-xs leading-snug text-amber-600 dark:text-amber-400">
+            {{ $t('settings.hlMainnetOnly') }}
+          </p>
         </div>
         <button
           @click="settings.dexMode = !settings.dexMode"
@@ -661,6 +683,7 @@ import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import { Store, LogOut } from 'lucide-vue-next'
 import { settings } from '../stores/settings'
+import { walletNetwork, isMainnet } from '../stores/network'
 import { disconnectWallet, logoutWallet, walletName } from '../stores/navio'
 import { UNLOCK_DURATIONS } from '../lib/unlockCache'
 import { FIAT_CURRENCIES } from '../stores/navPrice'

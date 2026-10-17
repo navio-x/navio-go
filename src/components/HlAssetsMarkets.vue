@@ -58,7 +58,7 @@
       </component>
 
       <button
-        v-if="settings.dexMode"
+        v-if="hlEnabled"
         @click="showAssetPicker = true"
         class="mt-2 w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-medium transition-colors
                border border-dashed border-gray-300 dark:border-gh-600 text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gh-800"
@@ -222,6 +222,7 @@
 import { computed, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { settings } from '@/stores/settings'
+import { hlEnabled } from '@/stores/network'
 import { navPrice } from '@/stores/navPrice'
 import { evmAddress } from '@/stores/evm'
 import { useHyperliquidBalances } from '@/composables/useHyperliquidBalances'
@@ -254,9 +255,9 @@ function formatFiat(value, currency = settings.currency ?? 'USD') {
 }
 
 // ===================== Hyperliquid (dexMode only) =====================
-// Gated on dexMode the same way /dex and /market/hl are: with it off the
+// Gated on hlEnabled the same way /market/hl is: with it off the
 // address stays '' so neither composable makes a single request.
-const hlAddress = computed(() => (settings.dexMode && !props.balances ? evmAddress.value : ''))
+const hlAddress = computed(() => (hlEnabled.value && !props.balances ? evmAddress.value : ''))
 const hl = useHyperliquidBalances(hlAddress)
 const balanceRows = computed(() => props.balances ?? hl.balances.value)
 
@@ -295,7 +296,7 @@ const hlRows = computed(() => {
 // picker can show live prices too.
 const pairIndexByKey = ref({})
 const tickerIndices = computed(() =>
-  settings.dexMode ? Object.values(pairIndexByKey.value).filter((i) => i != null) : []
+  hlEnabled.value ? Object.values(pairIndexByKey.value).filter((i) => i != null) : []
 )
 const { tickers } = useHyperliquidSpotTickers(tickerIndices)
 
@@ -328,7 +329,7 @@ const homeTab = ref(readTab())
 // Markets is a Hyperliquid thing; NFTs only exists where the host has some.
 const tabs = computed(() => [
   'assets',
-  ...(settings.dexMode ? ['markets'] : []),
+  ...(hlEnabled.value ? ['markets'] : []),
   ...(props.nfts ? ['nfts'] : []),
 ])
 // Falls back to Assets while the remembered tab isn't on offer.
@@ -391,7 +392,7 @@ function formatCompactUsd(value) {
 }
 
 watch(
-  () => settings.dexMode,
+  hlEnabled,
   (on) => {
     if (!on || Object.keys(pairIndexByKey.value).length) return
     for (const [pair, m] of Object.entries(HL_SPOT_MARKETS)) {

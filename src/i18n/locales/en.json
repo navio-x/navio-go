@@ -63,6 +63,8 @@
     "fiat": "Fiat",
     "wallpaper": "Wallpaper",
     "showFiatValue": "Show Fiat Value",
+    "txSound": "Transaction sound",
+    "txSoundDesc": "A short chime when NAV arrives, leaves, or a staking reward comes in.",
     "showBlockNumber": "Show Block Number",
     "syncIndicator": "Sync Indicator",
     "syncIndicatorBar": "Thin bar",
@@ -106,6 +108,7 @@
     "merchantRequiredConfirmationsDesc": "How many blocks must confirm a payment above the instant-accept limit before it counts as paid. More confirmations are safer against a blockchain reorganization, but make the customer wait longer at checkout.",
     "dexMode": "DEX / EVM Mode",
     "dexModeDesc": "Adds an optional BSC (EVM) account derived from this wallet's recovery phrase, for swapping on PancakeSwap. No network calls while turned off.",
+    "hlMainnetOnly": "Hyperliquid (bridge, swap and NAV trading) is available on mainnet only. This wallet is on another network.",
     "tradeMode": "Trade",
     "tradeModeDesc": "Peer-to-peer RFQ trading over Navio's own encrypted p2p bus — separate from DEX/EVM above. Requires a server carrying the trading bridge. Off by default — no network calls until enabled.",
     "chatMode": "Chat (Beta)",
@@ -279,7 +282,8 @@
     "synced": "SYNCED",
     "useAll": "Use All",
     "subtractFeeFromAmount": "Subtract fee from amount",
-    "subtractFeeFromAmountDesc": "The network fee will be deducted from the amount you send"
+    "subtractFeeFromAmountDesc": "The network fee will be deducted from the amount you send",
+    "pendingCount": "{n} pending transaction | {n} pending transactions"
   },
   "wizard": {
     "walletName": "Wallet Name",
@@ -1424,7 +1428,9 @@
       "exchangeHint": "Hyperliquid. Public. Ready to swap.",
       "exchangeHintOrders": "Hyperliquid. Public. {amount} in open orders.",
       "moving": "On the way",
-      "movingHint": "Moving between the two."
+      "movingHint": "Moving between the two.",
+      "staked": "Staked",
+      "stakedHint": "Delegated to a staker. Unstake to spend."
     },
     "links": {
       "trade": "Order book",
@@ -1437,6 +1443,232 @@
       "manualWithdrawHint": "Withdraw to any Navio address, step by step"
     },
     "explain": "NAV on the exchange is NAV held for you by the Navio–Hyperliquid bridge, one to one, as a token called Wrapped Navio. The bridge is custodial, and unlike NAV in your wallet, balances and trades on Hyperliquid are public."
+  },
+  "staking": {
+    "title": "Staking",
+    "staked": "Staked",
+    "staker": "Staker",
+    "summary": "{count} delegation | {count} delegations",
+    "stakeMore": "Stake more",
+    "unstake": "Unstake",
+    "start": "Start staking",
+    "needMin": "Staking starts at {min} NAV. You have {available} NAV available.",
+    "positions": "Delegations",
+    "waitingConfirm": "Waiting for confirmation",
+    "sinceBlock": "Since block {height}",
+    "howItWorks": "How staking works",
+    "status": {
+      "active": "Staking",
+      "confirming": "Confirming",
+      "unknown": "Staker unknown"
+    },
+    "hero": {
+      "title": "Put your NAV to work",
+      "subtitle": "Help secure Navio and earn rewards through a staker. Your keys never leave this wallet."
+    },
+    "perks": {
+      "keys": "Your keys stay yours",
+      "anytime": "Unstake any time",
+      "min": "From {amount} NAV"
+    },
+    "steps": {
+      "pick": "Pick a staking operator and copy their staker key.",
+      "lock": "Your NAV is locked in a staking commitment. The staker can use it to produce blocks, but never spend it.",
+      "earn": "The staker pays rewards to your address. Unstake whenever you like and the NAV is spendable again."
+    },
+    "notice": {
+      "custody": "The staker can stake this NAV but can never spend it. Only this wallet can unstake.",
+      "rewards": "Rewards are paid by the staker, not enforced by the network. Stake with an operator you trust.",
+      "locked": "Staked NAV isn't spendable until you unstake it."
+    },
+    "position": {
+      "title": "Delegation",
+      "stakerKey": "Staker key",
+      "since": "Confirmed at block",
+      "tx": "Transaction",
+      "unknownHint": "This wallet can't read who this NAV is delegated to, so it may not be staking. Unstake it and stake again with a staker you know."
+    },
+    "form": {
+      "title": "Stake NAV",
+      "minHint": "Minimum {min} NAV. The network fee is paid on top.",
+      "stakerKey": "Staker key",
+      "stakerKeyPlaceholder": "Paste the staker's delegation key",
+      "stakerKeyHelp": "Staking operators publish this 96-character key. It lets them stake your NAV, never spend it.",
+      "paste": "Paste",
+      "scan": "Scan",
+      "keyValid": "Valid staker key",
+      "keyInvalid": "A staker key is 96 hexadecimal characters.",
+      "recent": "Your stakers",
+      "rewardsTo": "Rewards to",
+      "rewardsWallet": "This wallet",
+      "rewardsCustom": "Another address",
+      "rewardsAddress": "Navio address for rewards",
+      "belowMin": "Stake at least {min} NAV.",
+      "insufficient": "You have {available} NAV available to stake.",
+      "whatIsKey": "What is a staker key?"
+    },
+    "review": {
+      "title": "Review stake",
+      "confirm": "Stake {amount} NAV",
+      "busy": "Staking…",
+      "fee": "Network fee",
+      "feeValue": "Paid from your balance",
+      "anyTime": "Any time",
+      "successTitle": "Stake submitted",
+      "successMessage": "{amount} NAV is being staked. It shows as staking once the transaction confirms.",
+      "failed": "Staking failed"
+    },
+    "unstakeForm": {
+      "title": "Unstake",
+      "reviewTitle": "Review unstake",
+      "nothing": "Nothing is confirmed yet to unstake.",
+      "all": "Everything",
+      "part": "Part",
+      "amountLabel": "Amount to unlock",
+      "toWallet": "Leaves staking",
+      "remains": "Stays staked",
+      "feeHint": "The network fee is taken from the unlocked amount.",
+      "partOnlySingle": "To unstake part, open a single delegation.",
+      "partUnknown": "This delegation can only be unstaked in full.",
+      "tooMuch": "You can unlock at most {max} NAV here.",
+      "tooLittle": "Unlock more than the network fee.",
+      "remainderTooSmall": "What stays staked must be at least {min} NAV. Unlock less, or unstake everything.",
+      "arrives": "Arrives",
+      "arrivesValue": "In your wallet, once confirmed",
+      "feeValue": "Taken from the unlocked amount",
+      "revokes": "Unstaking ends the delegation for this NAV: the staker can no longer stake it.",
+      "keepsStaker": "The rest stays staked with the same staker. It can be unstaked again once it confirms.",
+      "confirm": "Unstake {amount} NAV",
+      "busy": "Unstaking…",
+      "successTitle": "Unstake submitted",
+      "successMessage": "{amount} NAV will be spendable in your wallet once the transaction confirms.",
+      "failed": "Unstaking failed"
+    },
+    "rewards": {
+      "title": "Rewards",
+      "range": "Time range",
+      "earned": "Earned in {range}",
+      "count": "{count} reward | {count} rewards",
+      "empty": "No rewards in this period",
+      "none": "Rewards arrive in your wallet with the memo \"Reward\" each time your staker produces a block with your stake.",
+      "period": "Period"
+    },
+    "operators": {
+      "choose": "Choose",
+      "title": "Choose a staker",
+      "operator": "Operator",
+      "fee": "{fee}% fee",
+      "noFee": "No fee",
+      "feeLabel": "Fee",
+      "since": "Listed since {date}",
+      "website": "Website",
+      "error": "Couldn't load the operator list. Check your connection.",
+      "retry": "Try again",
+      "empty": "No operators are listed for {network} yet. You can still paste a staker key.",
+      "disclaimer": "Listed by go.nav.io. A listing is not an endorsement: the fee and reward payouts are the operator's promise, not enforced by the network.",
+      "default": "Default"
+    }
+  },
+  "stakingGuide": {
+    "title": "How staking works",
+    "intro": "Navio is proof of stake: blocks are produced by NAV locked for staking. A light wallet like this one can't produce blocks itself, so it delegates its stake to a staker, a node that runs around the clock, while this wallet keeps the keys that can spend it.",
+    "facts": {
+      "blockReward": "Block reward",
+      "blockTime": "Block time",
+      "minStake": "Minimum stake",
+      "maturity": "Rewards spendable after",
+      "minutes": "{n} min",
+      "blocks": "{n} blocks"
+    },
+    "flow": {
+      "title": "From your wallet to a block",
+      "wallet": {
+        "title": "Your wallet",
+        "body": "Locks NAV in a staked commitment and encrypts its opening for the staker you chose."
+      },
+      "staker": {
+        "title": "The staker",
+        "body": "Finds the commitments delegated to its key and stakes them, block after block."
+      },
+      "network": {
+        "title": "The network",
+        "body": "Picks who produces each block, in proportion to the stake behind it."
+      },
+      "reward": {
+        "title": "Your reward",
+        "body": "The staker pays the block reward to your address. It shows in your history with the memo \"Reward\"."
+      }
+    },
+    "rewards": {
+      "title": "How much you earn",
+      "body": "Every block pays a flat {reward} NAV, with no halving: about {perDay} NAV a day across the whole network. You receive your share of it, which is your share of all NAV staked, minus the staker's fee.",
+      "formula": "Per day ≈ {blocks} blocks × {reward} NAV × (your stake ÷ total staked) × (1 − fee)",
+      "luck": "Each block is a draw, so rewards come irregularly: a small stake may wait days for one, then get two in a row. Over time they average out to the formula.",
+      "maturity": "A reward becomes spendable after {blocks} confirmations (about {hours} hours). Rewards are not added to your stake on their own; use \"Stake more\" to put them to work."
+    },
+    "estimator": {
+      "title": "Estimate your rewards",
+      "yourStake": "Your stake",
+      "totalStaked": "Total staked on the network",
+      "totalHint": "The wallet can't see this; take it from a block explorer or your staker.",
+      "fee": "Staker fee",
+      "perDay": "Per day",
+      "perMonth": "Per month",
+      "perYear": "Per year",
+      "apr": "Yearly rate",
+      "every": "On average, one reward every {time}.",
+      "note": "An average, not a promise: it assumes the total stake stays the same and the staker stays online and honest.",
+      "enterTotal": "Enter the network's total stake to see an estimate."
+    },
+    "units": {
+      "days": "day | {n} days",
+      "hours": "hour | {n} hours",
+      "minutes": "minute | {n} minutes"
+    },
+    "key": {
+      "title": "The delegation key",
+      "body": "A staker is identified by its delegation key: a 48-byte BLS12-381 public key, written as 96 hexadecimal characters. The operator creates it with {cmd} and publishes it. The matching private key never leaves their staking server.",
+      "example": "What one looks like",
+      "payload": "When you stake, this wallet encrypts the commitment's opening and your reward address to that key (ECDH + ChaCha20-Poly1305, with a fresh key every time). Only that staker can read it, and only for the NAV you delegated to it.",
+      "network": "The key is random and carries no network: the same key works on mainnet and testnet. Make sure the operator runs its staker on the network this wallet uses, or nobody will stake your NAV."
+    },
+    "trust": {
+      "title": "What a staker can and can't do",
+      "can": "Can",
+      "cannot": "Can't",
+      "can1": "Produce blocks with your stake",
+      "can2": "See the amounts you delegated to it",
+      "can3": "Send future rewards somewhere else",
+      "cannot1": "Spend or unstake your NAV",
+      "cannot2": "See anything else in your wallet",
+      "cannot3": "Stop you from unstaking"
+    },
+    "fee": {
+      "title": "Staker fee and reward routing",
+      "body": "An operator may keep a share of each reward, set in basis points (1000 = 10%). It is paid in the same block as a separate \"Operator Fee\" output; you receive the rest.",
+      "advisory": "Routing is a request, not a rule: the staker builds its own block, and nothing on-chain forces it to pay you. Keep an eye on the Rewards panel; if rewards stop, unstake and choose another staker."
+    },
+    "unstake": {
+      "title": "Unstaking",
+      "body": "You can unstake whenever you like, without asking the staker. Only confirmed delegations can be unstaked. The network fee comes out of the unlocked amount, and the NAV is spendable as soon as the transaction confirms.",
+      "partial": "A partial unstake keeps the rest staked with the same staker. What stays must still be at least {min} NAV."
+    },
+    "privacy": {
+      "title": "Privacy",
+      "body": "Delegated stake is recognisable on-chain as delegated, but its amount and the staker behind it stay hidden from everyone else. No view keys are shared: the staker learns only the amounts of the outputs you delegated to it."
+    },
+    "restore": {
+      "title": "Restoring from your recovery phrase",
+      "body": "Your delegations live on-chain, encrypted for this wallet as well as for the staker. Restore from your recovery phrase and they come back with everything else."
+    },
+    "self": {
+      "title": "Run your own staker",
+      "body": "You don't need a third party: run navio-staker on a server of your own and delegate to your own key. The server holds only the delegation key, so even if it is compromised, your NAV and past rewards stay safe.",
+      "step1": "On the server, create a key pair",
+      "step2": "Paste the public key into Stake NAV in this wallet",
+      "step3": "Start the staker with the private key file"
+    },
+    "docs": "Full cold staking documentation"
   },
   "send": {
     "insufficient": "Not enough NAV in your wallet. Available: {available} NAV.",
@@ -1488,5 +1720,10 @@
     "copyHash": "Copy ID",
     "emptyFilter": "Nothing on this network yet.",
     "bscNote": "BNB Chain shows swaps made in this app on this device. Other activity is on the explorer."
+  },
+  "toast": {
+    "received": "NAV received",
+    "sent": "NAV sent",
+    "reward": "Staking reward"
   }
 }

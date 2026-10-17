@@ -14,6 +14,7 @@
       <router-view />
     </div>
     <BottomNavbar v-if="showNavbar" />
+    <TxToasts />
     <PwaInstallPrompt v-if="!isExtension" />
 
     <!-- Android back button exit confirmation -->
@@ -61,9 +62,11 @@ import { useRoute, useRouter } from 'vue-router'
 import { App as CapApp } from '@capacitor/app'
 import { Capacitor } from '@capacitor/core'
 import { settings, applyTheme } from './stores/settings'
+import { hlEnabled } from './stores/network'
 import { syncSystemBarsToPage } from './lib/systemBars'
 import { isExtensionContext } from './lib/extensionSession'
 import BottomNavbar from './components/BottomNavbar.vue'
+import TxToasts from './components/TxToasts.vue'
 import PwaInstallPrompt from './components/PwaInstallPrompt.vue'
 
 // "Install as PWA" is meaningless from inside an already-installed browser
@@ -105,7 +108,16 @@ watch(() => settings.merchantMode, (enabled) => {
 
 // DEX modu Settings'ten kapatılırsa ve kullanıcı hâlâ /dex'teyse aynı anda dışarı çıkar.
 watch(() => settings.dexMode, (enabled) => {
-  if (!enabled && (route.path.startsWith('/dex') || route.path.startsWith('/swap'))) {
+  if (!enabled && route.path.startsWith('/dex')) {
+    router.replace('/wallet/balance')
+  }
+})
+
+// Hyperliquid (bridge, swap, markets) is mainnet only: leave its screens as
+// soon as it is turned off or a wallet on another network is opened.
+const HL_PATHS = ['/swap', '/hl/', '/market/hl/', '/bridge/']
+watch(hlEnabled, (enabled) => {
+  if (!enabled && HL_PATHS.some((p) => route.path.startsWith(p))) {
     router.replace('/wallet/balance')
   }
 })

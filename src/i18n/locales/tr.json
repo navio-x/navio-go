@@ -63,6 +63,8 @@
     "fiat": "Fiat",
     "wallpaper": "Arka Plan",
     "showFiatValue": "Fiat Değerini Göster",
+    "txSound": "İşlem sesi",
+    "txSoundDesc": "NAV geldiğinde, gittiğinde ya da staking ödülü düştüğünde kısa bir ses çalar.",
     "showBlockNumber": "Blok Numarasını Göster",
     "syncIndicator": "Senkronizasyon Göstergesi",
     "syncIndicatorBar": "İnce çubuk",
@@ -106,6 +108,7 @@
     "merchantRequiredConfirmationsDesc": "Anında kabul sınırının üzerindeki bir ödemenin ödendi sayılması için kaç blok onaylanması gerektiği. Daha fazla onay, blok zinciri yeniden düzenlenmesine karşı daha güvenlidir ama müşteriyi kasada daha uzun bekletir.",
     "dexMode": "DEX / EVM Modu",
     "dexModeDesc": "Bu cüzdanın kurtarma ifadesinden türetilen opsiyonel bir BSC (EVM) hesabı ekler, PancakeSwap üzerinde swap yapmak için. Kapalıyken hiçbir ağ isteği yapılmaz.",
+    "hlMainnetOnly": "Hyperliquid (köprü, swap ve NAV alım satımı) yalnızca mainnet'te kullanılabilir. Bu cüzdan başka bir ağda.",
     "tradeMode": "Trade",
     "tradeModeDesc": "Navio'nun kendi şifreli p2p ağı üzerinden eşler arası RFQ alım satımı — yukarıdaki DEX/EVM'den ayrı. Alım satım köprüsünü taşıyan bir sunucu gerektirir. Varsayılan olarak kapalıdır — açılmadan hiçbir ağ isteği yapılmaz.",
     "chatMode": "Sohbet (Beta)",
@@ -279,7 +282,8 @@
     "synced": "SENKRONİZE",
     "useAll": "Tümünü Kullan",
     "subtractFeeFromAmount": "Ücreti miktardan düş",
-    "subtractFeeFromAmountDesc": "Ağ ücreti gönderdiğiniz miktardan düşülecek"
+    "subtractFeeFromAmountDesc": "Ağ ücreti gönderdiğiniz miktardan düşülecek",
+    "pendingCount": "{n} bekleyen işlem | {n} bekleyen işlem"
   },
   "wizard": {
     "walletName": "Cüzdan Adı",
@@ -1424,7 +1428,9 @@
       "exchangeHint": "Hyperliquid. Herkese açık. Takasa hazır.",
       "exchangeHintOrders": "Hyperliquid. Herkese açık. {amount} açık emirlerde.",
       "moving": "Yolda",
-      "movingHint": "İkisi arasında taşınıyor."
+      "movingHint": "İkisi arasında taşınıyor.",
+      "staked": "Stake'te",
+      "stakedHint": "Bir staker'a devredildi. Harcamak için stake'ten çıkarın."
     },
     "links": {
       "trade": "Emir defteri",
@@ -1437,6 +1443,232 @@
       "manualWithdrawHint": "Herhangi bir Navio adresine adım adım çek"
     },
     "explain": "Borsadaki NAV, Navio–Hyperliquid köprüsünün sizin adınıza bire bir tuttuğu NAV'dır; Wrapped Navio adlı bir token olarak durur. Köprü emanetçidir ve cüzdanınızdaki NAV'ın aksine Hyperliquid'deki bakiyeler ve işlemler herkese açıktır."
+  },
+  "staking": {
+    "title": "Staking",
+    "staked": "Stake edilen",
+    "staker": "Staker",
+    "summary": "{count} delegasyon | {count} delegasyon",
+    "stakeMore": "Daha fazla stake et",
+    "unstake": "Stake'ten çıkar",
+    "start": "Stake etmeye başla",
+    "needMin": "Staking {min} NAV'dan başlar. Kullanılabilir bakiyeniz {available} NAV.",
+    "positions": "Delegasyonlar",
+    "waitingConfirm": "Onay bekleniyor",
+    "sinceBlock": "{height}. bloktan beri",
+    "howItWorks": "Staking nasıl çalışır",
+    "status": {
+      "active": "Stake ediliyor",
+      "confirming": "Onaylanıyor",
+      "unknown": "Staker bilinmiyor"
+    },
+    "hero": {
+      "title": "NAV'ınızı çalıştırın",
+      "subtitle": "Bir staker aracılığıyla Navio'nun güvenliğine katkı sağlayın ve ödül kazanın. Anahtarlarınız bu cüzdandan asla çıkmaz."
+    },
+    "perks": {
+      "keys": "Anahtarlar sizde kalır",
+      "anytime": "İstediğiniz an çıkın",
+      "min": "{amount} NAV'dan başlar"
+    },
+    "steps": {
+      "pick": "Bir staking operatörü seçin ve staker anahtarını kopyalayın.",
+      "lock": "NAV'ınız bir staking taahhüdüne kilitlenir. Staker bununla blok üretebilir ama asla harcayamaz.",
+      "earn": "Staker ödülleri adresinize öder. İstediğiniz zaman stake'ten çıkın, NAV tekrar harcanabilir olur."
+    },
+    "notice": {
+      "custody": "Staker bu NAV'ı stake edebilir ama asla harcayamaz. Stake'ten yalnızca bu cüzdan çıkarabilir.",
+      "rewards": "Ödülleri ağ değil staker öder. Güvendiğiniz bir operatörle stake edin.",
+      "locked": "Stake edilen NAV, stake'ten çıkarana kadar harcanamaz."
+    },
+    "position": {
+      "title": "Delegasyon",
+      "stakerKey": "Staker anahtarı",
+      "since": "Onaylandığı blok",
+      "tx": "İşlem",
+      "unknownHint": "Bu cüzdan bu NAV'ın kime devredildiğini okuyamıyor, bu yüzden stake ediliyor olmayabilir. Stake'ten çıkarıp tanıdığınız bir staker ile yeniden stake edin."
+    },
+    "form": {
+      "title": "NAV stake et",
+      "minHint": "En az {min} NAV. Ağ ücreti ayrıca ödenir.",
+      "stakerKey": "Staker anahtarı",
+      "stakerKeyPlaceholder": "Staker'ın delegasyon anahtarını yapıştırın",
+      "stakerKeyHelp": "Staking operatörleri bu 96 karakterlik anahtarı yayınlar. Anahtar, NAV'ınızı stake etmelerini sağlar; harcamalarını asla.",
+      "paste": "Yapıştır",
+      "scan": "Tara",
+      "keyValid": "Geçerli staker anahtarı",
+      "keyInvalid": "Staker anahtarı 96 onaltılık karakterden oluşur.",
+      "recent": "Staker'larınız",
+      "rewardsTo": "Ödüller",
+      "rewardsWallet": "Bu cüzdan",
+      "rewardsCustom": "Başka adres",
+      "rewardsAddress": "Ödüller için Navio adresi",
+      "belowMin": "En az {min} NAV stake edin.",
+      "insufficient": "Stake için kullanılabilir bakiyeniz {available} NAV.",
+      "whatIsKey": "Staker anahtarı nedir?"
+    },
+    "review": {
+      "title": "Stake'i incele",
+      "confirm": "{amount} NAV stake et",
+      "busy": "Stake ediliyor…",
+      "fee": "Ağ ücreti",
+      "feeValue": "Bakiyenizden ödenir",
+      "anyTime": "İstediğiniz zaman",
+      "successTitle": "Stake gönderildi",
+      "successMessage": "{amount} NAV stake ediliyor. İşlem onaylandığında stake ediliyor olarak görünür.",
+      "failed": "Stake başarısız"
+    },
+    "unstakeForm": {
+      "title": "Stake'ten çıkar",
+      "reviewTitle": "Çıkışı incele",
+      "nothing": "Stake'ten çıkarılacak onaylanmış bir delegasyon yok.",
+      "all": "Tamamı",
+      "part": "Bir kısmı",
+      "amountLabel": "Çıkarılacak miktar",
+      "toWallet": "Stake'ten çıkan",
+      "remains": "Stake'te kalan",
+      "feeHint": "Ağ ücreti çıkarılan miktardan düşülür.",
+      "partOnlySingle": "Bir kısmını çıkarmak için tek bir delegasyonu açın.",
+      "partUnknown": "Bu delegasyon yalnızca tamamen çıkarılabilir.",
+      "tooMuch": "Burada en fazla {max} NAV çıkarabilirsiniz.",
+      "tooLittle": "Ağ ücretinden fazlasını çıkarın.",
+      "remainderTooSmall": "Stake'te kalan miktar en az {min} NAV olmalı. Daha az çıkarın ya da tamamını çıkarın.",
+      "arrives": "Varış",
+      "arrivesValue": "Onaylanınca cüzdanınızda",
+      "feeValue": "Çıkarılan miktardan düşülür",
+      "revokes": "Stake'ten çıkarmak bu NAV'ın delegasyonunu sonlandırır: staker artık onu stake edemez.",
+      "keepsStaker": "Kalanı aynı staker ile stake'te kalır. Onaylandıktan sonra tekrar çıkarılabilir.",
+      "confirm": "{amount} NAV çıkar",
+      "busy": "Çıkarılıyor…",
+      "successTitle": "Çıkış gönderildi",
+      "successMessage": "İşlem onaylandığında {amount} NAV cüzdanınızda harcanabilir olacak.",
+      "failed": "Stake'ten çıkarma başarısız"
+    },
+    "rewards": {
+      "title": "Ödüller",
+      "range": "Zaman aralığı",
+      "earned": "{range} içinde kazanılan",
+      "count": "{count} ödül | {count} ödül",
+      "empty": "Bu aralıkta ödül yok",
+      "none": "Staker'ınız stake'inizle her blok ürettiğinde ödüller cüzdanınıza \"Reward\" notuyla gelir.",
+      "period": "Dönem"
+    },
+    "operators": {
+      "choose": "Seç",
+      "title": "Staker seçin",
+      "operator": "Operatör",
+      "fee": "%{fee} ücret",
+      "noFee": "Ücretsiz",
+      "feeLabel": "Ücret",
+      "since": "{date} tarihinden beri listede",
+      "website": "Web sitesi",
+      "error": "Operatör listesi yüklenemedi. Bağlantınızı kontrol edin.",
+      "retry": "Tekrar dene",
+      "empty": "{network} için henüz listelenmiş operatör yok. Yine de bir staker anahtarı yapıştırabilirsiniz.",
+      "disclaimer": "go.nav.io tarafından listelenir. Listede olmak bir tavsiye değildir: ücret ve ödül ödemeleri operatörün sözüdür, ağ tarafından zorunlu tutulmaz.",
+      "default": "Varsayılan"
+    }
+  },
+  "stakingGuide": {
+    "title": "Staking nasıl çalışır",
+    "intro": "Navio bir proof of stake ağıdır: bloklar, staking için kilitlenmiş NAV ile üretilir. Bu cüzdan gibi hafif bir cüzdan kendisi blok üretemez; bu yüzden stake'ini 7/24 çalışan bir node'a, yani bir staker'a devreder. Harcama anahtarları ise bu cüzdanda kalır.",
+    "facts": {
+      "blockReward": "Blok ödülü",
+      "blockTime": "Blok süresi",
+      "minStake": "Minimum stake",
+      "maturity": "Ödüller harcanabilir",
+      "minutes": "{n} dk",
+      "blocks": "{n} blok sonra"
+    },
+    "flow": {
+      "title": "Cüzdanınızdan bloğa",
+      "wallet": {
+        "title": "Cüzdanınız",
+        "body": "NAV'ı bir staking taahhüdüne kilitler ve açılışını seçtiğiniz staker için şifreler."
+      },
+      "staker": {
+        "title": "Staker",
+        "body": "Kendi anahtarına devredilen taahhütleri bulur ve blok blok stake eder."
+      },
+      "network": {
+        "title": "Ağ",
+        "body": "Her bloğu kimin üreteceğini, arkasındaki stake ile orantılı olarak seçer."
+      },
+      "reward": {
+        "title": "Ödülünüz",
+        "body": "Staker blok ödülünü adresinize öder. Geçmişinizde \"Reward\" notuyla görünür."
+      }
+    },
+    "rewards": {
+      "title": "Ne kadar kazanırsınız",
+      "body": "Her blok, yarılanma olmadan sabit {reward} NAV öder: tüm ağda günde yaklaşık {perDay} NAV. Siz bunun payınıza düşen kısmını alırsınız; bu pay, stake edilen tüm NAV içindeki payınızdır, eksi staker'ın ücreti.",
+      "formula": "Günlük ≈ {blocks} blok × {reward} NAV × (stake'iniz ÷ toplam stake) × (1 − ücret)",
+      "luck": "Her blok bir çekiliştir, bu yüzden ödüller düzensiz gelir: küçük bir stake bir ödül için günlerce bekleyip sonra arka arkaya iki ödül alabilir. Zamanla ortalama formüle yaklaşır.",
+      "maturity": "Bir ödül {blocks} onaydan sonra (yaklaşık {hours} saat) harcanabilir olur. Ödüller stake'inize kendiliğinden eklenmez; onları da çalıştırmak için \"Daha fazla stake et\"i kullanın."
+    },
+    "estimator": {
+      "title": "Ödülünüzü tahmin edin",
+      "yourStake": "Stake'iniz",
+      "totalStaked": "Ağdaki toplam stake",
+      "totalHint": "Cüzdan bunu göremez; bir blok gezgininden ya da staker'ınızdan öğrenin.",
+      "fee": "Staker ücreti",
+      "perDay": "Günlük",
+      "perMonth": "Aylık",
+      "perYear": "Yıllık",
+      "apr": "Yıllık oran",
+      "every": "Ortalama her {time} bir ödül.",
+      "note": "Bir ortalamadır, garanti değildir: toplam stake'in değişmediğini, staker'ın çevrimiçi ve dürüst kaldığını varsayar.",
+      "enterTotal": "Tahmini görmek için ağdaki toplam stake'i girin."
+    },
+    "units": {
+      "days": "gün | {n} günde",
+      "hours": "saat | {n} saatte",
+      "minutes": "dakika | {n} dakikada"
+    },
+    "key": {
+      "title": "Delegation anahtarı",
+      "body": "Bir staker, delegation anahtarıyla tanınır: 96 onaltılık karakterle yazılan 48 baytlık bir BLS12-381 açık anahtarı. Operatör bunu {cmd} ile oluşturup yayınlar. Eşleşen özel anahtar staking sunucusundan hiç çıkmaz.",
+      "example": "Nasıl görünür",
+      "payload": "Stake ettiğinizde bu cüzdan, taahhüdün açılışını ve ödül adresinizi bu anahtara şifreler (ECDH + ChaCha20-Poly1305, her seferinde yeni bir anahtarla). Bunu yalnızca o staker okuyabilir ve yalnızca ona devrettiğiniz NAV için.",
+      "network": "Anahtar rastgeledir ve ağ bilgisi taşımaz: aynı anahtar mainnet'te de testnet'te de geçerlidir. Operatörün staker'ını bu cüzdanın kullandığı ağda çalıştırdığından emin olun; aksi halde NAV'ınızı kimse stake etmez."
+    },
+    "trust": {
+      "title": "Bir staker neyi yapabilir, neyi yapamaz",
+      "can": "Yapabilir",
+      "cannot": "Yapamaz",
+      "can1": "Stake'inizle blok üretmek",
+      "can2": "Ona devrettiğiniz tutarları görmek",
+      "can3": "Gelecek ödülleri başka yere göndermek",
+      "cannot1": "NAV'ınızı harcamak ya da stake'ten çıkarmak",
+      "cannot2": "Cüzdanınızdaki başka bir şeyi görmek",
+      "cannot3": "Stake'ten çıkmanızı engellemek"
+    },
+    "fee": {
+      "title": "Staker ücreti ve ödül yönlendirme",
+      "body": "Operatör her ödülden baz puan cinsinden bir pay alabilir (1000 = %10). Bu pay aynı blokta ayrı bir \"Operator Fee\" çıktısıyla ödenir; kalanı size gelir.",
+      "advisory": "Yönlendirme bir kural değil, bir istektir: staker bloğunu kendisi oluşturur ve zincirde sizi ödemeye zorlayan hiçbir şey yoktur. Ödüller panelini takip edin; ödüller durursa stake'ten çıkıp başka bir staker seçin."
+    },
+    "unstake": {
+      "title": "Stake'ten çıkma",
+      "body": "Staker'a sormadan istediğiniz zaman stake'ten çıkabilirsiniz. Yalnızca onaylanmış delegasyonlar çıkarılabilir. Ağ ücreti çıkarılan miktardan düşülür ve işlem onaylandığı anda NAV harcanabilir olur.",
+      "partial": "Kısmi çıkışta kalan kısım aynı staker ile stake'te kalır. Kalan miktar en az {min} NAV olmalıdır."
+    },
+    "privacy": {
+      "title": "Gizlilik",
+      "body": "Devredilmiş stake zincirde devredilmiş olarak tanınabilir, ancak tutarı ve arkasındaki staker herkesten gizli kalır. Görüntüleme anahtarı paylaşılmaz: staker yalnızca ona devrettiğiniz çıktıların tutarlarını öğrenir."
+    },
+    "restore": {
+      "title": "Kurtarma ifadesiyle geri yükleme",
+      "body": "Delegasyonlarınız zincirde, staker'ın yanı sıra bu cüzdan için de şifreli olarak durur. Kurtarma ifadenizle geri yüklediğinizde diğer her şeyle birlikte geri gelirler."
+    },
+    "self": {
+      "title": "Kendi staker'ınızı çalıştırın",
+      "body": "Üçüncü bir tarafa ihtiyacınız yok: navio-staker'ı kendi sunucunuzda çalıştırıp kendi anahtarınıza devredin. Sunucu yalnızca delegation anahtarını tutar; ele geçirilse bile NAV'ınız ve geçmiş ödülleriniz güvende kalır.",
+      "step1": "Sunucuda bir anahtar çifti oluşturun",
+      "step2": "Açık anahtarı bu cüzdandaki NAV stake et formuna yapıştırın",
+      "step3": "Staker'ı özel anahtar dosyasıyla başlatın"
+    },
+    "docs": "Cold staking dokümantasyonunun tamamı"
   },
   "send": {
     "insufficient": "Cüzdanınızda yeterli NAV yok. Kullanılabilir: {available} NAV.",
@@ -1488,5 +1720,10 @@
     "copyHash": "Kimliği kopyala",
     "emptyFilter": "Bu ağda henüz işlem yok.",
     "bscNote": "BNB Chain'de yalnızca bu cihazda, bu uygulamadan yapılan takaslar listelenir. Diğer hareketler için gezgine bakın."
+  },
+  "toast": {
+    "received": "NAV alındı",
+    "sent": "NAV gönderildi",
+    "reward": "Staking ödülü"
   }
 }

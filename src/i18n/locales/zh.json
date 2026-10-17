@@ -63,6 +63,8 @@
     "fiat": "法币",
     "wallpaper": "Wallpaper",
     "showFiatValue": "显示法币价值",
+    "txSound": "交易提示音",
+    "txSoundDesc": "收到或发出 NAV、或收到质押奖励时播放简短提示音。",
     "showBlockNumber": "显示区块编号",
     "syncIndicator": "同步指示器",
     "syncIndicatorBar": "细条",
@@ -106,6 +108,7 @@
     "merchantRequiredConfirmationsDesc": "超过即时接受限额的付款需要多少个区块确认后才算已支付。确认数越多，越能防范区块链重组，但顾客在结账时需要等待更久。",
     "dexMode": "DEX / EVM 模式",
     "dexModeDesc": "添加一个由此钱包恢复短语派生的可选 BSC（EVM）账户，用于在 PancakeSwap 上兑换。关闭时不会发起任何网络请求。",
+    "hlMainnetOnly": "Hyperliquid（跨链桥、兑换和 NAV 交易）仅在主网可用。此钱包位于其他网络。",
     "tradeMode": "交易",
     "tradeModeDesc": "通过 Navio 自有的加密 p2p 总线进行点对点 RFQ 交易——与上面的 DEX/EVM 相互独立。需要支持交易桥的服务器。默认关闭——启用前不会发起任何网络请求。",
     "chatMode": "聊天（测试版）",
@@ -279,7 +282,8 @@
     "synced": "已同步",
     "useAll": "全部使用",
     "subtractFeeFromAmount": "从金额中扣除手续费",
-    "subtractFeeFromAmountDesc": "网络手续费将从发送金额中扣除"
+    "subtractFeeFromAmountDesc": "网络手续费将从发送金额中扣除",
+    "pendingCount": "{n} 笔待确认交易"
   },
   "wizard": {
     "walletName": "钱包名称",
@@ -1424,7 +1428,9 @@
       "exchangeHint": "Hyperliquid。公开。可随时兑换。",
       "exchangeHintOrders": "Hyperliquid。公开。{amount} 在未成交订单中。",
       "moving": "转移途中",
-      "movingHint": "正在两者之间转移。"
+      "movingHint": "正在两者之间转移。",
+      "staked": "质押中",
+      "stakedHint": "已委托给质押者。解除质押后才能花费。"
     },
     "links": {
       "trade": "订单簿",
@@ -1437,6 +1443,232 @@
       "manualWithdrawHint": "分步提款到任意 Navio 地址"
     },
     "explain": "交易所里的 NAV 是由 Navio–Hyperliquid 跨链桥按一比一为您保管的 NAV，以名为 Wrapped Navio 的代币形式存在。该跨链桥是托管式的，并且与钱包中的 NAV 不同，Hyperliquid 上的余额和交易是公开的。"
+  },
+  "staking": {
+    "title": "质押",
+    "staked": "质押中",
+    "staker": "质押者",
+    "summary": "{count} 个委托",
+    "stakeMore": "追加质押",
+    "unstake": "解除质押",
+    "start": "开始质押",
+    "needMin": "质押最低 {min} NAV。可用余额：{available} NAV。",
+    "positions": "委托",
+    "waitingConfirm": "等待确认",
+    "sinceBlock": "自区块 {height}",
+    "howItWorks": "质押如何运作",
+    "status": {
+      "active": "质押中",
+      "confirming": "确认中",
+      "unknown": "质押者未知"
+    },
+    "hero": {
+      "title": "让你的 NAV 发挥作用",
+      "subtitle": "通过质押者帮助保护 Navio 网络并获得奖励。你的密钥永远不会离开此钱包。"
+    },
+    "perks": {
+      "keys": "密钥始终归你",
+      "anytime": "随时解除",
+      "min": "{amount} NAV 起"
+    },
+    "steps": {
+      "pick": "选择一个质押运营方，复制其质押者密钥。",
+      "lock": "你的 NAV 被锁定在质押承诺中。质押者可以用它出块，但永远无法花费。",
+      "earn": "质押者将奖励支付到你的地址。随时解除质押，NAV 即可再次使用。"
+    },
+    "notice": {
+      "custody": "质押者可以质押这些 NAV，但永远无法花费。只有此钱包可以解除质押。",
+      "rewards": "奖励由质押者支付，而非由网络强制保证。请选择你信任的运营方。",
+      "locked": "质押中的 NAV 在解除质押前无法花费。"
+    },
+    "position": {
+      "title": "委托",
+      "stakerKey": "质押者密钥",
+      "since": "确认区块",
+      "tx": "交易",
+      "unknownHint": "此钱包无法读取这些 NAV 委托给了谁，因此它们可能未在质押。请解除质押，并与你了解的质押者重新质押。"
+    },
+    "form": {
+      "title": "质押 NAV",
+      "minHint": "最低 {min} NAV。网络手续费另付。",
+      "stakerKey": "质押者密钥",
+      "stakerKeyPlaceholder": "粘贴质押者的委托密钥",
+      "stakerKeyHelp": "质押运营方会公布这个 96 位的密钥。它允许对方质押你的 NAV，但永远无法花费。",
+      "paste": "粘贴",
+      "scan": "扫码",
+      "keyValid": "质押者密钥有效",
+      "keyInvalid": "质押者密钥为 96 个十六进制字符。",
+      "recent": "你的质押者",
+      "rewardsTo": "奖励发送至",
+      "rewardsWallet": "此钱包",
+      "rewardsCustom": "其他地址",
+      "rewardsAddress": "接收奖励的 Navio 地址",
+      "belowMin": "至少质押 {min} NAV。",
+      "insufficient": "可用于质押的余额为 {available} NAV。",
+      "whatIsKey": "什么是质押者密钥？"
+    },
+    "review": {
+      "title": "确认质押",
+      "confirm": "质押 {amount} NAV",
+      "busy": "质押中…",
+      "fee": "网络手续费",
+      "feeValue": "从余额中支付",
+      "anyTime": "随时",
+      "successTitle": "质押已提交",
+      "successMessage": "正在质押 {amount} NAV。交易确认后将显示为质押中。",
+      "failed": "质押失败"
+    },
+    "unstakeForm": {
+      "title": "解除质押",
+      "reviewTitle": "确认解除质押",
+      "nothing": "暂无已确认的委托可解除质押。",
+      "all": "全部",
+      "part": "部分",
+      "amountLabel": "解除金额",
+      "toWallet": "解除质押",
+      "remains": "继续质押",
+      "feeHint": "网络手续费从解除金额中扣除。",
+      "partOnlySingle": "如需部分解除，请打开单个委托。",
+      "partUnknown": "此委托只能全部解除。",
+      "tooMuch": "此处最多可解除 {max} NAV。",
+      "tooLittle": "解除金额需大于网络手续费。",
+      "remainderTooSmall": "剩余质押至少需 {min} NAV。请减少解除金额，或全部解除。",
+      "arrives": "到账",
+      "arrivesValue": "确认后进入钱包",
+      "feeValue": "从解除金额中扣除",
+      "revokes": "解除质押会终止这些 NAV 的委托：质押者将无法再质押它们。",
+      "keepsStaker": "剩余部分继续由同一质押者质押，确认后可再次解除。",
+      "confirm": "解除 {amount} NAV",
+      "busy": "解除中…",
+      "successTitle": "解除质押已提交",
+      "successMessage": "交易确认后，{amount} NAV 将可在钱包中使用。",
+      "failed": "解除质押失败"
+    },
+    "rewards": {
+      "title": "奖励",
+      "range": "时间范围",
+      "earned": "{range} 内获得",
+      "count": "{count} 笔奖励",
+      "empty": "此期间没有奖励",
+      "none": "每当你的质押者用你的质押出块时，奖励会以备注 \"Reward\" 进入你的钱包。",
+      "period": "期间"
+    },
+    "operators": {
+      "choose": "选择",
+      "title": "选择质押者",
+      "operator": "运营方",
+      "fee": "费率 {fee}%",
+      "noFee": "无费用",
+      "feeLabel": "费率",
+      "since": "自 {date} 起收录",
+      "website": "网站",
+      "error": "无法加载运营方列表。请检查网络连接。",
+      "retry": "重试",
+      "empty": "{network} 暂无收录的运营方。你仍可以粘贴质押者密钥。",
+      "disclaimer": "由 go.nav.io 收录。收录并不代表推荐：费率和奖励发放是运营方的承诺，网络不会强制执行。",
+      "default": "默认"
+    }
+  },
+  "stakingGuide": {
+    "title": "质押如何运作",
+    "intro": "Navio 采用权益证明：区块由为质押而锁定的 NAV 产生。像本钱包这样的轻钱包无法自己出块，因此会把质押委托给一个全天候运行的节点，即质押者。能够花费这些 NAV 的密钥始终留在本钱包中。",
+    "facts": {
+      "blockReward": "区块奖励",
+      "blockTime": "出块时间",
+      "minStake": "最低质押",
+      "maturity": "奖励可用于",
+      "minutes": "{n} 分钟",
+      "blocks": "{n} 个区块后"
+    },
+    "flow": {
+      "title": "从钱包到区块",
+      "wallet": {
+        "title": "你的钱包",
+        "body": "将 NAV 锁定在质押承诺中，并为你选择的质押者加密其开启信息。"
+      },
+      "staker": {
+        "title": "质押者",
+        "body": "找到委托给其密钥的承诺，逐块进行质押。"
+      },
+      "network": {
+        "title": "网络",
+        "body": "按每个区块背后的质押量比例选择出块者。"
+      },
+      "reward": {
+        "title": "你的奖励",
+        "body": "质押者把区块奖励支付到你的地址，在历史记录中带有备注 \"Reward\"。"
+      }
+    },
+    "rewards": {
+      "title": "能获得多少",
+      "body": "每个区块固定支付 {reward} NAV，没有减半：全网每天约 {perDay} NAV。你获得其中属于你的份额，即你在全部质押 NAV 中的占比，再扣除质押者的费用。",
+      "formula": "每天 ≈ {blocks} 个区块 × {reward} NAV ×（你的质押 ÷ 全网质押）×（1 − 费率）",
+      "luck": "每个区块都是一次抽签，因此奖励到账不规律：小额质押可能要等几天才有一笔，然后又连续收到两笔。长期来看平均值会接近公式。",
+      "maturity": "奖励在 {blocks} 次确认后（约 {hours} 小时）可以花费。奖励不会自动加入质押；可用“追加质押”让它们继续产生收益。"
+    },
+    "estimator": {
+      "title": "估算你的奖励",
+      "yourStake": "你的质押",
+      "totalStaked": "全网质押总量",
+      "totalHint": "钱包看不到这个数值；请从区块浏览器或你的质押者处获取。",
+      "fee": "质押者费率",
+      "perDay": "每天",
+      "perMonth": "每月",
+      "perYear": "每年",
+      "apr": "年化",
+      "every": "平均每 {time}获得一笔奖励。",
+      "note": "这是平均值而非承诺：假设全网质押保持不变，且质押者持续在线并诚实运行。",
+      "enterTotal": "输入全网质押总量以查看估算。"
+    },
+    "units": {
+      "days": "{n} 天",
+      "hours": "{n} 小时",
+      "minutes": "{n} 分钟"
+    },
+    "key": {
+      "title": "委托密钥",
+      "body": "质押者通过委托密钥来识别：一个 48 字节的 BLS12-381 公钥，写作 96 个十六进制字符。运营方用 {cmd} 生成并公布它，对应的私钥从不离开其质押服务器。",
+      "example": "示例",
+      "payload": "质押时，本钱包会用该密钥加密承诺的开启信息和你的奖励地址（ECDH + ChaCha20-Poly1305，每次使用新密钥）。只有该质押者能读取，而且仅限你委托给它的 NAV。",
+      "network": "该密钥是随机的，不包含网络信息：同一个密钥在主网和测试网都有效。请确认运营方在本钱包所用的网络上运行质押程序，否则没有人会质押你的 NAV。"
+    },
+    "trust": {
+      "title": "质押者能做什么、不能做什么",
+      "can": "可以",
+      "cannot": "不能",
+      "can1": "用你的质押出块",
+      "can2": "看到你委托给它的金额",
+      "can3": "把未来的奖励转到别处",
+      "cannot1": "花费或解除你的 NAV",
+      "cannot2": "看到你钱包里的其他内容",
+      "cannot3": "阻止你解除质押"
+    },
+    "fee": {
+      "title": "质押者费用与奖励去向",
+      "body": "运营方可以从每笔奖励中抽取一部分，以基点计（1000 = 10%）。它在同一区块中以单独的 \"Operator Fee\" 输出支付，其余部分归你。",
+      "advisory": "奖励去向只是请求而非规则：区块由质押者自己构建，链上没有任何机制强制它付款给你。请留意奖励面板；如果奖励停止，就解除质押并选择其他质押者。"
+    },
+    "unstake": {
+      "title": "解除质押",
+      "body": "你可以随时解除质押，无需征得质押者同意。只有已确认的委托可以解除。网络手续费从解除金额中扣除，交易确认后 NAV 即可使用。",
+      "partial": "部分解除时，剩余部分继续由同一质押者质押。剩余金额至少需 {min} NAV。"
+    },
+    "privacy": {
+      "title": "隐私",
+      "body": "委托的质押在链上可被识别为已委托，但其金额和背后的质押者对其他人保持隐藏。不会共享查看密钥：质押者只知道你委托给它的输出金额。"
+    },
+    "restore": {
+      "title": "用助记词恢复",
+      "body": "你的委托保存在链上，同时为质押者和本钱包加密。用助记词恢复后，它们会与其他数据一起回来。"
+    },
+    "self": {
+      "title": "运行你自己的质押者",
+      "body": "无需第三方：在你自己的服务器上运行 navio-staker，并委托给你自己的密钥。服务器只保存委托密钥，即使被攻破，你的 NAV 和过去的奖励依然安全。",
+      "step1": "在服务器上生成密钥对",
+      "step2": "将公钥粘贴到本钱包的“质押 NAV”中",
+      "step3": "使用私钥文件启动质押程序"
+    },
+    "docs": "冷质押完整文档"
   },
   "send": {
     "insufficient": "钱包中的 NAV 不足。可用：{available} NAV。",
@@ -1488,5 +1720,10 @@
     "copyHash": "复制 ID",
     "emptyFilter": "此网络上暂无记录。",
     "bscNote": "BNB Chain 仅显示在此设备上通过本应用进行的兑换。其他活动请在区块浏览器中查看。"
+  },
+  "toast": {
+    "received": "已收到 NAV",
+    "sent": "已发送 NAV",
+    "reward": "质押奖励"
   }
 }

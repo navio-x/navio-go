@@ -25,14 +25,15 @@ import { encryptWithdrawalNote } from "@/lib/hyperliquid/bridge/noteEncryption";
 import { ensureEvmGas, estimateBridgeGasCost } from "@/lib/hyperliquid/bridge/gas";
 import { floorTo, toDecimalString, FALLBACK_FEE_RATE } from "./quote";
 import { MIN_BRIDGE_NAV } from "./router";
+import { isMainnet } from "@/stores/network";
 
 const POLL_MS = 15_000;
 // A credited deposit is accepted as "arrived" within this margin of the
 // expected amount, so an operation never waits forever on a rounding
 // difference between what was sent and what the bridge credits.
 const CREDIT_TOLERANCE = 0.01;
-// The bridge only exists on Navio mainnet.
-const onMainnet = () => (sessionStorage.getItem("network") ?? "mainnet") === "mainnet";
+// The bridge only exists on Navio mainnet; an unknown network counts as not.
+const onMainnet = () => isMainnet.value;
 
 function fail(code, detail) {
   const err = new Error(code);

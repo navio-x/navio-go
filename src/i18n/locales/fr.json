@@ -63,6 +63,8 @@
     "fiat": "Fiat",
     "wallpaper": "Wallpaper",
     "showFiatValue": "Afficher la valeur fiat",
+    "txSound": "Son des transactions",
+    "txSoundDesc": "Un court carillon quand des NAV arrivent, partent, ou qu'une récompense de staking arrive.",
     "showBlockNumber": "Afficher le numéro de bloc",
     "syncIndicator": "Indicateur de synchronisation",
     "syncIndicatorBar": "Barre fine",
@@ -106,6 +108,7 @@
     "merchantRequiredConfirmationsDesc": "Nombre de blocs qui doivent confirmer un paiement supérieur à la limite d'acceptation instantanée avant qu'il soit considéré comme payé. Plus de confirmations protègent mieux contre une réorganisation de la blockchain, mais font attendre le client plus longtemps en caisse.",
     "dexMode": "Mode DEX / EVM",
     "dexModeDesc": "Ajoute un compte BSC (EVM) facultatif, dérivé de la phrase de récupération de ce portefeuille, pour échanger sur PancakeSwap. Aucun appel réseau tant qu'il est désactivé.",
+    "hlMainnetOnly": "Hyperliquid (pont, swap et trading de NAV) n'est disponible que sur le mainnet. Ce portefeuille est sur un autre réseau.",
     "tradeMode": "Trading",
     "tradeModeDesc": "Trading RFQ pair-à-pair sur le bus p2p chiffré de Navio, distinct du mode DEX/EVM ci-dessus. Nécessite un serveur proposant le pont de trading. Désactivé par défaut : aucun appel réseau tant qu'il n'est pas activé.",
     "chatMode": "Chat (bêta)",
@@ -279,7 +282,8 @@
     "synced": "SYNCHRONISÉ",
     "useAll": "Tout utiliser",
     "subtractFeeFromAmount": "Déduire les frais du montant",
-    "subtractFeeFromAmountDesc": "Les frais de réseau seront déduits du montant envoyé"
+    "subtractFeeFromAmountDesc": "Les frais de réseau seront déduits du montant envoyé",
+    "pendingCount": "{n} transaction en attente | {n} transactions en attente"
   },
   "wizard": {
     "walletName": "Nom du portefeuille",
@@ -1424,7 +1428,9 @@
       "exchangeHint": "Hyperliquid. Public. Prêt à être échangé.",
       "exchangeHintOrders": "Hyperliquid. Public. {amount} dans des ordres ouverts.",
       "moving": "En transit",
-      "movingHint": "En déplacement entre les deux."
+      "movingHint": "En déplacement entre les deux.",
+      "staked": "En staking",
+      "stakedHint": "Délégué à un staker. Retirez-le du staking pour le dépenser."
     },
     "links": {
       "trade": "Carnet d'ordres",
@@ -1437,6 +1443,232 @@
       "manualWithdrawHint": "Retirer vers n'importe quelle adresse Navio, étape par étape"
     },
     "explain": "Les NAV sur l'exchange sont des NAV conservés pour vous par le pont Navio–Hyperliquid, à un pour un, sous la forme d'un jeton appelé Wrapped Navio. Le pont est dépositaire et, contrairement aux NAV de votre portefeuille, les soldes et les trades sur Hyperliquid sont publics."
+  },
+  "staking": {
+    "title": "Staking",
+    "staked": "En staking",
+    "staker": "Staker",
+    "summary": "{count} délégation | {count} délégations",
+    "stakeMore": "Staker davantage",
+    "unstake": "Retirer",
+    "start": "Commencer le staking",
+    "needMin": "Le staking commence à {min} NAV. Vous avez {available} NAV disponibles.",
+    "positions": "Délégations",
+    "waitingConfirm": "En attente de confirmation",
+    "sinceBlock": "Depuis le bloc {height}",
+    "howItWorks": "Comment fonctionne le staking",
+    "status": {
+      "active": "Actif",
+      "confirming": "Confirmation",
+      "unknown": "Staker inconnu"
+    },
+    "hero": {
+      "title": "Faites travailler vos NAV",
+      "subtitle": "Contribuez à sécuriser Navio et gagnez des récompenses via un staker. Vos clés ne quittent jamais ce portefeuille."
+    },
+    "perks": {
+      "keys": "Vos clés restent les vôtres",
+      "anytime": "Retrait à tout moment",
+      "min": "Dès {amount} NAV"
+    },
+    "steps": {
+      "pick": "Choisissez un opérateur de staking et copiez sa clé de staker.",
+      "lock": "Vos NAV sont verrouillés dans un engagement de staking. Le staker peut s'en servir pour produire des blocs, jamais pour les dépenser.",
+      "earn": "Le staker verse les récompenses à votre adresse. Retirez quand vous voulez et vos NAV redeviennent disponibles."
+    },
+    "notice": {
+      "custody": "Le staker peut staker ces NAV mais jamais les dépenser. Seul ce portefeuille peut les retirer.",
+      "rewards": "Les récompenses sont versées par le staker, le réseau ne les garantit pas. Choisissez un opérateur de confiance.",
+      "locked": "Les NAV en staking ne sont pas dépensables tant que vous ne les retirez pas."
+    },
+    "position": {
+      "title": "Délégation",
+      "stakerKey": "Clé du staker",
+      "since": "Confirmé au bloc",
+      "tx": "Transaction",
+      "unknownHint": "Ce portefeuille ne peut pas lire à qui ces NAV sont délégués ; ils ne sont peut-être pas stakés. Retirez-les et stakez à nouveau avec un staker connu."
+    },
+    "form": {
+      "title": "Staker des NAV",
+      "minHint": "Minimum {min} NAV. Les frais de réseau s'ajoutent.",
+      "stakerKey": "Clé du staker",
+      "stakerKeyPlaceholder": "Collez la clé de délégation du staker",
+      "stakerKeyHelp": "Les opérateurs de staking publient cette clé de 96 caractères. Elle leur permet de staker vos NAV, jamais de les dépenser.",
+      "paste": "Coller",
+      "scan": "Scanner",
+      "keyValid": "Clé de staker valide",
+      "keyInvalid": "Une clé de staker compte 96 caractères hexadécimaux.",
+      "recent": "Vos stakers",
+      "rewardsTo": "Récompenses vers",
+      "rewardsWallet": "Ce portefeuille",
+      "rewardsCustom": "Autre adresse",
+      "rewardsAddress": "Adresse Navio pour les récompenses",
+      "belowMin": "Stakez au moins {min} NAV.",
+      "insufficient": "Vous avez {available} NAV disponibles pour le staking.",
+      "whatIsKey": "Qu'est-ce qu'une clé de staker ?"
+    },
+    "review": {
+      "title": "Vérifier le staking",
+      "confirm": "Staker {amount} NAV",
+      "busy": "Staking…",
+      "fee": "Frais de réseau",
+      "feeValue": "Payés sur votre solde",
+      "anyTime": "À tout moment",
+      "successTitle": "Staking envoyé",
+      "successMessage": "{amount} NAV sont en cours de staking. Ils apparaîtront comme actifs une fois la transaction confirmée.",
+      "failed": "Échec du staking"
+    },
+    "unstakeForm": {
+      "title": "Retirer du staking",
+      "reviewTitle": "Vérifier le retrait",
+      "nothing": "Rien de confirmé à retirer pour l'instant.",
+      "all": "Tout",
+      "part": "Une partie",
+      "amountLabel": "Montant à déverrouiller",
+      "toWallet": "Sort du staking",
+      "remains": "Reste en staking",
+      "feeHint": "Les frais de réseau sont déduits du montant déverrouillé.",
+      "partOnlySingle": "Pour retirer une partie, ouvrez une seule délégation.",
+      "partUnknown": "Cette délégation ne peut être retirée qu'en totalité.",
+      "tooMuch": "Vous pouvez déverrouiller au plus {max} NAV ici.",
+      "tooLittle": "Déverrouillez plus que les frais de réseau.",
+      "remainderTooSmall": "Ce qui reste en staking doit atteindre au moins {min} NAV. Déverrouillez moins, ou tout.",
+      "arrives": "Arrivée",
+      "arrivesValue": "Dans votre portefeuille, après confirmation",
+      "feeValue": "Déduits du montant déverrouillé",
+      "revokes": "Le retrait met fin à la délégation de ces NAV : le staker ne peut plus les staker.",
+      "keepsStaker": "Le reste demeure en staking chez le même staker. Il pourra être retiré une fois confirmé.",
+      "confirm": "Retirer {amount} NAV",
+      "busy": "Retrait…",
+      "successTitle": "Retrait envoyé",
+      "successMessage": "{amount} NAV seront disponibles dans votre portefeuille une fois la transaction confirmée.",
+      "failed": "Échec du retrait"
+    },
+    "rewards": {
+      "title": "Récompenses",
+      "range": "Période",
+      "earned": "Gagné sur {range}",
+      "count": "{count} récompense | {count} récompenses",
+      "empty": "Aucune récompense sur cette période",
+      "none": "Les récompenses arrivent dans votre portefeuille avec le mémo \"Reward\" chaque fois que votre staker produit un bloc avec votre stake.",
+      "period": "Période"
+    },
+    "operators": {
+      "choose": "Choisir",
+      "title": "Choisir un staker",
+      "operator": "Opérateur",
+      "fee": "Frais de {fee} %",
+      "noFee": "Sans frais",
+      "feeLabel": "Frais",
+      "since": "Listé depuis {date}",
+      "website": "Site web",
+      "error": "Impossible de charger la liste des opérateurs. Vérifiez votre connexion.",
+      "retry": "Réessayer",
+      "empty": "Aucun opérateur n'est encore listé pour {network}. Vous pouvez quand même coller une clé de staker.",
+      "disclaimer": "Listé par go.nav.io. Être listé n'est pas une recommandation : les frais et le versement des récompenses sont une promesse de l'opérateur, pas une règle du réseau.",
+      "default": "Par défaut"
+    }
+  },
+  "stakingGuide": {
+    "title": "Comment fonctionne le staking",
+    "intro": "Navio est en proof of stake : les blocs sont produits par des NAV verrouillés pour le staking. Un portefeuille léger comme celui-ci ne peut pas produire de blocs lui-même ; il délègue donc son stake à un staker, un nœud qui tourne en permanence, tout en gardant les clés qui permettent de le dépenser.",
+    "facts": {
+      "blockReward": "Récompense par bloc",
+      "blockTime": "Temps de bloc",
+      "minStake": "Stake minimum",
+      "maturity": "Récompenses dépensables après",
+      "minutes": "{n} min",
+      "blocks": "{n} blocs"
+    },
+    "flow": {
+      "title": "De votre portefeuille à un bloc",
+      "wallet": {
+        "title": "Votre portefeuille",
+        "body": "Verrouille des NAV dans un engagement de staking et chiffre son ouverture pour le staker choisi."
+      },
+      "staker": {
+        "title": "Le staker",
+        "body": "Trouve les engagements délégués à sa clé et les stake, bloc après bloc."
+      },
+      "network": {
+        "title": "Le réseau",
+        "body": "Choisit qui produit chaque bloc, en proportion du stake engagé."
+      },
+      "reward": {
+        "title": "Votre récompense",
+        "body": "Le staker verse la récompense du bloc à votre adresse. Elle apparaît dans l'historique avec le mémo \"Reward\"."
+      }
+    },
+    "rewards": {
+      "title": "Combien vous gagnez",
+      "body": "Chaque bloc verse {reward} NAV fixes, sans halving : environ {perDay} NAV par jour sur tout le réseau. Vous en recevez votre part, c'est-à-dire votre part de tous les NAV stakés, moins les frais du staker.",
+      "formula": "Par jour ≈ {blocks} blocs × {reward} NAV × (votre stake ÷ stake total) × (1 − frais)",
+      "luck": "Chaque bloc est un tirage, donc les récompenses arrivent irrégulièrement : un petit stake peut attendre des jours, puis en recevoir deux d'affilée. Avec le temps, la moyenne rejoint la formule.",
+      "maturity": "Une récompense devient dépensable après {blocks} confirmations (environ {hours} heures). Les récompenses ne s'ajoutent pas seules à votre stake ; utilisez « Staker davantage » pour les faire travailler."
+    },
+    "estimator": {
+      "title": "Estimer vos récompenses",
+      "yourStake": "Votre stake",
+      "totalStaked": "Stake total du réseau",
+      "totalHint": "Le portefeuille ne le voit pas ; prenez-le d'un explorateur de blocs ou de votre staker.",
+      "fee": "Frais du staker",
+      "perDay": "Par jour",
+      "perMonth": "Par mois",
+      "perYear": "Par an",
+      "apr": "Taux annuel",
+      "every": "En moyenne, une récompense en {time}.",
+      "note": "Une moyenne, pas une promesse : elle suppose que le stake total reste stable et que le staker reste en ligne et honnête.",
+      "enterTotal": "Saisissez le stake total du réseau pour voir une estimation."
+    },
+    "units": {
+      "days": "1 jour | {n} jours",
+      "hours": "1 heure | {n} heures",
+      "minutes": "1 minute | {n} minutes"
+    },
+    "key": {
+      "title": "La clé de délégation",
+      "body": "Un staker est identifié par sa clé de délégation : une clé publique BLS12-381 de 48 octets, écrite en 96 caractères hexadécimaux. L'opérateur la crée avec {cmd} et la publie. La clé privée correspondante ne quitte jamais son serveur de staking.",
+      "example": "À quoi elle ressemble",
+      "payload": "Lorsque vous stakez, ce portefeuille chiffre l'ouverture de l'engagement et votre adresse de récompense pour cette clé (ECDH + ChaCha20-Poly1305, avec une nouvelle clé à chaque fois). Seul ce staker peut le lire, et seulement pour les NAV que vous lui avez délégués.",
+      "network": "La clé est aléatoire et ne contient aucun réseau : la même clé vaut sur le mainnet et le testnet. Vérifiez que l'opérateur fait tourner son staker sur le réseau de ce portefeuille, sinon personne ne stakera vos NAV."
+    },
+    "trust": {
+      "title": "Ce qu'un staker peut et ne peut pas faire",
+      "can": "Peut",
+      "cannot": "Ne peut pas",
+      "can1": "Produire des blocs avec votre stake",
+      "can2": "Voir les montants que vous lui avez délégués",
+      "can3": "Envoyer les récompenses futures ailleurs",
+      "cannot1": "Dépenser ou retirer vos NAV",
+      "cannot2": "Voir quoi que ce soit d'autre dans votre portefeuille",
+      "cannot3": "Vous empêcher de retirer"
+    },
+    "fee": {
+      "title": "Frais du staker et destination des récompenses",
+      "body": "Un opérateur peut garder une part de chaque récompense, fixée en points de base (1000 = 10 %). Elle est versée dans le même bloc par une sortie « Operator Fee » séparée ; vous recevez le reste.",
+      "advisory": "La destination est une demande, pas une règle : le staker construit son propre bloc et rien on-chain ne l'oblige à vous payer. Surveillez le panneau des récompenses ; si elles cessent, retirez et choisissez un autre staker."
+    },
+    "unstake": {
+      "title": "Retirer du staking",
+      "body": "Vous pouvez retirer quand vous voulez, sans demander au staker. Seules les délégations confirmées peuvent être retirées. Les frais de réseau sont déduits du montant déverrouillé, et les NAV sont dépensables dès que la transaction est confirmée.",
+      "partial": "Un retrait partiel laisse le reste en staking chez le même staker. Ce qui reste doit atteindre au moins {min} NAV."
+    },
+    "privacy": {
+      "title": "Confidentialité",
+      "body": "Un stake délégué est reconnaissable on-chain comme délégué, mais son montant et le staker derrière restent cachés à tous les autres. Aucune clé de lecture n'est partagée : le staker n'apprend que les montants des sorties que vous lui avez déléguées."
+    },
+    "restore": {
+      "title": "Restaurer avec votre phrase de récupération",
+      "body": "Vos délégations vivent on-chain, chiffrées pour le staker comme pour ce portefeuille. Restaurez avec votre phrase de récupération et elles reviennent avec tout le reste."
+    },
+    "self": {
+      "title": "Faire tourner votre propre staker",
+      "body": "Pas besoin d'un tiers : faites tourner navio-staker sur votre propre serveur et déléguez à votre propre clé. Le serveur ne détient que la clé de délégation ; même compromis, vos NAV et vos récompenses passées restent en sécurité.",
+      "step1": "Sur le serveur, créez une paire de clés",
+      "step2": "Collez la clé publique dans Staker des NAV dans ce portefeuille",
+      "step3": "Démarrez le staker avec le fichier de clé privée"
+    },
+    "docs": "Documentation complète du cold staking"
   },
   "send": {
     "insufficient": "Pas assez de NAV dans votre portefeuille. Disponible : {available} NAV.",
@@ -1488,5 +1720,10 @@
     "copyHash": "Copier l'ID",
     "emptyFilter": "Rien sur ce réseau pour l'instant.",
     "bscNote": "BNB Chain affiche les échanges effectués dans cette application sur cet appareil. Le reste de l'activité se trouve dans l'explorateur."
+  },
+  "toast": {
+    "received": "NAV reçus",
+    "sent": "NAV envoyés",
+    "reward": "Récompense de staking"
   }
 }

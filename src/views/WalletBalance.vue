@@ -84,7 +84,8 @@
 
       <!-- Assets | Markets | NFTs. The asset rows are the unified ones: NAV
            is a single row, wherever it is held. The wallet's private tokens
-           follow them; with dexMode off Assets is just NAV and those. -->
+           follow them; without Hyperliquid (dexMode off, or not on
+           mainnet) Assets is just NAV and those. -->
       <HlAssetsMarkets :balances="portfolio.hl.balances.value" nfts>
         <template #assets>
           <button
@@ -215,6 +216,7 @@
   import { ref, onMounted, onUnmounted, computed, watch } from "vue";
   import { useRouter } from "vue-router";
   import { settings } from "@/stores/settings";
+  import { hlEnabled } from "@/stores/network";
   import { wallpapers } from "@/assets/wallpapers";
   import { percent, walletHeight, chainTip, getNavioClient, logoutWallet, tokenBalances, nftBalances, refreshAssetBalances } from "@/stores/navio";
   import { navPrice, startPricePolling, stopPricePolling } from "@/stores/navPrice";
@@ -289,7 +291,7 @@
 
   let deriving = false
   watch(
-    () => settings.dexMode && !evmAddress.value && getNavioClient(),
+    () => hlEnabled.value && !evmAddress.value && getNavioClient(),
     async (client) => {
       if (!client || deriving) return
       deriving = true

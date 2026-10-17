@@ -116,8 +116,8 @@
           </div>
         </div>
 
-        <!-- Network tabs -->
-        <div class="grid grid-cols-2 gap-1 p-1 rounded-xl bg-gray-100 dark:bg-gh-800">
+        <!-- Network tabs (just BSC off mainnet, so no strip) -->
+        <div v-if="DEX_TABS.length > 1" class="grid grid-cols-2 gap-1 p-1 rounded-xl bg-gray-100 dark:bg-gh-800">
           <button
             v-for="tab in DEX_TABS"
             :key="tab.id"
@@ -409,7 +409,7 @@
         </div>
 
         <!-- TAB: Hyperliquid — balances and markets -->
-        <div v-show="dexTab === 'hl'" class="space-y-4">
+        <div v-if="hlEnabled" v-show="dexTab === 'hl'" class="space-y-4">
           <!-- Same Assets | Markets panel as the home screen -->
           <div class="rounded-2xl border border-gray-200 dark:border-gh-700 bg-white dark:bg-gh-800 px-4 pt-3 pb-3">
             <HlAssetsMarkets ref="hlPanel" storage-key="dexHlTab" />
@@ -611,6 +611,7 @@ import {
   ChevronDown, Wallet,
 } from 'lucide-vue-next'
 import { settings } from '@/stores/settings'
+import { hlEnabled } from '@/stores/network'
 import {
   evmAddress, evmStatus, nativeBalance, tokenBalanceList, rpcStale,
   refreshBalances, startBalancePolling, stopBalancePolling, readTokenMetadata,
@@ -632,13 +633,20 @@ const copied = ref(false)
 
 // Account strip + network tabs. The last-used tab is remembered so coming
 // back to the page lands where the user left off.
-const DEX_TABS = [
+// Hyperliquid is mainnet only, so its tab is too.
+const DEX_TABS = computed(() => [
   { id: 'bsc', label: 'dex.tabs.bsc' },
-  { id: 'hl', label: 'dex.hyperliquid.title' },
-]
+  ...(hlEnabled.value ? [{ id: 'hl', label: 'dex.hyperliquid.title' }] : []),
+])
 const DEX_TAB_KEY = 'dexTab'
-const dexTab = ref(localStorage.getItem(DEX_TAB_KEY) === 'hl' ? 'hl' : 'bsc')
-watch(dexTab, (tab) => localStorage.setItem(DEX_TAB_KEY, tab))
+const savedDexTab = ref(localStorage.getItem(DEX_TAB_KEY) === 'hl' ? 'hl' : 'bsc')
+const dexTab = computed({
+  get: () => (savedDexTab.value === 'hl' && !hlEnabled.value ? 'bsc' : savedDexTab.value),
+  set: (tab) => {
+    savedDexTab.value = tab
+    localStorage.setItem(DEX_TAB_KEY, tab)
+  },
+})
 const showAccountDetails = ref(false)
 
 // Binance Smart Chain tab's own two sections, remembered the same way.

@@ -63,6 +63,8 @@
     "fiat": "Fiat",
     "wallpaper": "Wallpaper",
     "showFiatValue": "Fiat-Wert anzeigen",
+    "txSound": "Transaktionston",
+    "txSoundDesc": "Ein kurzer Ton, wenn NAV ankommt, gesendet wird oder eine Staking-Belohnung eintrifft.",
     "showBlockNumber": "Blocknummer anzeigen",
     "syncIndicator": "Sync-Anzeige",
     "syncIndicatorBar": "Dünner Balken",
@@ -106,6 +108,7 @@
     "merchantRequiredConfirmationsDesc": "Wie viele Blöcke eine Zahlung über dem Sofortannahme-Limit bestätigen müssen, bevor sie als bezahlt gilt. Mehr Bestätigungen schützen besser vor einer Blockchain-Reorganisation, lassen den Kunden an der Kasse aber länger warten.",
     "dexMode": "DEX-/EVM-Modus",
     "dexModeDesc": "Fügt ein optionales BSC-(EVM-)Konto hinzu, das aus der Wiederherstellungsphrase dieser Wallet abgeleitet wird, zum Tauschen auf PancakeSwap. Keine Netzwerkaufrufe, solange ausgeschaltet.",
+    "hlMainnetOnly": "Hyperliquid (Bridge, Swap und NAV-Handel) gibt es nur im Mainnet. Diese Wallet ist in einem anderen Netzwerk.",
     "tradeMode": "Handel",
     "tradeModeDesc": "Peer-to-Peer-RFQ-Handel über Navios eigenen verschlüsselten P2P-Bus – getrennt vom DEX-/EVM-Modus oben. Erfordert einen Server mit der Trading-Bridge. Standardmäßig aus – keine Netzwerkaufrufe, bis es aktiviert wird.",
     "chatMode": "Chat (Beta)",
@@ -279,7 +282,8 @@
     "synced": "SYNCHRONISIERT",
     "useAll": "Alles verwenden",
     "subtractFeeFromAmount": "Gebühr vom Betrag abziehen",
-    "subtractFeeFromAmountDesc": "Die Netzwerkgebühr wird vom gesendeten Betrag abgezogen"
+    "subtractFeeFromAmountDesc": "Die Netzwerkgebühr wird vom gesendeten Betrag abgezogen",
+    "pendingCount": "{n} ausstehende Transaktion | {n} ausstehende Transaktionen"
   },
   "wizard": {
     "walletName": "Wallet-Name",
@@ -1424,7 +1428,9 @@
       "exchangeHint": "Hyperliquid. Öffentlich. Bereit zum Tauschen.",
       "exchangeHintOrders": "Hyperliquid. Öffentlich. {amount} in offenen Orders.",
       "moving": "Unterwegs",
-      "movingHint": "Wird zwischen beiden verschoben."
+      "movingHint": "Wird zwischen beiden verschoben.",
+      "staked": "Gestaked",
+      "stakedHint": "An einen Staker delegiert. Zum Ausgeben entstaken."
     },
     "links": {
       "trade": "Orderbuch",
@@ -1437,6 +1443,232 @@
       "manualWithdrawHint": "Schritt für Schritt an eine beliebige Navio-Adresse auszahlen"
     },
     "explain": "NAV auf der Börse ist NAV, das die Navio–Hyperliquid-Bridge eins zu eins für dich hält, als Token namens Wrapped Navio. Die Bridge ist verwahrend, und anders als bei NAV in deiner Wallet sind Guthaben und Trades auf Hyperliquid öffentlich."
+  },
+  "staking": {
+    "title": "Staking",
+    "staked": "Gestaked",
+    "staker": "Staker",
+    "summary": "{count} Delegation | {count} Delegationen",
+    "stakeMore": "Mehr staken",
+    "unstake": "Entstaken",
+    "start": "Staking starten",
+    "needMin": "Staking beginnt ab {min} NAV. Verfügbar: {available} NAV.",
+    "positions": "Delegationen",
+    "waitingConfirm": "Wartet auf Bestätigung",
+    "sinceBlock": "Seit Block {height}",
+    "howItWorks": "So funktioniert Staking",
+    "status": {
+      "active": "Aktiv",
+      "confirming": "Wird bestätigt",
+      "unknown": "Staker unbekannt"
+    },
+    "hero": {
+      "title": "Lass dein NAV arbeiten",
+      "subtitle": "Sichere Navio über einen Staker ab und verdiene Belohnungen. Deine Schlüssel verlassen diese Wallet nie."
+    },
+    "perks": {
+      "keys": "Deine Schlüssel bleiben deine",
+      "anytime": "Jederzeit entstaken",
+      "min": "Ab {amount} NAV"
+    },
+    "steps": {
+      "pick": "Wähle einen Staking-Betreiber und kopiere seinen Staker-Schlüssel.",
+      "lock": "Dein NAV wird in einem Staking-Commitment gesperrt. Der Staker kann damit Blöcke erzeugen, es aber nie ausgeben.",
+      "earn": "Der Staker zahlt Belohnungen an deine Adresse. Entstake jederzeit und dein NAV ist wieder verfügbar."
+    },
+    "notice": {
+      "custody": "Der Staker kann dieses NAV staken, aber nie ausgeben. Nur diese Wallet kann entstaken.",
+      "rewards": "Belohnungen zahlt der Staker, das Netzwerk erzwingt sie nicht. Stake bei einem Betreiber, dem du vertraust.",
+      "locked": "Gestaktes NAV ist erst nach dem Entstaken wieder ausgebbar."
+    },
+    "position": {
+      "title": "Delegation",
+      "stakerKey": "Staker-Schlüssel",
+      "since": "Bestätigt in Block",
+      "tx": "Transaktion",
+      "unknownHint": "Diese Wallet kann nicht lesen, an wen dieses NAV delegiert ist; es wird womöglich nicht gestaked. Entstake es und stake erneut bei einem bekannten Staker."
+    },
+    "form": {
+      "title": "NAV staken",
+      "minHint": "Mindestens {min} NAV. Die Netzwerkgebühr kommt hinzu.",
+      "stakerKey": "Staker-Schlüssel",
+      "stakerKeyPlaceholder": "Delegationsschlüssel des Stakers einfügen",
+      "stakerKeyHelp": "Staking-Betreiber veröffentlichen diesen 96-stelligen Schlüssel. Damit können sie dein NAV staken, nie ausgeben.",
+      "paste": "Einfügen",
+      "scan": "Scannen",
+      "keyValid": "Gültiger Staker-Schlüssel",
+      "keyInvalid": "Ein Staker-Schlüssel besteht aus 96 Hexadezimalzeichen.",
+      "recent": "Deine Staker",
+      "rewardsTo": "Belohnungen an",
+      "rewardsWallet": "Diese Wallet",
+      "rewardsCustom": "Andere Adresse",
+      "rewardsAddress": "Navio-Adresse für Belohnungen",
+      "belowMin": "Stake mindestens {min} NAV.",
+      "insufficient": "Zum Staken verfügbar: {available} NAV.",
+      "whatIsKey": "Was ist ein Staker-Schlüssel?"
+    },
+    "review": {
+      "title": "Stake prüfen",
+      "confirm": "{amount} NAV staken",
+      "busy": "Wird gestaked…",
+      "fee": "Netzwerkgebühr",
+      "feeValue": "Aus deinem Guthaben",
+      "anyTime": "Jederzeit",
+      "successTitle": "Stake gesendet",
+      "successMessage": "{amount} NAV wird gestaked. Nach der Bestätigung erscheint es als aktiv.",
+      "failed": "Staking fehlgeschlagen"
+    },
+    "unstakeForm": {
+      "title": "Entstaken",
+      "reviewTitle": "Entstaken prüfen",
+      "nothing": "Noch nichts Bestätigtes zum Entstaken.",
+      "all": "Alles",
+      "part": "Teil",
+      "amountLabel": "Zu entsperrender Betrag",
+      "toWallet": "Verlässt das Staking",
+      "remains": "Bleibt gestaked",
+      "feeHint": "Die Netzwerkgebühr wird vom entsperrten Betrag abgezogen.",
+      "partOnlySingle": "Um einen Teil zu entstaken, öffne eine einzelne Delegation.",
+      "partUnknown": "Diese Delegation kann nur vollständig entstaked werden.",
+      "tooMuch": "Hier kannst du höchstens {max} NAV entsperren.",
+      "tooLittle": "Entsperre mehr als die Netzwerkgebühr.",
+      "remainderTooSmall": "Was gestaked bleibt, muss mindestens {min} NAV betragen. Entsperre weniger oder alles.",
+      "arrives": "Ankunft",
+      "arrivesValue": "In deiner Wallet, nach Bestätigung",
+      "feeValue": "Vom entsperrten Betrag abgezogen",
+      "revokes": "Entstaken beendet die Delegation für dieses NAV: Der Staker kann es nicht mehr staken.",
+      "keepsStaker": "Der Rest bleibt beim selben Staker gestaked und kann nach Bestätigung erneut entstaked werden.",
+      "confirm": "{amount} NAV entstaken",
+      "busy": "Wird entstaked…",
+      "successTitle": "Entstaken gesendet",
+      "successMessage": "{amount} NAV ist nach der Bestätigung in deiner Wallet verfügbar.",
+      "failed": "Entstaken fehlgeschlagen"
+    },
+    "rewards": {
+      "title": "Belohnungen",
+      "range": "Zeitraum",
+      "earned": "Verdient in {range}",
+      "count": "{count} Belohnung | {count} Belohnungen",
+      "empty": "Keine Belohnungen in diesem Zeitraum",
+      "none": "Belohnungen kommen mit dem Memo \"Reward\" in deine Wallet, sobald dein Staker mit deinem Stake einen Block erzeugt.",
+      "period": "Zeitraum"
+    },
+    "operators": {
+      "choose": "Auswählen",
+      "title": "Staker auswählen",
+      "operator": "Betreiber",
+      "fee": "{fee} % Gebühr",
+      "noFee": "Keine Gebühr",
+      "feeLabel": "Gebühr",
+      "since": "Gelistet seit {date}",
+      "website": "Website",
+      "error": "Die Betreiberliste konnte nicht geladen werden. Prüfe deine Verbindung.",
+      "retry": "Erneut versuchen",
+      "empty": "Für {network} sind noch keine Betreiber gelistet. Du kannst trotzdem einen Staker-Schlüssel einfügen.",
+      "disclaimer": "Gelistet von go.nav.io. Eine Listung ist keine Empfehlung: Gebühr und Auszahlungen sind ein Versprechen des Betreibers, das Netzwerk erzwingt sie nicht.",
+      "default": "Standard"
+    }
+  },
+  "stakingGuide": {
+    "title": "So funktioniert Staking",
+    "intro": "Navio ist Proof of Stake: Blöcke werden von NAV erzeugt, das zum Staking gesperrt ist. Eine schlanke Wallet wie diese kann selbst keine Blöcke erzeugen. Sie delegiert ihren Stake daher an einen Staker, einen Node, der rund um die Uhr läuft, und behält die Schlüssel, mit denen es ausgegeben werden kann.",
+    "facts": {
+      "blockReward": "Blockbelohnung",
+      "blockTime": "Blockzeit",
+      "minStake": "Mindest-Stake",
+      "maturity": "Belohnungen verfügbar nach",
+      "minutes": "{n} Min.",
+      "blocks": "{n} Blöcken"
+    },
+    "flow": {
+      "title": "Von deiner Wallet zum Block",
+      "wallet": {
+        "title": "Deine Wallet",
+        "body": "Sperrt NAV in einem Staking-Commitment und verschlüsselt dessen Öffnung für den gewählten Staker."
+      },
+      "staker": {
+        "title": "Der Staker",
+        "body": "Findet die an seinen Schlüssel delegierten Commitments und staked sie Block für Block."
+      },
+      "network": {
+        "title": "Das Netzwerk",
+        "body": "Bestimmt, wer jeden Block erzeugt, im Verhältnis zum Stake dahinter."
+      },
+      "reward": {
+        "title": "Deine Belohnung",
+        "body": "Der Staker zahlt die Blockbelohnung an deine Adresse. Sie erscheint im Verlauf mit dem Memo \"Reward\"."
+      }
+    },
+    "rewards": {
+      "title": "Wie viel du verdienst",
+      "body": "Jeder Block zahlt pauschal {reward} NAV, ohne Halving: rund {perDay} NAV pro Tag im ganzen Netzwerk. Du erhältst deinen Anteil daran, also deinen Anteil am gesamten gestakten NAV, abzüglich der Gebühr des Stakers.",
+      "formula": "Pro Tag ≈ {blocks} Blöcke × {reward} NAV × (dein Stake ÷ gesamter Stake) × (1 − Gebühr)",
+      "luck": "Jeder Block ist eine Ziehung, daher kommen Belohnungen unregelmäßig: Ein kleiner Stake wartet vielleicht Tage auf eine und bekommt dann zwei hintereinander. Mit der Zeit gleicht sich das zur Formel aus.",
+      "maturity": "Eine Belohnung ist nach {blocks} Bestätigungen (etwa {hours} Stunden) ausgebbar. Belohnungen werden nicht automatisch gestaked; nutze \"Mehr staken\", um sie arbeiten zu lassen."
+    },
+    "estimator": {
+      "title": "Belohnungen schätzen",
+      "yourStake": "Dein Stake",
+      "totalStaked": "Gesamter Stake im Netzwerk",
+      "totalHint": "Die Wallet sieht das nicht; nimm den Wert aus einem Block-Explorer oder von deinem Staker.",
+      "fee": "Staker-Gebühr",
+      "perDay": "Pro Tag",
+      "perMonth": "Pro Monat",
+      "perYear": "Pro Jahr",
+      "apr": "Jahresrate",
+      "every": "Im Schnitt etwa eine Belohnung in {time}.",
+      "note": "Ein Durchschnitt, kein Versprechen: Er setzt voraus, dass der Gesamt-Stake gleich bleibt und der Staker online und ehrlich ist.",
+      "enterTotal": "Gib den Gesamt-Stake des Netzwerks ein, um eine Schätzung zu sehen."
+    },
+    "units": {
+      "days": "1 Tag | {n} Tagen",
+      "hours": "1 Stunde | {n} Stunden",
+      "minutes": "1 Minute | {n} Minuten"
+    },
+    "key": {
+      "title": "Der Delegationsschlüssel",
+      "body": "Ein Staker wird über seinen Delegationsschlüssel erkannt: einen 48-Byte-BLS12-381-Public-Key, geschrieben als 96 Hexadezimalzeichen. Der Betreiber erzeugt ihn mit {cmd} und veröffentlicht ihn. Der zugehörige private Schlüssel verlässt nie seinen Staking-Server.",
+      "example": "So sieht einer aus",
+      "payload": "Beim Staken verschlüsselt diese Wallet die Öffnung des Commitments und deine Belohnungsadresse für diesen Schlüssel (ECDH + ChaCha20-Poly1305, jedes Mal mit neuem Schlüssel). Nur dieser Staker kann sie lesen, und nur für das an ihn delegierte NAV.",
+      "network": "Der Schlüssel ist zufällig und enthält kein Netzwerk: Derselbe Schlüssel gilt im Mainnet und im Testnet. Stelle sicher, dass der Betreiber seinen Staker im Netzwerk dieser Wallet betreibt, sonst staked niemand dein NAV."
+    },
+    "trust": {
+      "title": "Was ein Staker kann und nicht kann",
+      "can": "Kann",
+      "cannot": "Kann nicht",
+      "can1": "Mit deinem Stake Blöcke erzeugen",
+      "can2": "Die an ihn delegierten Beträge sehen",
+      "can3": "Künftige Belohnungen umleiten",
+      "cannot1": "Dein NAV ausgeben oder entstaken",
+      "cannot2": "Sonst etwas in deiner Wallet sehen",
+      "cannot3": "Dich am Entstaken hindern"
+    },
+    "fee": {
+      "title": "Staker-Gebühr und Belohnungsweiterleitung",
+      "body": "Ein Betreiber kann einen Anteil jeder Belohnung behalten, in Basispunkten festgelegt (1000 = 10 %). Er wird im selben Block als separate \"Operator Fee\"-Ausgabe gezahlt; du erhältst den Rest.",
+      "advisory": "Die Weiterleitung ist eine Bitte, keine Regel: Der Staker baut seinen Block selbst, und nichts on-chain zwingt ihn, dich zu bezahlen. Behalte das Belohnungs-Panel im Blick; bleiben Belohnungen aus, entstake und wähle einen anderen Staker."
+    },
+    "unstake": {
+      "title": "Entstaken",
+      "body": "Du kannst jederzeit entstaken, ohne den Staker zu fragen. Nur bestätigte Delegationen lassen sich entstaken. Die Netzwerkgebühr wird vom entsperrten Betrag abgezogen, und das NAV ist verfügbar, sobald die Transaktion bestätigt ist.",
+      "partial": "Ein teilweises Entstaken lässt den Rest beim selben Staker gestaked. Was bleibt, muss mindestens {min} NAV betragen."
+    },
+    "privacy": {
+      "title": "Privatsphäre",
+      "body": "Delegierter Stake ist on-chain als delegiert erkennbar, aber sein Betrag und der Staker dahinter bleiben für alle anderen verborgen. Es werden keine View-Keys geteilt: Der Staker erfährt nur die Beträge der an ihn delegierten Ausgaben."
+    },
+    "restore": {
+      "title": "Wiederherstellen mit der Wiederherstellungsphrase",
+      "body": "Deine Delegationen liegen on-chain, verschlüsselt für den Staker und auch für diese Wallet. Stellst du mit deiner Wiederherstellungsphrase wieder her, kommen sie mit allem anderen zurück."
+    },
+    "self": {
+      "title": "Eigenen Staker betreiben",
+      "body": "Du brauchst keinen Dritten: Betreibe navio-staker auf einem eigenen Server und delegiere an deinen eigenen Schlüssel. Der Server hält nur den Delegationsschlüssel; selbst wenn er kompromittiert wird, bleiben dein NAV und bisherige Belohnungen sicher.",
+      "step1": "Auf dem Server ein Schlüsselpaar erzeugen",
+      "step2": "Den Public Key in dieser Wallet unter NAV staken einfügen",
+      "step3": "Den Staker mit der privaten Schlüsseldatei starten"
+    },
+    "docs": "Vollständige Cold-Staking-Dokumentation"
   },
   "send": {
     "insufficient": "Nicht genug NAV in deiner Wallet. Verfügbar: {available} NAV.",
@@ -1488,5 +1720,10 @@
     "copyHash": "ID kopieren",
     "emptyFilter": "In diesem Netzwerk gibt es noch nichts.",
     "bscNote": "BNB Chain zeigt Swaps, die in dieser App auf diesem Gerät gemacht wurden. Weitere Aktivitäten findest du im Explorer."
+  },
+  "toast": {
+    "received": "NAV empfangen",
+    "sent": "NAV gesendet",
+    "reward": "Staking-Belohnung"
   }
 }

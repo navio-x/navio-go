@@ -63,6 +63,8 @@
     "fiat": "Fiat",
     "wallpaper": "Wallpaper",
     "showFiatValue": "Mostrar valor fiat",
+    "txSound": "Sonido de transacción",
+    "txSoundDesc": "Un breve sonido cuando llega o sale NAV, o cuando entra una recompensa de staking.",
     "showBlockNumber": "Mostrar número de bloque",
     "syncIndicator": "Indicador de sincronización",
     "syncIndicatorBar": "Barra fina",
@@ -106,6 +108,7 @@
     "merchantRequiredConfirmationsDesc": "Cuántos bloques deben confirmar un pago superior al límite de aceptación instantánea para que cuente como pagado. Más confirmaciones protegen mejor frente a una reorganización de la blockchain, pero hacen esperar más al cliente en caja.",
     "dexMode": "Modo DEX / EVM",
     "dexModeDesc": "Añade una cuenta BSC (EVM) opcional derivada de la frase de recuperación de esta billetera, para intercambiar en PancakeSwap. Sin llamadas de red mientras esté desactivado.",
+    "hlMainnetOnly": "Hyperliquid (puente, swap y trading de NAV) solo está disponible en mainnet. Esta billetera está en otra red.",
     "tradeMode": "Trading",
     "tradeModeDesc": "Trading RFQ entre pares sobre el bus p2p cifrado propio de Navio, independiente del modo DEX/EVM de arriba. Requiere un servidor que ofrezca el puente de trading. Desactivado por defecto: sin llamadas de red hasta activarlo.",
     "chatMode": "Chat (Beta)",
@@ -279,7 +282,8 @@
     "synced": "SINCRONIZADO",
     "useAll": "Usar todo",
     "subtractFeeFromAmount": "Deducir comisión del monto",
-    "subtractFeeFromAmountDesc": "La comisión de red se deducirá del monto enviado"
+    "subtractFeeFromAmountDesc": "La comisión de red se deducirá del monto enviado",
+    "pendingCount": "{n} transacción pendiente | {n} transacciones pendientes"
   },
   "wizard": {
     "walletName": "Nombre de la billetera",
@@ -1424,7 +1428,9 @@
       "exchangeHint": "Hyperliquid. Público. Listo para intercambiar.",
       "exchangeHintOrders": "Hyperliquid. Público. {amount} en órdenes abiertas.",
       "moving": "En camino",
-      "movingHint": "Moviéndose entre ambos."
+      "movingHint": "Moviéndose entre ambos.",
+      "staked": "En staking",
+      "stakedHint": "Delegado a un staker. Retíralo del staking para gastarlo."
     },
     "links": {
       "trade": "Libro de órdenes",
@@ -1437,6 +1443,232 @@
       "manualWithdrawHint": "Retirar a cualquier dirección de Navio, paso a paso"
     },
     "explain": "El NAV en el exchange es NAV que el puente Navio–Hyperliquid guarda para ti, uno a uno, como un token llamado Wrapped Navio. El puente es custodio y, a diferencia del NAV de tu billetera, los saldos y las operaciones en Hyperliquid son públicos."
+  },
+  "staking": {
+    "title": "Staking",
+    "staked": "En staking",
+    "staker": "Staker",
+    "summary": "{count} delegación | {count} delegaciones",
+    "stakeMore": "Hacer más staking",
+    "unstake": "Retirar",
+    "start": "Empezar staking",
+    "needMin": "El staking empieza en {min} NAV. Tienes {available} NAV disponibles.",
+    "positions": "Delegaciones",
+    "waitingConfirm": "Esperando confirmación",
+    "sinceBlock": "Desde el bloque {height}",
+    "howItWorks": "Cómo funciona el staking",
+    "status": {
+      "active": "Activo",
+      "confirming": "Confirmando",
+      "unknown": "Staker desconocido"
+    },
+    "hero": {
+      "title": "Pon tu NAV a trabajar",
+      "subtitle": "Ayuda a asegurar Navio y gana recompensas a través de un staker. Tus claves nunca salen de esta billetera."
+    },
+    "perks": {
+      "keys": "Tus claves siguen siendo tuyas",
+      "anytime": "Retira cuando quieras",
+      "min": "Desde {amount} NAV"
+    },
+    "steps": {
+      "pick": "Elige un operador de staking y copia su clave de staker.",
+      "lock": "Tu NAV queda bloqueado en un compromiso de staking. El staker puede usarlo para producir bloques, pero nunca gastarlo.",
+      "earn": "El staker paga las recompensas a tu dirección. Retira cuando quieras y el NAV vuelve a estar disponible."
+    },
+    "notice": {
+      "custody": "El staker puede hacer staking con este NAV pero nunca gastarlo. Solo esta billetera puede retirarlo.",
+      "rewards": "Las recompensas las paga el staker; la red no las garantiza. Elige un operador de confianza.",
+      "locked": "El NAV en staking no se puede gastar hasta que lo retires."
+    },
+    "position": {
+      "title": "Delegación",
+      "stakerKey": "Clave del staker",
+      "since": "Confirmado en el bloque",
+      "tx": "Transacción",
+      "unknownHint": "Esta billetera no puede leer a quién está delegado este NAV, así que puede que no esté haciendo staking. Retíralo y vuelve a hacer staking con un staker que conozcas."
+    },
+    "form": {
+      "title": "Hacer staking de NAV",
+      "minHint": "Mínimo {min} NAV. La comisión de red se paga aparte.",
+      "stakerKey": "Clave del staker",
+      "stakerKeyPlaceholder": "Pega la clave de delegación del staker",
+      "stakerKeyHelp": "Los operadores de staking publican esta clave de 96 caracteres. Les permite hacer staking con tu NAV, nunca gastarlo.",
+      "paste": "Pegar",
+      "scan": "Escanear",
+      "keyValid": "Clave de staker válida",
+      "keyInvalid": "Una clave de staker tiene 96 caracteres hexadecimales.",
+      "recent": "Tus stakers",
+      "rewardsTo": "Recompensas a",
+      "rewardsWallet": "Esta billetera",
+      "rewardsCustom": "Otra dirección",
+      "rewardsAddress": "Dirección Navio para recompensas",
+      "belowMin": "Haz staking de al menos {min} NAV.",
+      "insufficient": "Tienes {available} NAV disponibles para staking.",
+      "whatIsKey": "¿Qué es una clave de staker?"
+    },
+    "review": {
+      "title": "Revisar staking",
+      "confirm": "Hacer staking de {amount} NAV",
+      "busy": "Haciendo staking…",
+      "fee": "Comisión de red",
+      "feeValue": "Se paga de tu saldo",
+      "anyTime": "Cuando quieras",
+      "successTitle": "Staking enviado",
+      "successMessage": "{amount} NAV se está poniendo en staking. Aparecerá como activo cuando se confirme la transacción.",
+      "failed": "El staking falló"
+    },
+    "unstakeForm": {
+      "title": "Retirar del staking",
+      "reviewTitle": "Revisar retiro",
+      "nothing": "Aún no hay nada confirmado para retirar.",
+      "all": "Todo",
+      "part": "Una parte",
+      "amountLabel": "Cantidad a desbloquear",
+      "toWallet": "Sale del staking",
+      "remains": "Sigue en staking",
+      "feeHint": "La comisión de red se descuenta de la cantidad desbloqueada.",
+      "partOnlySingle": "Para retirar una parte, abre una sola delegación.",
+      "partUnknown": "Esta delegación solo se puede retirar completa.",
+      "tooMuch": "Aquí puedes desbloquear como máximo {max} NAV.",
+      "tooLittle": "Desbloquea más que la comisión de red.",
+      "remainderTooSmall": "Lo que siga en staking debe ser al menos {min} NAV. Desbloquea menos o retíralo todo.",
+      "arrives": "Llega",
+      "arrivesValue": "A tu billetera, al confirmarse",
+      "feeValue": "Se descuenta de lo desbloqueado",
+      "revokes": "Retirar termina la delegación de este NAV: el staker ya no puede usarlo.",
+      "keepsStaker": "El resto sigue en staking con el mismo staker. Se puede retirar de nuevo una vez confirmado.",
+      "confirm": "Retirar {amount} NAV",
+      "busy": "Retirando…",
+      "successTitle": "Retiro enviado",
+      "successMessage": "{amount} NAV estará disponible en tu billetera cuando se confirme la transacción.",
+      "failed": "El retiro falló"
+    },
+    "rewards": {
+      "title": "Recompensas",
+      "range": "Periodo",
+      "earned": "Ganado en {range}",
+      "count": "{count} recompensa | {count} recompensas",
+      "empty": "Sin recompensas en este periodo",
+      "none": "Las recompensas llegan a tu billetera con la nota \"Reward\" cada vez que tu staker produce un bloque con tu stake.",
+      "period": "Periodo"
+    },
+    "operators": {
+      "choose": "Elegir",
+      "title": "Elige un staker",
+      "operator": "Operador",
+      "fee": "Comisión del {fee} %",
+      "noFee": "Sin comisión",
+      "feeLabel": "Comisión",
+      "since": "En la lista desde {date}",
+      "website": "Sitio web",
+      "error": "No se pudo cargar la lista de operadores. Revisa tu conexión.",
+      "retry": "Reintentar",
+      "empty": "Aún no hay operadores en la lista para {network}. Puedes pegar una clave de staker igualmente.",
+      "disclaimer": "Listado por go.nav.io. Estar en la lista no es una recomendación: la comisión y el pago de recompensas son una promesa del operador, no algo que la red garantice.",
+      "default": "Predeterminado"
+    }
+  },
+  "stakingGuide": {
+    "title": "Cómo funciona el staking",
+    "intro": "Navio es proof of stake: los bloques los produce NAV bloqueado para staking. Una billetera ligera como esta no puede producir bloques por sí misma, así que delega su stake a un staker, un nodo que funciona día y noche, mientras esta billetera conserva las claves que pueden gastarlo.",
+    "facts": {
+      "blockReward": "Recompensa por bloque",
+      "blockTime": "Tiempo de bloque",
+      "minStake": "Stake mínimo",
+      "maturity": "Recompensas gastables tras",
+      "minutes": "{n} min",
+      "blocks": "{n} bloques"
+    },
+    "flow": {
+      "title": "De tu billetera a un bloque",
+      "wallet": {
+        "title": "Tu billetera",
+        "body": "Bloquea NAV en un compromiso de staking y cifra su apertura para el staker que elegiste."
+      },
+      "staker": {
+        "title": "El staker",
+        "body": "Encuentra los compromisos delegados a su clave y hace staking con ellos, bloque tras bloque."
+      },
+      "network": {
+        "title": "La red",
+        "body": "Elige quién produce cada bloque, en proporción al stake que lo respalda."
+      },
+      "reward": {
+        "title": "Tu recompensa",
+        "body": "El staker paga la recompensa del bloque a tu dirección. Aparece en tu historial con la nota \"Reward\"."
+      }
+    },
+    "rewards": {
+      "title": "Cuánto ganas",
+      "body": "Cada bloque paga {reward} NAV fijos, sin halving: unos {perDay} NAV al día en toda la red. Recibes tu parte, que es tu parte de todo el NAV en staking, menos la comisión del staker.",
+      "formula": "Por día ≈ {blocks} bloques × {reward} NAV × (tu stake ÷ stake total) × (1 − comisión)",
+      "luck": "Cada bloque es un sorteo, así que las recompensas llegan de forma irregular: un stake pequeño puede esperar días por una y luego recibir dos seguidas. Con el tiempo se acercan a la fórmula.",
+      "maturity": "Una recompensa se puede gastar tras {blocks} confirmaciones (unas {hours} horas). Las recompensas no se suman solas a tu stake; usa \"Hacer más staking\" para ponerlas a trabajar."
+    },
+    "estimator": {
+      "title": "Estima tus recompensas",
+      "yourStake": "Tu stake",
+      "totalStaked": "Stake total de la red",
+      "totalHint": "La billetera no lo ve; obtenlo de un explorador de bloques o de tu staker.",
+      "fee": "Comisión del staker",
+      "perDay": "Por día",
+      "perMonth": "Por mes",
+      "perYear": "Por año",
+      "apr": "Tasa anual",
+      "every": "De media, una recompensa cada {time}.",
+      "note": "Una media, no una promesa: supone que el stake total no cambia y que el staker sigue en línea y es honesto.",
+      "enterTotal": "Introduce el stake total de la red para ver una estimación."
+    },
+    "units": {
+      "days": "día | {n} días",
+      "hours": "hora | {n} horas",
+      "minutes": "minuto | {n} minutos"
+    },
+    "key": {
+      "title": "La clave de delegación",
+      "body": "Un staker se identifica por su clave de delegación: una clave pública BLS12-381 de 48 bytes, escrita como 96 caracteres hexadecimales. El operador la crea con {cmd} y la publica. La clave privada correspondiente nunca sale de su servidor de staking.",
+      "example": "Así es una",
+      "payload": "Al hacer staking, esta billetera cifra la apertura del compromiso y tu dirección de recompensas para esa clave (ECDH + ChaCha20-Poly1305, con una clave nueva cada vez). Solo ese staker puede leerlo, y solo para el NAV que le delegaste.",
+      "network": "La clave es aleatoria y no contiene red: la misma clave sirve en mainnet y testnet. Asegúrate de que el operador ejecute su staker en la red de esta billetera, o nadie hará staking con tu NAV."
+    },
+    "trust": {
+      "title": "Qué puede y qué no puede hacer un staker",
+      "can": "Puede",
+      "cannot": "No puede",
+      "can1": "Producir bloques con tu stake",
+      "can2": "Ver los importes que le delegaste",
+      "can3": "Enviar recompensas futuras a otro sitio",
+      "cannot1": "Gastar o retirar tu NAV",
+      "cannot2": "Ver nada más de tu billetera",
+      "cannot3": "Impedir que retires tu stake"
+    },
+    "fee": {
+      "title": "Comisión del staker y destino de recompensas",
+      "body": "Un operador puede quedarse una parte de cada recompensa, fijada en puntos básicos (1000 = 10 %). Se paga en el mismo bloque como una salida \"Operator Fee\" aparte; tú recibes el resto.",
+      "advisory": "El destino es una petición, no una regla: el staker construye su propio bloque y nada en la cadena lo obliga a pagarte. Vigila el panel de recompensas; si dejan de llegar, retira y elige otro staker."
+    },
+    "unstake": {
+      "title": "Retirar del staking",
+      "body": "Puedes retirar cuando quieras, sin pedir permiso al staker. Solo se pueden retirar delegaciones confirmadas. La comisión de red se descuenta de lo desbloqueado y el NAV se puede gastar en cuanto se confirma la transacción.",
+      "partial": "Un retiro parcial deja el resto en staking con el mismo staker. Lo que queda debe ser al menos {min} NAV."
+    },
+    "privacy": {
+      "title": "Privacidad",
+      "body": "El stake delegado se reconoce en la cadena como delegado, pero su importe y el staker que lo respalda quedan ocultos para los demás. No se comparten claves de visualización: el staker solo conoce los importes de las salidas que le delegaste."
+    },
+    "restore": {
+      "title": "Restaurar con tu frase de recuperación",
+      "body": "Tus delegaciones viven en la cadena, cifradas tanto para el staker como para esta billetera. Restaura con tu frase de recuperación y vuelven con todo lo demás."
+    },
+    "self": {
+      "title": "Ejecuta tu propio staker",
+      "body": "No necesitas a un tercero: ejecuta navio-staker en tu propio servidor y delega a tu propia clave. El servidor solo guarda la clave de delegación; aunque lo comprometan, tu NAV y tus recompensas pasadas siguen a salvo.",
+      "step1": "En el servidor, crea un par de claves",
+      "step2": "Pega la clave pública en Hacer staking de NAV en esta billetera",
+      "step3": "Inicia el staker con el archivo de clave privada"
+    },
+    "docs": "Documentación completa de cold staking"
   },
   "send": {
     "insufficient": "No hay suficiente NAV en tu billetera. Disponible: {available} NAV.",
@@ -1488,5 +1720,10 @@
     "copyHash": "Copiar ID",
     "emptyFilter": "Aún no hay nada en esta red.",
     "bscNote": "BNB Chain muestra los intercambios hechos en esta app en este dispositivo. El resto de la actividad está en el explorador."
+  },
+  "toast": {
+    "received": "NAV recibido",
+    "sent": "NAV enviado",
+    "reward": "Recompensa de staking"
   }
 }

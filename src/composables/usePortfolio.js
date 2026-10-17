@@ -1,7 +1,8 @@
 import { ref, computed, watch, onMounted, onUnmounted } from "vue";
 import { formatUnits } from "viem";
 import { settings } from "@/stores/settings";
-import { balance } from "@/stores/navio";
+import { hlEnabled } from "@/stores/network";
+import { balance, stakedBalance } from "@/stores/navio";
 import { navPrice } from "@/stores/navPrice";
 import { evmAddress } from "@/stores/evm";
 import { navInTransit, operations } from "@/stores/operations";
@@ -17,10 +18,11 @@ const EVM_POLL_MS = 30_000;
  * Everything the user owns, as they think of it: NAV is ONE asset whether
  * it sits in the private wallet, on the exchange, or is moving between the
  * two — `nav` carries the breakdown for anyone who wants to look. With
- * dexMode off this is just the wallet and makes no request.
+ * Hyperliquid unavailable (dexMode off, or not on mainnet) this is just the
+ * wallet and makes no request.
  */
 export function usePortfolio() {
-  const hlAddress = computed(() => (settings.dexMode ? evmAddress.value : ""));
+  const hlAddress = computed(() => (hlEnabled.value ? evmAddress.value : ""));
   const hl = useHyperliquidBalances(hlAddress);
 
   // NAV held as the ERC20 on HyperEVM — only ever a stop on the way back to
@@ -60,7 +62,7 @@ export function usePortfolio() {
   // False until the exchange side has answered once, so a total is never
   // shown as wallet-only and then corrected a moment later. With dexMode
   // off there is nothing to wait for.
-  const ready = computed(() => !settings.dexMode || (!!hlAddress.value && hl.loaded.value && evmLoaded.value));
+  const ready = computed(() => !hlEnabled.value || (!!hlAddress.value && hl.loaded.value && evmLoaded.value));
   // True as soon as there is something truthful to show: fresh balances, or
   // the ones saved from the last visit while the fresh ones load.
   const hasData = computed(() => ready.value || (!!hlAddress.value && hl.fromCache.value));
@@ -83,13 +85,16 @@ export function usePortfolio() {
     const inOrders = Number(row?.hold ?? 0);
     const { toExchange, toWallet } = navInTransit.value;
     const moving = navOnEvm.value + toExchange + toWallet;
+    // Locked in cold staking: still the user's, just not spendable.
+    const staked = Number(stakedBalance.value) || 0;
     return {
       wallet,
+      staked,
       exchange,
       exchangeAvailable: Math.max(0, exchange - inOrders),
       inOrders,
       moving,
-      total: wallet + exchange + moving,
+      total: wallet + staked + exchange + moving,
     };
   });
 
@@ -107,7 +112,7 @@ export function usePortfolio() {
     }];
     // Before the exchange account is known the rows are still listed (at
     // zero) — hosts show a loading mark in place of the amounts until `hasData`.
-    if (!settings.dexMode) return list;
+    if (!hlEnabled.value) return list;
     for (const row of hl.balances.value) {
       if (row.symbol === "NAV") continue;
       // Shown if the user added it or it holds a balance — funds are never hidden.

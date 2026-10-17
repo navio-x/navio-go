@@ -1,6 +1,7 @@
-<!-- NAV, as one asset: the total first, where it is held one tap away, and
-     the explicit wallet <-> exchange move (what used to be the bridge's
-     deposit/withdraw screens) under Advanced for those who want it. -->
+<!-- NAV, as one asset: the total first, where it is held one tap away,
+     cold staking under the actions, and the explicit wallet <-> exchange
+     move (what used to be the bridge's deposit/withdraw screens) under
+     Advanced for those who want it. -->
 <template>
   <div class="bg-gray-50 dark:bg-gh-900 min-h-full flex flex-col">
     <div class="flex items-center gap-3 px-5 pt-5 pb-4">
@@ -25,7 +26,7 @@
         <p v-if="settings.showFiatValue && totalFiat" class="text-sm text-gray-500 dark:text-gray-400">≈ {{ totalFiat }}</p>
 
         <!-- Where it is: exact, but secondary -->
-        <template v-if="settings.dexMode">
+        <template v-if="hlEnabled || nav.staked > 0">
           <button
             type="button"
             @click="showBreakdown = !showBreakdown"
@@ -48,22 +49,30 @@
       </div>
 
       <!-- Actions -->
-      <div class="grid gap-2" :class="settings.dexMode ? 'grid-cols-3' : 'grid-cols-2'">
+      <div class="grid gap-2" :class="hlEnabled ? 'grid-cols-3' : 'grid-cols-2'">
         <button
           v-for="action in actions"
           :key="action.id"
           @click="router.push(action.to)"
-          class="py-3 rounded-2xl flex flex-col items-center gap-1.5 text-xs font-semibold bg-blue-600 hover:bg-blue-700 text-white"
+          class="py-3 rounded-2xl flex flex-col items-center gap-1.5 text-xs font-semibold transition-colors
+                 border border-gray-200 dark:border-gh-700 bg-white dark:bg-gh-800 text-gray-700 dark:text-gray-200
+                 hover:bg-gray-50 dark:hover:bg-gh-700 active:scale-[0.98]"
         >
-          <component :is="action.icon" class="w-5 h-5" />
+          <!-- Tonal: colour only in the icon's disc, so the page's real
+               primary actions (stake, review, confirm) stay the loud ones. -->
+          <span class="w-9 h-9 rounded-full flex items-center justify-center bg-blue-50 dark:bg-blue-500/15 text-blue-600 dark:text-blue-400">
+            <component :is="action.icon" class="w-[18px] h-[18px]" />
+          </span>
           {{ $t(action.label) }}
         </button>
       </div>
 
       <OperationCard v-for="op in operations" :key="op.id" :op="op" />
 
+      <StakingCard />
+
       <!-- Advanced: the explicit versions of what Swap does on its own -->
-      <div v-if="settings.dexMode" class="rounded-2xl border border-gray-200 dark:border-gh-700 bg-white dark:bg-gh-800 overflow-hidden">
+      <div v-if="hlEnabled" class="rounded-2xl border border-gray-200 dark:border-gh-700 bg-white dark:bg-gh-800 overflow-hidden">
         <button
           type="button"
           @click="showAdvanced = !showAdvanced"
@@ -161,6 +170,7 @@ import {
   ArrowUpFromLine, ArrowDownToLine, Loader2,
 } from 'lucide-vue-next'
 import { settings } from '@/stores/settings'
+import { hlEnabled } from '@/stores/network'
 import { evmAddress } from '@/stores/evm'
 import { receiveAddress } from '@/stores/navio'
 import { operations, activeOperations, startOperation } from '@/stores/operations'
@@ -175,6 +185,7 @@ import BottomSheet from '@/components/tx/BottomSheet.vue'
 import AmountField from '@/components/tx/AmountField.vue'
 import ReviewSheet from '@/components/tx/ReviewSheet.vue'
 import OperationCard from '@/components/tx/OperationCard.vue'
+import StakingCard from '@/components/staking/StakingCard.vue'
 
 const router = useRouter()
 const { t, te } = useI18n()
@@ -188,13 +199,19 @@ const totalFiat = computed(() =>
 // Open by default as soon as anything is held outside the wallet.
 const breakdownToggled = ref(null)
 const showBreakdown = computed({
-  get: () => breakdownToggled.value ?? (nav.value.exchange > 0 || nav.value.moving > 0),
+  get: () => breakdownToggled.value ?? (nav.value.exchange > 0 || nav.value.moving > 0 || nav.value.staked > 0),
   set: (v) => { breakdownToggled.value = v },
 })
 
 const breakdown = computed(() => {
   const rows = [
     { id: 'wallet', label: t('asset.where.wallet'), hint: t('asset.where.walletHint'), amount: nav.value.wallet },
+  ]
+  if (nav.value.staked > 0) {
+    rows.push({ id: 'staked', label: t('asset.where.staked'), hint: t('asset.where.stakedHint'), amount: nav.value.staked })
+  }
+  if (!hlEnabled.value) return rows
+  rows.push(
     {
       id: 'exchange',
       label: t('asset.where.exchange'),
@@ -203,7 +220,7 @@ const breakdown = computed(() => {
         : t('asset.where.exchangeHint'),
       amount: nav.value.exchange,
     },
-  ]
+  )
   if (nav.value.moving > 0) {
     rows.push({ id: 'moving', label: t('asset.where.moving'), hint: t('asset.where.movingHint'), amount: nav.value.moving })
   }
@@ -213,7 +230,7 @@ const breakdown = computed(() => {
 const actions = computed(() => [
   { id: 'send', to: '/wallet/send', icon: SendHorizontal, label: 'wallet.send' },
   { id: 'receive', to: '/wallet/receive', icon: Download, label: 'wallet.receive' },
-  ...(settings.dexMode ? [{ id: 'swap', to: '/swap?from=NAV', icon: Repeat, label: 'swap.title' }] : []),
+  ...(hlEnabled.value ? [{ id: 'swap', to: '/swap?from=NAV', icon: Repeat, label: 'swap.title' }] : []),
 ])
 
 const showAdvanced = ref(false)

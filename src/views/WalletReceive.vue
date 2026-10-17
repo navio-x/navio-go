@@ -2,6 +2,7 @@
 import { ref, computed, onMounted } from "vue";
 import { getNavioClient } from "@/stores/navio";
 import { settings } from "@/stores/settings";
+import { hlEnabled } from "@/stores/network";
 import { evmAddress } from "@/stores/evm";
 import { deriveEvmAddress } from "@/composables/useEvmAccount";
 import QRCode from "qrcode.vue";
@@ -56,7 +57,7 @@ onMounted(async () => {
     <div class="px-5 pb-6 flex justify-center">
       <div class="w-full max-w-sm flex flex-col gap-4">
         <!-- What are you receiving? -->
-        <div v-if="settings.dexMode" class="grid grid-cols-2 gap-1 p-1 rounded-xl bg-gray-100 dark:bg-gh-800" role="tablist">
+        <div v-if="hlEnabled" class="grid grid-cols-2 gap-1 p-1 rounded-xl bg-gray-100 dark:bg-gh-800" role="tablist">
           <button
             v-for="option in ['nav', 'other']"
             :key="option"
