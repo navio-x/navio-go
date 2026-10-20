@@ -142,10 +142,13 @@
     "unlockDurationDesc": "Recuerda la contraseña de una billetera cifrada en este dispositivo, contando desde la última vez que la escribiste. Durante ese tiempo, cualquiera con acceso a este dispositivo puede abrir la billetera.",
     "autoOpenLastWallet": "Abrir automáticamente la última billetera",
     "autoOpenLastWalletDesc": "Omite la lista de billeteras al iniciar y abre la última billetera que usaste.",
-    "logout": "Cerrar sesión"
+    "logout": "Cerrar sesión",
+    "developer": "Desarrollador",
+    "developerDesc": "Ajustes para quienes ejecutan sus propios servicios."
   },
   "nav": {
-    "more": "Más"
+    "more": "Más",
+    "activity": "Actividad"
   },
   "pos": {
     "title": "POS",
@@ -852,7 +855,7 @@
   },
   "bridge": {
     "deposit": {
-      "title": "Depositar NAV",
+      "title": "Recibir en trading",
       "activateTitle": "Activa tu cuenta de HyperCore",
       "activateDesc": "Antes de poder depositar, tu dirección debe registrarse una vez en el puente. Esto cuesta una pequeña cantidad de gas en HYPE; el HYPE de tu cuenta de HyperCore se mueve automáticamente.",
       "activateButton": "Activar",
@@ -869,10 +872,19 @@
       "sendSuccess": "Enviado: este depósito se acreditará tras las confirmaciones indicadas abajo.",
       "sendFailed": "Algo salió mal al enviar. Inténtalo de nuevo.",
       "txId": "ID de transacción",
-      "movingHype": "Moviendo HYPE a HyperEVM para el gas…"
+      "movingHype": "Moviendo HYPE a HyperEVM para el gas…",
+      "intro": "Envía NAV desde cualquier cartera Navio a esta dirección y llegará a tu cuenta de trading.",
+      "notReadyTitle": "Primero hace falta una configuración única",
+      "notReadyBody": "Tu cuenta de trading necesita una configuración única antes de que el puente pueda acreditar depósitos. Cuesta {amount} NAV de esta cartera y tarda unos minutos. Después, esta dirección funciona para siempre.",
+      "notReadyNoFunds": "La configuración única cuesta {amount} NAV y esta cartera tiene {have} NAV. Recibe NAV en la cartera primero, o intercambia desde una cartera que ya tenga NAV.",
+      "setupButton": "Configurar cuenta de trading",
+      "settingUp": "Configurando tu cuenta de trading…",
+      "readyBadge": "Lista para recibir",
+      "notReadyBodyFree": "Tu cuenta de trading necesita un registro único antes de que el puente pueda acreditar depósitos. Es automático, no cuesta nada de tu cartera y tarda alrededor de un minuto. Después, esta dirección funciona para siempre.",
+      "setupButtonFree": "Registrar ahora"
     },
     "withdraw": {
-      "title": "Retirar NAV",
+      "title": "Traer NAV de vuelta",
       "onEvm": "En HyperEVM",
       "onCore": "En HyperCore",
       "moveToEvm": "Mover a HyperEVM",
@@ -888,7 +900,11 @@
       "submit": "Retirar",
       "encrypting": "Cifrando destino…",
       "burning": "Enviando…",
-      "done": "Retiro enviado: los fondos suelen llegar a Navio en unos minutos."
+      "done": "Retiro enviado: los fondos suelen llegar a Navio en unos minutos.",
+      "intro": "Saca NAV de tu cuenta de trading a cualquier dirección Navio.",
+      "available": "Disponible en trading",
+      "ownWallet": "Usar la dirección de mi cartera",
+      "notReady": "Tu cuenta de trading aún no está registrada. No hay nada que retirar."
     },
     "errors": {
       "wallet_locked": "La billetera está bloqueada: desbloquéala para continuar.",
@@ -1336,7 +1352,47 @@
       "setup_unavailable": "La configuración única de la cuenta no está disponible ahora mismo. Inténtalo más tarde.",
       "wallet_locked": "La billetera está bloqueada: desbloquéala para continuar."
     },
-    "walletHint": "Hay otros {amount} NAV en tu billetera. Introduce más del importe disponible y Swap los moverá primero al exchange (tarda unos minutos)."
+    "walletHint": "Hay otros {amount} NAV en tu billetera. Introduce más del importe disponible y Swap los moverá primero al exchange (tarda unos minutos).",
+    "available": "Disponible",
+    "where": "En cartera {wallet} · Listo para operar {exchange}",
+    "whereMoving": " · En camino {moving}",
+    "setupNeeded": {
+      "title": "Hace falta una configuración única",
+      "body": "Tu cuenta de trading aún no está configurada. Navio Go lo hace por ti como parte de este intercambio:",
+      "faucet": "Configurar cuenta de trading",
+      "faucetCost": "{amount} NAV, una vez",
+      "register": "Registrar en el puente",
+      "registerCost": "automático",
+      "deposit": "Mover {amount} NAV a trading",
+      "depositTime": "unos {minutes} min",
+      "total": "Total desde tu cartera",
+      "howItWorks": "Cómo funciona",
+      "inProgress": "Tu cuenta de trading se está configurando ahora mismo; este intercambio puede empezar en cuanto termine."
+    },
+    "moveNeeded": {
+      "title": "Primero se moverá NAV a trading",
+      "body": "{amount} NAV pasan de tu cartera privada a tu cuenta de trading (unos {minutes} min); después el intercambio se ejecuta solo."
+    },
+    "blocked": {
+      "insufficient": "Necesitas unos {needed} NAV en tu cartera para este intercambio. Tienes {have} NAV.",
+      "breakdown": "{deposit} NAV para operar + {setup} NAV de configuración única + comisión de red",
+      "breakdownNoSetup": "{deposit} NAV para operar + comisión de red",
+      "belowMinimum": "Las operaciones deben valer al menos 10 USDC: unos {nav} NAV al precio actual.",
+      "belowMinimumNoPrice": "Las operaciones deben valer al menos 10 USDC.",
+      "receive": "Recibir NAV",
+      "otherAsset": "No hay suficiente {symbol} en tu cuenta de trading. Disponible: {available}.",
+      "setupBusy": "Tu cuenta de trading se está configurando. Este intercambio puede empezar cuando termine."
+    },
+    "review": {
+      "setupTitle": "Se requiere una configuración única",
+      "setupBody": "Tu cuenta de trading aún no está configurada. Navio Go la configura automáticamente antes de ejecutar este intercambio.",
+      "willDo": "Navio Go hará:",
+      "totalLeaving": "Total que sale de tu cartera",
+      "plusFees": "+ comisiones de red",
+      "confirmPayments": "Confirmar · aprueba {n} pagos",
+      "confirmOne": "Confirmar intercambio",
+      "setupDetails": "Detalles de la configuración"
+    }
   },
   "ops": {
     "title": {
@@ -1414,8 +1470,8 @@
     "openNav": "Abrir NAV",
     "moveDesc": "Swap mueve el NAV por ti cuando hace falta. Muévelo tú solo si lo quieres en un lugar concreto.",
     "move": {
-      "toExchange": "Mover al exchange",
-      "toWallet": "Traer de vuelta a la billetera",
+      "toExchange": "Mover NAV a trading",
+      "toWallet": "Traer NAV de vuelta a la cartera",
       "from": "De",
       "to": "A",
       "walletAddress": "La dirección de tu billetera",
@@ -1424,9 +1480,9 @@
     "where": {
       "wallet": "En tu billetera",
       "walletHint": "Privado. Listo para enviar.",
-      "exchange": "En el exchange",
-      "exchangeHint": "Hyperliquid. Público. Listo para intercambiar.",
-      "exchangeHintOrders": "Hyperliquid. Público. {amount} en órdenes abiertas.",
+      "exchange": "Listo para operar",
+      "exchangeHint": "En tu cuenta de trading (Hyperliquid). Público.",
+      "exchangeHintOrders": "En tu cuenta de trading. {amount} en órdenes abiertas.",
       "moving": "En camino",
       "movingHint": "Moviéndose entre ambos.",
       "staked": "En staking",
@@ -1435,14 +1491,35 @@
     "links": {
       "trade": "Libro de órdenes",
       "tradeHint": "Órdenes límite y el mercado NAV/USDC en vivo",
-      "hlTransfer": "Transferencia en Hyperliquid",
+      "hlTransfer": "Transferir dentro de Hyperliquid",
       "hlTransferHint": "Enviar a otra cuenta de Hyperliquid o recibir desde ella",
-      "depositAddress": "Dirección de depósito del puente",
-      "depositAddressHint": "Fondear el exchange desde otra billetera Navio",
-      "manualWithdraw": "Retiro manual del puente",
-      "manualWithdrawHint": "Retirar a cualquier dirección de Navio, paso a paso"
+      "depositAddress": "Recibir en trading desde otra cartera",
+      "depositAddressHint": "La dirección de depósito de tu cuenta de trading",
+      "manualWithdraw": "Traer NAV de vuelta a cualquier dirección",
+      "manualWithdrawHint": "Retirar de trading a cualquier dirección Navio",
+      "diagnostics": "Cuenta de trading",
+      "diagnosticsHint": "Estado, direcciones y saldos"
     },
-    "explain": "El NAV en el exchange es NAV que el puente Navio–Hyperliquid guarda para ti, uno a uno, como un token llamado Wrapped Navio. El puente es custodio y, a diferencia del NAV de tu billetera, los saldos y las operaciones en Hyperliquid son públicos."
+    "explain": "El NAV en el exchange es NAV que el puente Navio–Hyperliquid guarda para ti, uno a uno, como un token llamado Wrapped Navio. El puente es custodio y, a diferencia del NAV de tu billetera, los saldos y las operaciones en Hyperliquid son públicos.",
+    "diag": {
+      "title": "Cuenta de trading",
+      "account": "Cuenta de Hyperliquid",
+      "registered": "Registrada en el puente",
+      "gas": "Saldo para comisiones de red (HYPE)",
+      "evmAddress": "Dirección de la cuenta",
+      "depositAddress": "Dirección de depósito del puente",
+      "depositAddressNone": "Disponible cuando la cuenta esté registrada",
+      "navCore": "NAV en trading",
+      "navEvm": "NAV en HyperEVM (fase de retiro)",
+      "usdc": "USDC",
+      "yes": "Sí",
+      "no": "Todavía no",
+      "ready": "Lista",
+      "notReady": "Necesita configuración única",
+      "setup": "Configurar ahora",
+      "setupCost": "La configuración única cuesta {amount} NAV",
+      "refresh": "Actualizar"
+    }
   },
   "staking": {
     "title": "Staking",
@@ -1719,11 +1796,115 @@
     "txHash": "Transacción",
     "copyHash": "Copiar ID",
     "emptyFilter": "Aún no hay nada en esta red.",
-    "bscNote": "BNB Chain muestra los intercambios hechos en esta app en este dispositivo. El resto de la actividad está en el explorador."
+    "bscNote": "BNB Chain muestra los intercambios hechos en esta app en este dispositivo. El resto de la actividad está en el explorador.",
+    "operation": "Operación",
+    "technicalSteps": "Pasos técnicos",
+    "stopped": "Detenida",
+    "inProgress": "En curso"
   },
   "toast": {
     "received": "NAV recibido",
     "sent": "NAV enviado",
     "reward": "Recompensa de staking"
+  },
+  "process": {
+    "activityTitle": "Actividad",
+    "title": {
+      "swap": "Intercambio {from} → {to}",
+      "swapDone": "Intercambiado {from} → {to}",
+      "toExchange": "Moviendo NAV a trading",
+      "toWallet": "Trayendo NAV de vuelta a tu cartera",
+      "receiveViaBridge": "Configurando tu cuenta de trading"
+    },
+    "subtitle": {
+      "setupOnly": "Configuración única"
+    },
+    "status": {
+      "done": "Hecho",
+      "cancelled": "Detenida",
+      "awaiting": "Necesita tu aprobación",
+      "attention": "Necesita atención",
+      "starting": "Iniciando…",
+      "running": "En curso"
+    },
+    "progress": "{done} de {total}",
+    "step": {
+      "faucet": "Configurar cuenta de trading",
+      "register": "Registrar en el puente",
+      "deposit": "Mover {amount} NAV a trading",
+      "sell": "Vender {base} por USDC",
+      "buy": "Comprar {base} con USDC",
+      "toEvm": "Preparar NAV para el retiro",
+      "burn": "Enviar NAV a tu cartera"
+    },
+    "stepDetail": {
+      "faucet": "{amount} NAV compran un pequeño paquete de USDC + HYPE que crea tu cuenta y paga sus comisiones de red. Solo una vez.",
+      "faucetWaiting": "{amount} NAV enviados. Esperando 3 confirmaciones (unos 6 min).",
+      "faucetDone": "{amount} NAV enviados. Cuenta de trading creada.",
+      "register": "Automático. No se mueve NAV; la pequeña comisión se paga con el HYPE que recibiste.",
+      "movingGas": "Moviendo un poco de HYPE para pagar la comisión de registro…",
+      "deposit": "Enviado desde tu cartera privada a tu cuenta de trading.",
+      "depositWaiting": "Enviado desde tu cartera. Esperando confirmaciones · quedan unos {minutes} min.",
+      "depositDone": "{amount} NAV llegaron a tu cuenta de trading.",
+      "order": "A {price} o mejor, o nada.",
+      "orderDone": "Ejecutado: {size} {base} a {price}.",
+      "toEvmWaiting": "Esperando al exchange…",
+      "burn": "El NAV sale del exchange; el puente lo paga en tu cartera unos minutos después.",
+      "burnDone": "Enviado. El NAV llega a tu cartera en unos minutos."
+    },
+    "leave": "Puedes salir de esta pantalla. Navio Go sigue el proceso mientras esté abierto y lo retoma donde lo dejó tras reiniciar.",
+    "view": "Ver progreso",
+    "viewAll": "Toda la actividad",
+    "open": "Abrir",
+    "tray": {
+      "one": "{n} operación en curso",
+      "many": "{n} operaciones en curso",
+      "needsYou": "{n} necesitan tu atención"
+    },
+    "approval": {
+      "title": "Aprueba para continuar",
+      "setup_price_changed": "El precio de la configuración cambió desde que lo revisaste: {amount} NAV en lugar de {approved} NAV. Aún no se ha enviado nada.",
+      "approve": "Aprobar {amount} NAV",
+      "unknown": "Este paso necesita una nueva aprobación antes de continuar."
+    },
+    "failed": {
+      "title": "Este paso no se completó",
+      "keep": "Los pasos terminados se conservan. Reintentar empieza desde este paso."
+    },
+    "interrupted": {
+      "title": "No está claro si este paso se envió",
+      "body": "La app se cerró mientras se enviaba y los saldos no despejan la duda. Revisa el Historial antes de elegir.",
+      "checked": "Comprobado tras reiniciar: saldo de la cartera, saldo de trading."
+    },
+    "actions": {
+      "retry": "Reintentar",
+      "stop": "Detener",
+      "wentThrough": "Sí se envió",
+      "sendAgain": "Enviar de nuevo",
+      "details": "Detalles técnicos",
+      "dismiss": "OK",
+      "requote": "Intercambiar al precio actual",
+      "keepWaiting": "Probar el mismo precio de nuevo",
+      "back": "Atrás",
+      "accept": "Intercambiar"
+    },
+    "empty": {
+      "title": "Nada en curso",
+      "body": "Los intercambios y movimientos de NAV que inicies aparecen aquí con su progreso, incluso después de cerrar la app."
+    },
+    "sections": {
+      "attention": "Te necesita",
+      "active": "En curso",
+      "recent": "Recientes"
+    },
+    "tech": {
+      "id": "Operación",
+      "assumedDone": "se asume enviado (tu elección)",
+      "verified": "verificado en cadena tras reiniciar",
+      "received": "Recibido",
+      "lastError": "Último error"
+    },
+    "stopConfirm": "¿Detener esta operación? Los pasos terminados se conservan: el NAV ya movido se queda donde está y se muestra en la página de NAV.",
+    "setupOnlyDone": "Tu cuenta de trading está lista."
   }
 }

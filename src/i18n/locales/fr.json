@@ -142,10 +142,13 @@
     "unlockDurationDesc": "Mémorise le mot de passe d'un portefeuille chiffré sur cet appareil, à compter de la dernière saisie. Pendant ce délai, toute personne ayant accès à cet appareil peut ouvrir le portefeuille.",
     "autoOpenLastWallet": "Ouvrir automatiquement le dernier portefeuille",
     "autoOpenLastWalletDesc": "Ignore la liste des portefeuilles au démarrage et ouvre le dernier portefeuille utilisé.",
-    "logout": "Se déconnecter"
+    "logout": "Se déconnecter",
+    "developer": "Développeur",
+    "developerDesc": "Réglages pour ceux qui font tourner leurs propres services."
   },
   "nav": {
-    "more": "Plus"
+    "more": "Plus",
+    "activity": "Activité"
   },
   "pos": {
     "title": "POS",
@@ -852,7 +855,7 @@
   },
   "bridge": {
     "deposit": {
-      "title": "Déposer des NAV",
+      "title": "Recevoir sur le trading",
       "activateTitle": "Activez votre compte HyperCore",
       "activateDesc": "Avant de pouvoir déposer, votre adresse doit être enregistrée une fois auprès du pont. Cela coûte une petite quantité de gas en HYPE ; les HYPE de votre compte HyperCore sont transférés automatiquement.",
       "activateButton": "Activer",
@@ -869,10 +872,19 @@
       "sendSuccess": "Envoyé : ce dépôt sera crédité après les confirmations indiquées ci-dessous.",
       "sendFailed": "Un problème est survenu lors de l'envoi. Veuillez réessayer.",
       "txId": "ID de transaction",
-      "movingHype": "Transfert de HYPE vers HyperEVM pour le gas…"
+      "movingHype": "Transfert de HYPE vers HyperEVM pour le gas…",
+      "intro": "Envoyez des NAV depuis n'importe quel portefeuille Navio à cette adresse : ils arrivent sur votre compte de trading.",
+      "notReadyTitle": "Une configuration unique est d'abord nécessaire",
+      "notReadyBody": "Votre compte de trading a besoin d'une configuration unique avant que le pont puisse créditer les dépôts. Elle coûte {amount} NAV de ce portefeuille et prend quelques minutes. Ensuite, cette adresse fonctionne pour toujours.",
+      "notReadyNoFunds": "La configuration unique coûte {amount} NAV et ce portefeuille en contient {have}. Recevez d'abord des NAV dans le portefeuille, ou échangez depuis un portefeuille qui en détient déjà.",
+      "setupButton": "Configurer le compte de trading",
+      "settingUp": "Configuration de votre compte de trading…",
+      "readyBadge": "Prêt à recevoir",
+      "notReadyBodyFree": "Votre compte de trading a besoin d'un enregistrement unique avant que le pont puisse créditer les dépôts. C'est automatique, cela ne coûte rien à votre portefeuille et prend environ une minute. Ensuite, cette adresse fonctionne pour toujours.",
+      "setupButtonFree": "Enregistrer maintenant"
     },
     "withdraw": {
-      "title": "Retirer des NAV",
+      "title": "Rapatrier des NAV",
       "onEvm": "Sur HyperEVM",
       "onCore": "Sur HyperCore",
       "moveToEvm": "Déplacer vers HyperEVM",
@@ -888,7 +900,11 @@
       "submit": "Retirer",
       "encrypting": "Chiffrement de la destination…",
       "burning": "Envoi…",
-      "done": "Retrait envoyé : les fonds arrivent généralement sur Navio en quelques minutes."
+      "done": "Retrait envoyé : les fonds arrivent généralement sur Navio en quelques minutes.",
+      "intro": "Sortez des NAV de votre compte de trading vers n'importe quelle adresse Navio.",
+      "available": "Disponible en trading",
+      "ownWallet": "Utiliser l'adresse de mon portefeuille",
+      "notReady": "Votre compte de trading n'est pas encore enregistré. Rien à retirer."
     },
     "errors": {
       "wallet_locked": "Le portefeuille est verrouillé : déverrouillez-le pour continuer.",
@@ -1336,7 +1352,47 @@
       "setup_unavailable": "La configuration unique du compte n'est pas disponible pour le moment. Réessayez plus tard.",
       "wallet_locked": "Le portefeuille est verrouillé : déverrouillez-le pour continuer."
     },
-    "walletHint": "{amount} NAV supplémentaires se trouvent dans votre portefeuille. Saisissez plus que le montant disponible et Swap les déplacera d'abord vers l'exchange (quelques minutes)."
+    "walletHint": "{amount} NAV supplémentaires se trouvent dans votre portefeuille. Saisissez plus que le montant disponible et Swap les déplacera d'abord vers l'exchange (quelques minutes).",
+    "available": "Disponible",
+    "where": "Dans le portefeuille {wallet} · Prêt à trader {exchange}",
+    "whereMoving": " · En transit {moving}",
+    "setupNeeded": {
+      "title": "Configuration unique nécessaire",
+      "body": "Votre compte de trading n'est pas encore configuré. Navio Go s'en charge pour vous dans le cadre de cet échange :",
+      "faucet": "Configurer le compte de trading",
+      "faucetCost": "{amount} NAV, une seule fois",
+      "register": "Enregistrer auprès du pont",
+      "registerCost": "automatique",
+      "deposit": "Déplacer {amount} NAV vers le trading",
+      "depositTime": "environ {minutes} min",
+      "total": "Total prélevé sur votre portefeuille",
+      "howItWorks": "Comment ça marche",
+      "inProgress": "Votre compte de trading est en cours de configuration ; cet échange pourra démarrer dès que ce sera terminé."
+    },
+    "moveNeeded": {
+      "title": "Les NAV seront d'abord déplacés vers le trading",
+      "body": "{amount} NAV passent de votre portefeuille privé à votre compte de trading (environ {minutes} min), puis l'échange s'exécute tout seul."
+    },
+    "blocked": {
+      "insufficient": "Il vous faut environ {needed} NAV dans votre portefeuille pour cet échange. Vous avez {have} NAV.",
+      "breakdown": "{deposit} NAV à échanger + {setup} NAV de configuration unique + frais de réseau",
+      "breakdownNoSetup": "{deposit} NAV à échanger + frais de réseau",
+      "belowMinimum": "Un échange doit valoir au moins 10 USDC, soit environ {nav} NAV au prix actuel.",
+      "belowMinimumNoPrice": "Un échange doit valoir au moins 10 USDC.",
+      "receive": "Recevoir des NAV",
+      "otherAsset": "Pas assez de {symbol} sur votre compte de trading. Disponible : {available}.",
+      "setupBusy": "Votre compte de trading est en cours de configuration. Cet échange pourra démarrer une fois terminée."
+    },
+    "review": {
+      "setupTitle": "Configuration unique requise",
+      "setupBody": "Votre compte de trading n'est pas encore configuré. Navio Go le configure automatiquement avant d'exécuter cet échange.",
+      "willDo": "Navio Go va :",
+      "totalLeaving": "Total qui quitte votre portefeuille",
+      "plusFees": "+ frais de réseau",
+      "confirmPayments": "Confirmer · approuve {n} paiements",
+      "confirmOne": "Confirmer l'échange",
+      "setupDetails": "Détails de la configuration"
+    }
   },
   "ops": {
     "title": {
@@ -1414,8 +1470,8 @@
     "openNav": "Ouvrir NAV",
     "moveDesc": "Swap déplace les NAV pour vous quand c'est nécessaire. Ne les déplacez vous-même que si vous les voulez à un endroit précis.",
     "move": {
-      "toExchange": "Déplacer vers l'exchange",
-      "toWallet": "Ramener dans le portefeuille",
+      "toExchange": "Déplacer des NAV vers le trading",
+      "toWallet": "Rapatrier des NAV dans le portefeuille",
       "from": "De",
       "to": "Vers",
       "walletAddress": "L'adresse de votre portefeuille",
@@ -1424,9 +1480,9 @@
     "where": {
       "wallet": "Dans votre portefeuille",
       "walletHint": "Privé. Prêt à être envoyé.",
-      "exchange": "Sur l'exchange",
-      "exchangeHint": "Hyperliquid. Public. Prêt à être échangé.",
-      "exchangeHintOrders": "Hyperliquid. Public. {amount} dans des ordres ouverts.",
+      "exchange": "Prêt à trader",
+      "exchangeHint": "Sur votre compte de trading (Hyperliquid). Public.",
+      "exchangeHintOrders": "Sur votre compte de trading. {amount} dans des ordres ouverts.",
       "moving": "En transit",
       "movingHint": "En déplacement entre les deux.",
       "staked": "En staking",
@@ -1435,14 +1491,35 @@
     "links": {
       "trade": "Carnet d'ordres",
       "tradeHint": "Ordres limites et marché NAV/USDC en direct",
-      "hlTransfer": "Transfert Hyperliquid",
+      "hlTransfer": "Transférer au sein de Hyperliquid",
       "hlTransferHint": "Envoyer vers un autre compte Hyperliquid ou en recevoir",
-      "depositAddress": "Adresse de dépôt du pont",
-      "depositAddressHint": "Alimenter l'exchange depuis un autre portefeuille Navio",
-      "manualWithdraw": "Retrait manuel du pont",
-      "manualWithdrawHint": "Retirer vers n'importe quelle adresse Navio, étape par étape"
+      "depositAddress": "Recevoir sur le trading depuis un autre portefeuille",
+      "depositAddressHint": "L'adresse de dépôt de votre compte de trading",
+      "manualWithdraw": "Rapatrier des NAV vers n'importe quelle adresse",
+      "manualWithdrawHint": "Retirer du trading vers n'importe quelle adresse Navio",
+      "diagnostics": "Compte de trading",
+      "diagnosticsHint": "État, adresses et soldes"
     },
-    "explain": "Les NAV sur l'exchange sont des NAV conservés pour vous par le pont Navio–Hyperliquid, à un pour un, sous la forme d'un jeton appelé Wrapped Navio. Le pont est dépositaire et, contrairement aux NAV de votre portefeuille, les soldes et les trades sur Hyperliquid sont publics."
+    "explain": "Les NAV sur l'exchange sont des NAV conservés pour vous par le pont Navio–Hyperliquid, à un pour un, sous la forme d'un jeton appelé Wrapped Navio. Le pont est dépositaire et, contrairement aux NAV de votre portefeuille, les soldes et les trades sur Hyperliquid sont publics.",
+    "diag": {
+      "title": "Compte de trading",
+      "account": "Compte Hyperliquid",
+      "registered": "Enregistré auprès du pont",
+      "gas": "Solde pour les frais de réseau (HYPE)",
+      "evmAddress": "Adresse du compte",
+      "depositAddress": "Adresse de dépôt du pont",
+      "depositAddressNone": "Disponible une fois le compte enregistré",
+      "navCore": "NAV en trading",
+      "navEvm": "NAV sur HyperEVM (étape de retrait)",
+      "usdc": "USDC",
+      "yes": "Oui",
+      "no": "Pas encore",
+      "ready": "Prêt",
+      "notReady": "Configuration unique nécessaire",
+      "setup": "Configurer maintenant",
+      "setupCost": "La configuration unique coûte {amount} NAV",
+      "refresh": "Actualiser"
+    }
   },
   "staking": {
     "title": "Staking",
@@ -1719,11 +1796,115 @@
     "txHash": "Transaction",
     "copyHash": "Copier l'ID",
     "emptyFilter": "Rien sur ce réseau pour l'instant.",
-    "bscNote": "BNB Chain affiche les échanges effectués dans cette application sur cet appareil. Le reste de l'activité se trouve dans l'explorateur."
+    "bscNote": "BNB Chain affiche les échanges effectués dans cette application sur cet appareil. Le reste de l'activité se trouve dans l'explorateur.",
+    "operation": "Opération",
+    "technicalSteps": "Étapes techniques",
+    "stopped": "Arrêtée",
+    "inProgress": "En cours"
   },
   "toast": {
     "received": "NAV reçus",
     "sent": "NAV envoyés",
     "reward": "Récompense de staking"
+  },
+  "process": {
+    "activityTitle": "Activité",
+    "title": {
+      "swap": "Échange {from} → {to}",
+      "swapDone": "Échangé {from} → {to}",
+      "toExchange": "Déplacement de NAV vers le trading",
+      "toWallet": "Rapatriement de NAV vers votre portefeuille",
+      "receiveViaBridge": "Configuration de votre compte de trading"
+    },
+    "subtitle": {
+      "setupOnly": "Configuration unique"
+    },
+    "status": {
+      "done": "Terminé",
+      "cancelled": "Arrêté",
+      "awaiting": "Votre approbation est requise",
+      "attention": "Attention requise",
+      "starting": "Démarrage…",
+      "running": "En cours"
+    },
+    "progress": "{done} sur {total}",
+    "step": {
+      "faucet": "Configurer le compte de trading",
+      "register": "Enregistrer auprès du pont",
+      "deposit": "Déplacer {amount} NAV vers le trading",
+      "sell": "Vendre des {base} contre des USDC",
+      "buy": "Acheter des {base} avec des USDC",
+      "toEvm": "Préparer les NAV pour le retrait",
+      "burn": "Envoyer les NAV à votre portefeuille"
+    },
+    "stepDetail": {
+      "faucet": "{amount} NAV achètent un petit lot d'USDC + HYPE qui crée votre compte et paie ses frais de réseau. Une seule fois.",
+      "faucetWaiting": "{amount} NAV envoyés. En attente de 3 confirmations (environ 6 min).",
+      "faucetDone": "{amount} NAV envoyés. Compte de trading créé.",
+      "register": "Automatique. Aucun NAV ne bouge ; les frais minimes sont payés avec les HYPE reçus.",
+      "movingGas": "Déplacement d'un peu de HYPE pour payer les frais d'enregistrement…",
+      "deposit": "Envoyé depuis votre portefeuille privé vers votre compte de trading.",
+      "depositWaiting": "Envoyé depuis votre portefeuille. En attente de confirmations · environ {minutes} min restantes.",
+      "depositDone": "{amount} NAV sont arrivés sur votre compte de trading.",
+      "order": "À {price} ou mieux, sinon rien.",
+      "orderDone": "Exécuté : {size} {base} à {price}.",
+      "toEvmWaiting": "En attente de la plateforme…",
+      "burn": "Les NAV quittent la plateforme ; le pont les verse dans votre portefeuille quelques minutes plus tard.",
+      "burnDone": "Envoyé. Les NAV arrivent dans votre portefeuille dans quelques minutes."
+    },
+    "leave": "Vous pouvez quitter cet écran. Navio Go continue de suivre l'opération tant qu'il est ouvert et reprend là où il s'était arrêté après un redémarrage.",
+    "view": "Voir la progression",
+    "viewAll": "Toute l'activité",
+    "open": "Ouvrir",
+    "tray": {
+      "one": "{n} opération en cours",
+      "many": "{n} opérations en cours",
+      "needsYou": "{n} demandent votre attention"
+    },
+    "approval": {
+      "title": "Approuvez pour continuer",
+      "setup_price_changed": "Le prix de la configuration a changé depuis votre vérification : {amount} NAV au lieu de {approved} NAV. Rien n'a encore été envoyé.",
+      "approve": "Approuver {amount} NAV",
+      "unknown": "Cette étape a besoin d'une nouvelle approbation avant de continuer."
+    },
+    "failed": {
+      "title": "Cette étape n'a pas abouti",
+      "keep": "Les étapes terminées sont conservées. Réessayer repart de cette étape."
+    },
+    "interrupted": {
+      "title": "Impossible de savoir si cette étape est partie",
+      "body": "L'app s'est fermée pendant l'envoi et les soldes ne tranchent pas la question. Vérifiez l'historique avant de choisir.",
+      "checked": "Vérifié après redémarrage : solde du portefeuille, solde de trading."
+    },
+    "actions": {
+      "retry": "Réessayer",
+      "stop": "Arrêter",
+      "wentThrough": "C'est passé",
+      "sendAgain": "Renvoyer",
+      "details": "Détails techniques",
+      "dismiss": "OK",
+      "requote": "Échanger au prix actuel",
+      "keepWaiting": "Réessayer au même prix",
+      "back": "Retour",
+      "accept": "Échanger"
+    },
+    "empty": {
+      "title": "Rien en cours",
+      "body": "Les échanges et déplacements de NAV que vous lancez apparaissent ici avec leur progression, même après avoir fermé l'app."
+    },
+    "sections": {
+      "attention": "Besoin de vous",
+      "active": "En cours",
+      "recent": "Récent"
+    },
+    "tech": {
+      "id": "Opération",
+      "assumedDone": "supposé envoyé (votre choix)",
+      "verified": "vérifié sur la chaîne après un redémarrage",
+      "received": "Reçu",
+      "lastError": "Dernière erreur"
+    },
+    "stopConfirm": "Arrêter cette opération ? Les étapes terminées sont conservées : les NAV déjà déplacés restent où ils sont et apparaissent sur la page NAV.",
+    "setupOnlyDone": "Votre compte de trading est prêt."
   }
 }

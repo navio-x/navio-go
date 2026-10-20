@@ -142,10 +142,13 @@
     "unlockDurationDesc": "Merkt sich das Passwort einer verschlüsselten Wallet auf diesem Gerät, gerechnet ab der letzten Eingabe. In dieser Zeit kann jeder mit Zugriff auf dieses Gerät die Wallet öffnen.",
     "autoOpenLastWallet": "Letzte Wallet automatisch öffnen",
     "autoOpenLastWalletDesc": "Überspringt beim Start die Wallet-Liste und öffnet die zuletzt verwendete Wallet.",
-    "logout": "Abmelden"
+    "logout": "Abmelden",
+    "developer": "Entwickler",
+    "developerDesc": "Einstellungen für alle, die eigene Dienste betreiben."
   },
   "nav": {
-    "more": "Mehr"
+    "more": "Mehr",
+    "activity": "Aktivität"
   },
   "pos": {
     "title": "POS",
@@ -852,7 +855,7 @@
   },
   "bridge": {
     "deposit": {
-      "title": "NAV einzahlen",
+      "title": "Ins Trading empfangen",
       "activateTitle": "Aktiviere dein HyperCore-Konto",
       "activateDesc": "Bevor du einzahlen kannst, muss deine Adresse einmalig bei der Bridge registriert werden. Das kostet eine kleine Menge HYPE-Gas – HYPE auf deinem HyperCore-Konto wird automatisch übertragen.",
       "activateButton": "Aktivieren",
@@ -869,10 +872,19 @@
       "sendSuccess": "Gesendet – diese Einzahlung wird nach den unten angezeigten Bestätigungen gutgeschrieben.",
       "sendFailed": "Beim Senden ist etwas schiefgelaufen. Bitte versuche es erneut.",
       "txId": "Transaktions-ID",
-      "movingHype": "HYPE wird für Gas zu HyperEVM verschoben…"
+      "movingHype": "HYPE wird für Gas zu HyperEVM verschoben…",
+      "intro": "Sende NAV von einer beliebigen Navio-Wallet an diese Adresse, und es landet auf deinem Trading-Konto.",
+      "notReadyTitle": "Zuerst ist eine einmalige Einrichtung nötig",
+      "notReadyBody": "Dein Trading-Konto braucht eine einmalige Einrichtung, bevor die Bridge Einzahlungen gutschreiben kann. Sie kostet {amount} NAV aus dieser Wallet und dauert ein paar Minuten. Danach funktioniert diese Adresse dauerhaft.",
+      "notReadyNoFunds": "Die einmalige Einrichtung kostet {amount} NAV, diese Wallet hat {have} NAV. Empfange zuerst NAV in die Wallet, oder tausche aus einer Wallet, die bereits NAV hält.",
+      "setupButton": "Trading-Konto einrichten",
+      "settingUp": "Dein Trading-Konto wird eingerichtet…",
+      "readyBadge": "Empfangsbereit",
+      "notReadyBodyFree": "Dein Trading-Konto braucht eine einmalige Registrierung, bevor die Bridge Einzahlungen gutschreiben kann. Sie läuft automatisch, kostet nichts aus deiner Wallet und dauert etwa eine Minute. Danach funktioniert diese Adresse dauerhaft.",
+      "setupButtonFree": "Jetzt registrieren"
     },
     "withdraw": {
-      "title": "NAV auszahlen",
+      "title": "NAV zurückholen",
       "onEvm": "Auf HyperEVM",
       "onCore": "Auf HyperCore",
       "moveToEvm": "Zu HyperEVM verschieben",
@@ -888,7 +900,11 @@
       "submit": "Auszahlen",
       "encrypting": "Ziel wird verschlüsselt…",
       "burning": "Wird übermittelt…",
-      "done": "Auszahlung übermittelt – das Guthaben kommt in der Regel innerhalb weniger Minuten auf Navio an."
+      "done": "Auszahlung übermittelt – das Guthaben kommt in der Regel innerhalb weniger Minuten auf Navio an.",
+      "intro": "Hole NAV aus deinem Trading-Konto an eine beliebige Navio-Adresse.",
+      "available": "Im Trading verfügbar",
+      "ownWallet": "Meine Wallet-Adresse verwenden",
+      "notReady": "Dein Trading-Konto ist noch nicht registriert. Nichts zum Abheben."
     },
     "errors": {
       "wallet_locked": "Wallet ist gesperrt – entsperre sie, um fortzufahren.",
@@ -1336,7 +1352,47 @@
       "setup_unavailable": "Die einmalige Kontoeinrichtung ist gerade nicht verfügbar. Versuche es später erneut.",
       "wallet_locked": "Wallet ist gesperrt – entsperre sie, um fortzufahren."
     },
-    "walletHint": "Weitere {amount} NAV liegen in deiner Wallet. Gib mehr als den verfügbaren Betrag ein, dann verschiebt Swap sie zuerst zur Börse (dauert wenige Minuten)."
+    "walletHint": "Weitere {amount} NAV liegen in deiner Wallet. Gib mehr als den verfügbaren Betrag ein, dann verschiebt Swap sie zuerst zur Börse (dauert wenige Minuten).",
+    "available": "Verfügbar",
+    "where": "In der Wallet {wallet} · Tradingbereit {exchange}",
+    "whereMoving": " · Unterwegs {moving}",
+    "setupNeeded": {
+      "title": "Einmalige Einrichtung nötig",
+      "body": "Dein Trading-Konto ist noch nicht eingerichtet. Navio Go erledigt das für dich als Teil dieses Tauschs:",
+      "faucet": "Trading-Konto einrichten",
+      "faucetCost": "{amount} NAV, einmalig",
+      "register": "Bei der Bridge registrieren",
+      "registerCost": "automatisch",
+      "deposit": "{amount} NAV ins Trading verschieben",
+      "depositTime": "etwa {minutes} Min.",
+      "total": "Gesamt aus deiner Wallet",
+      "howItWorks": "So funktioniert es",
+      "inProgress": "Dein Trading-Konto wird gerade eingerichtet – dieser Tausch kann starten, sobald das fertig ist."
+    },
+    "moveNeeded": {
+      "title": "NAV wird zuerst ins Trading verschoben",
+      "body": "{amount} NAV gehen von deiner privaten Wallet auf dein Trading-Konto (etwa {minutes} Min.), dann läuft der Tausch von selbst."
+    },
+    "blocked": {
+      "insufficient": "Für diesen Tausch brauchst du etwa {needed} NAV in deiner Wallet. Du hast {have} NAV.",
+      "breakdown": "{deposit} NAV zum Tauschen + {setup} NAV einmalige Einrichtung + Netzwerkgebühr",
+      "breakdownNoSetup": "{deposit} NAV zum Tauschen + Netzwerkgebühr",
+      "belowMinimum": "Ein Tausch muss mindestens 10 USDC wert sein – etwa {nav} NAV zum aktuellen Preis.",
+      "belowMinimumNoPrice": "Ein Tausch muss mindestens 10 USDC wert sein.",
+      "receive": "NAV empfangen",
+      "otherAsset": "Nicht genug {symbol} auf deinem Trading-Konto. Verfügbar: {available}.",
+      "setupBusy": "Dein Trading-Konto wird gerade eingerichtet. Dieser Tausch kann starten, sobald das fertig ist."
+    },
+    "review": {
+      "setupTitle": "Einmalige Einrichtung erforderlich",
+      "setupBody": "Dein Trading-Konto ist noch nicht eingerichtet. Navio Go richtet es automatisch ein, bevor dieser Tausch ausgeführt wird.",
+      "willDo": "Navio Go wird:",
+      "totalLeaving": "Gesamt, das deine Wallet verlässt",
+      "plusFees": "+ Netzwerkgebühren",
+      "confirmPayments": "Bestätigen · genehmigt {n} Zahlungen",
+      "confirmOne": "Tausch bestätigen",
+      "setupDetails": "Details zur Einrichtung"
+    }
   },
   "ops": {
     "title": {
@@ -1414,8 +1470,8 @@
     "openNav": "NAV öffnen",
     "moveDesc": "Swap verschiebt NAV bei Bedarf für dich. Verschiebe es nur selbst, wenn du es an einem bestimmten Ort haben möchtest.",
     "move": {
-      "toExchange": "Zur Börse verschieben",
-      "toWallet": "Zurück in die Wallet holen",
+      "toExchange": "NAV ins Trading verschieben",
+      "toWallet": "NAV in die Wallet zurückholen",
       "from": "Von",
       "to": "Nach",
       "walletAddress": "Deine Wallet-Adresse",
@@ -1424,9 +1480,9 @@
     "where": {
       "wallet": "In deiner Wallet",
       "walletHint": "Privat. Bereit zum Senden.",
-      "exchange": "Auf der Börse",
-      "exchangeHint": "Hyperliquid. Öffentlich. Bereit zum Tauschen.",
-      "exchangeHintOrders": "Hyperliquid. Öffentlich. {amount} in offenen Orders.",
+      "exchange": "Tradingbereit",
+      "exchangeHint": "Auf deinem Trading-Konto (Hyperliquid). Öffentlich.",
+      "exchangeHintOrders": "Auf deinem Trading-Konto. {amount} in offenen Orders.",
       "moving": "Unterwegs",
       "movingHint": "Wird zwischen beiden verschoben.",
       "staked": "Gestaked",
@@ -1435,14 +1491,35 @@
     "links": {
       "trade": "Orderbuch",
       "tradeHint": "Limit-Orders und der Live-Markt NAV/USDC",
-      "hlTransfer": "Hyperliquid-Transfer",
+      "hlTransfer": "Innerhalb von Hyperliquid übertragen",
       "hlTransferHint": "An ein anderes Hyperliquid-Konto senden oder von dort empfangen",
-      "depositAddress": "Einzahlungsadresse der Bridge",
-      "depositAddressHint": "Die Börse aus einer anderen Navio-Wallet aufladen",
-      "manualWithdraw": "Manuelle Bridge-Auszahlung",
-      "manualWithdrawHint": "Schritt für Schritt an eine beliebige Navio-Adresse auszahlen"
+      "depositAddress": "Aus einer anderen Wallet ins Trading empfangen",
+      "depositAddressHint": "Die Einzahlungsadresse deines Trading-Kontos",
+      "manualWithdraw": "NAV an eine beliebige Adresse zurückholen",
+      "manualWithdrawHint": "Aus dem Trading an eine beliebige Navio-Adresse abheben",
+      "diagnostics": "Trading-Konto",
+      "diagnosticsHint": "Status, Adressen und Guthaben"
     },
-    "explain": "NAV auf der Börse ist NAV, das die Navio–Hyperliquid-Bridge eins zu eins für dich hält, als Token namens Wrapped Navio. Die Bridge ist verwahrend, und anders als bei NAV in deiner Wallet sind Guthaben und Trades auf Hyperliquid öffentlich."
+    "explain": "NAV auf der Börse ist NAV, das die Navio–Hyperliquid-Bridge eins zu eins für dich hält, als Token namens Wrapped Navio. Die Bridge ist verwahrend, und anders als bei NAV in deiner Wallet sind Guthaben und Trades auf Hyperliquid öffentlich.",
+    "diag": {
+      "title": "Trading-Konto",
+      "account": "Hyperliquid-Konto",
+      "registered": "Bei der Bridge registriert",
+      "gas": "Guthaben für Netzwerkgebühren (HYPE)",
+      "evmAddress": "Kontoadresse",
+      "depositAddress": "Bridge-Einzahlungsadresse",
+      "depositAddressNone": "Verfügbar, sobald das Konto registriert ist",
+      "navCore": "NAV im Trading",
+      "navEvm": "NAV auf HyperEVM (Abhebungsstufe)",
+      "usdc": "USDC",
+      "yes": "Ja",
+      "no": "Noch nicht",
+      "ready": "Bereit",
+      "notReady": "Einmalige Einrichtung nötig",
+      "setup": "Jetzt einrichten",
+      "setupCost": "Die einmalige Einrichtung kostet {amount} NAV",
+      "refresh": "Aktualisieren"
+    }
   },
   "staking": {
     "title": "Staking",
@@ -1719,11 +1796,115 @@
     "txHash": "Transaktion",
     "copyHash": "ID kopieren",
     "emptyFilter": "In diesem Netzwerk gibt es noch nichts.",
-    "bscNote": "BNB Chain zeigt Swaps, die in dieser App auf diesem Gerät gemacht wurden. Weitere Aktivitäten findest du im Explorer."
+    "bscNote": "BNB Chain zeigt Swaps, die in dieser App auf diesem Gerät gemacht wurden. Weitere Aktivitäten findest du im Explorer.",
+    "operation": "Vorgang",
+    "technicalSteps": "Technische Schritte",
+    "stopped": "Gestoppt",
+    "inProgress": "Läuft"
   },
   "toast": {
     "received": "NAV empfangen",
     "sent": "NAV gesendet",
     "reward": "Staking-Belohnung"
+  },
+  "process": {
+    "activityTitle": "Aktivität",
+    "title": {
+      "swap": "Tausch {from} → {to}",
+      "swapDone": "Getauscht {from} → {to}",
+      "toExchange": "NAV wird ins Trading verschoben",
+      "toWallet": "NAV wird in deine Wallet zurückgeholt",
+      "receiveViaBridge": "Dein Trading-Konto wird eingerichtet"
+    },
+    "subtitle": {
+      "setupOnly": "Einmalige Einrichtung"
+    },
+    "status": {
+      "done": "Fertig",
+      "cancelled": "Gestoppt",
+      "awaiting": "Braucht deine Freigabe",
+      "attention": "Braucht Aufmerksamkeit",
+      "starting": "Startet…",
+      "running": "Läuft"
+    },
+    "progress": "{done} von {total}",
+    "step": {
+      "faucet": "Trading-Konto einrichten",
+      "register": "Bei der Bridge registrieren",
+      "deposit": "{amount} NAV ins Trading verschieben",
+      "sell": "{base} gegen USDC verkaufen",
+      "buy": "{base} mit USDC kaufen",
+      "toEvm": "NAV für die Abhebung vorbereiten",
+      "burn": "NAV an deine Wallet senden"
+    },
+    "stepDetail": {
+      "faucet": "{amount} NAV kaufen ein kleines USDC + HYPE-Paket, das dein Konto erstellt und seine Netzwerkgebühren bezahlt. Nur einmal.",
+      "faucetWaiting": "{amount} NAV gesendet. Warten auf 3 Bestätigungen (etwa 6 Min.).",
+      "faucetDone": "{amount} NAV gesendet. Trading-Konto erstellt.",
+      "register": "Automatisch. Es bewegt sich kein NAV; die winzige Gebühr wird aus dem erhaltenen HYPE bezahlt.",
+      "movingGas": "Etwas HYPE wird für die Registrierungsgebühr verschoben…",
+      "deposit": "Von deiner privaten Wallet an dein Trading-Konto gesendet.",
+      "depositWaiting": "Aus deiner Wallet gesendet. Warten auf Bestätigungen · noch etwa {minutes} Min.",
+      "depositDone": "{amount} NAV sind auf deinem Trading-Konto angekommen.",
+      "order": "Zu {price} oder besser, sonst gar nicht.",
+      "orderDone": "{size} {base} zu {price} ausgeführt.",
+      "toEvmWaiting": "Warten auf die Börse…",
+      "burn": "Das NAV verlässt die Börse; die Bridge zahlt es ein paar Minuten später in deine Wallet aus.",
+      "burnDone": "Abgeschickt. Das NAV kommt in ein paar Minuten in deiner Wallet an."
+    },
+    "leave": "Du kannst diesen Bildschirm verlassen. Navio Go verfolgt den Vorgang weiter, solange es geöffnet ist, und macht nach einem Neustart dort weiter, wo es aufgehört hat.",
+    "view": "Fortschritt ansehen",
+    "viewAll": "Gesamte Aktivität",
+    "open": "Öffnen",
+    "tray": {
+      "one": "{n} Vorgang läuft",
+      "many": "{n} Vorgänge laufen",
+      "needsYou": "{n} brauchen deine Aufmerksamkeit"
+    },
+    "approval": {
+      "title": "Zum Fortfahren freigeben",
+      "setup_price_changed": "Der Einrichtungspreis hat sich seit deiner Prüfung geändert: {amount} NAV statt {approved} NAV. Es wurde noch nichts gesendet.",
+      "approve": "{amount} NAV freigeben",
+      "unknown": "Dieser Schritt braucht eine neue Freigabe, bevor er weiterläuft."
+    },
+    "failed": {
+      "title": "Dieser Schritt ist fehlgeschlagen",
+      "keep": "Abgeschlossene Schritte bleiben erhalten. Ein neuer Versuch beginnt bei diesem Schritt."
+    },
+    "interrupted": {
+      "title": "Unklar, ob dieser Schritt gesendet wurde",
+      "body": "Die App wurde während des Sendens geschlossen, und die Guthaben geben keine Antwort. Prüfe den Verlauf, bevor du wählst.",
+      "checked": "Nach dem Neustart geprüft: Wallet-Guthaben, Trading-Guthaben."
+    },
+    "actions": {
+      "retry": "Erneut versuchen",
+      "stop": "Stoppen",
+      "wentThrough": "Es wurde gesendet",
+      "sendAgain": "Erneut senden",
+      "details": "Technische Details",
+      "dismiss": "OK",
+      "requote": "Zum aktuellen Preis tauschen",
+      "keepWaiting": "Denselben Preis erneut versuchen",
+      "back": "Zurück",
+      "accept": "Tauschen"
+    },
+    "empty": {
+      "title": "Nichts in Arbeit",
+      "body": "Tausche und NAV-Verschiebungen, die du startest, erscheinen hier mit ihrem Fortschritt – auch nachdem du die App geschlossen hast."
+    },
+    "sections": {
+      "attention": "Braucht dich",
+      "active": "Läuft",
+      "recent": "Zuletzt"
+    },
+    "tech": {
+      "id": "Vorgang",
+      "assumedDone": "als gesendet angenommen (deine Wahl)",
+      "verified": "nach einem Neustart auf der Chain verifiziert",
+      "received": "Erhalten",
+      "lastError": "Letzter Fehler"
+    },
+    "stopConfirm": "Diesen Vorgang stoppen? Abgeschlossene Schritte bleiben erhalten: bereits verschobenes NAV bleibt, wo es ist, und wird auf der NAV-Seite angezeigt.",
+    "setupOnlyDone": "Dein Trading-Konto ist bereit."
   }
 }

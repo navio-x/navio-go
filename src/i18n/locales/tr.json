@@ -142,10 +142,13 @@
     "unlockDurationDesc": "Şifreli cüzdanın şifresini bu cihazda hatırlar; süre şifreyi en son yazdığınız andan itibaren sayılır. Bu süre boyunca cihaza erişen herkes cüzdanı açabilir.",
     "autoOpenLastWallet": "Son cüzdanı otomatik aç",
     "autoOpenLastWalletDesc": "Açılışta cüzdan listesini atlar ve en son kullandığınız cüzdanı açar.",
-    "logout": "Çıkış yap"
+    "logout": "Çıkış yap",
+    "developer": "Geliştirici",
+    "developerDesc": "Kendi servislerini çalıştıranlar için ayarlar."
   },
   "nav": {
-    "more": "Diğer"
+    "more": "Diğer",
+    "activity": "İşlemler"
   },
   "pos": {
     "title": "POS",
@@ -852,7 +855,7 @@
   },
   "bridge": {
     "deposit": {
-      "title": "NAV Yatır",
+      "title": "Alım satım hesabına al",
       "activateTitle": "Hyperliquid Core hesabınızı etkinleştirin",
       "activateDesc": "Yatırma yapabilmek için adresinizin bridge'e bir kez kaydedilmesi gerekir. Bu işlem az miktarda HYPE gas'ı gerektirir — HyperCore hesabınızdaki HYPE otomatik olarak taşınır.",
       "activateButton": "Etkinleştir",
@@ -869,10 +872,19 @@
       "sendSuccess": "Gönderildi — bu yatırım aşağıda gösterilen onay sayısından sonra kredilendirilecek.",
       "sendFailed": "Bu gönderim sırasında bir şeyler ters gitti. Lütfen tekrar deneyin.",
       "txId": "İşlem Kimliği",
-      "movingHype": "Gas için HYPE, HyperEVM'e taşınıyor…"
+      "movingHype": "Gas için HYPE, HyperEVM'e taşınıyor…",
+      "intro": "Herhangi bir Navio cüzdanından bu adrese NAV gönderin; alım satım hesabınıza ulaşır.",
+      "notReadyTitle": "Önce tek seferlik kurulum gerekiyor",
+      "notReadyBody": "Köprünün yatırmaları işleyebilmesi için alım satım hesabınızın tek seferlik kurulumu gerekiyor. Bu cüzdandan {amount} NAV alır ve birkaç dakika sürer. Sonrasında bu adres kalıcı olarak çalışır.",
+      "notReadyNoFunds": "Tek seferlik kurulum {amount} NAV tutuyor, bu cüzdanda {have} NAV var. Önce cüzdana NAV alın ya da zaten NAV bulunan bir cüzdandan takas yapın.",
+      "setupButton": "Alım satım hesabını kur",
+      "settingUp": "Alım satım hesabınız kuruluyor…",
+      "readyBadge": "Almaya hazır",
+      "notReadyBodyFree": "Köprünün yatırmaları işleyebilmesi için alım satım hesabınızın tek seferlik kaydı gerekiyor. Otomatiktir, cüzdanınızdan bir şey almaz ve yaklaşık bir dakika sürer. Sonrasında bu adres kalıcı olarak çalışır.",
+      "setupButtonFree": "Şimdi kaydet"
     },
     "withdraw": {
-      "title": "NAV Çek",
+      "title": "NAV'ı geri getir",
       "onEvm": "HyperEVM'de",
       "onCore": "HyperCore'da",
       "moveToEvm": "HyperEVM'e Taşı",
@@ -888,7 +900,11 @@
       "submit": "Çek",
       "encrypting": "Hedef şifreleniyor…",
       "burning": "Gönderiliyor…",
-      "done": "Çekim gönderildi — fonlar genellikle birkaç dakika içinde Navio'da görünür."
+      "done": "Çekim gönderildi — fonlar genellikle birkaç dakika içinde Navio'da görünür.",
+      "intro": "Alım satım hesabınızdaki NAV'ı herhangi bir Navio adresine çekin.",
+      "available": "Alım satımda kullanılabilir",
+      "ownWallet": "Cüzdan adresimi kullan",
+      "notReady": "Alım satım hesabınız henüz kayıtlı değil. Çekilecek bir şey yok."
     },
     "errors": {
       "wallet_locked": "Cüzdan kilitli — devam etmek için kilidini açın.",
@@ -1336,7 +1352,47 @@
       "setup_unavailable": "Tek seferlik hesap kurulumu şu an yapılamıyor. Daha sonra tekrar deneyin.",
       "wallet_locked": "Cüzdan kilitli — devam etmek için kilidini açın."
     },
-    "walletHint": "Cüzdanınızda {amount} NAV daha var. Kullanılabilir tutardan fazlasını girerseniz Takas önce onu borsaya taşır (birkaç dakika sürer)."
+    "walletHint": "Cüzdanınızda {amount} NAV daha var. Kullanılabilir tutardan fazlasını girerseniz Takas önce onu borsaya taşır (birkaç dakika sürer).",
+    "available": "Kullanılabilir",
+    "where": "Cüzdanda {wallet} · Alım satıma hazır {exchange}",
+    "whereMoving": " · Yolda {moving}",
+    "setupNeeded": {
+      "title": "Tek seferlik kurulum gerekiyor",
+      "body": "Alım satım hesabınız henüz kurulmadı. Navio Go bunu bu takasın parçası olarak sizin için yapar:",
+      "faucet": "Alım satım hesabını kur",
+      "faucetCost": "{amount} NAV, bir kez",
+      "register": "Köprüye kaydet",
+      "registerCost": "otomatik",
+      "deposit": "{amount} NAV'ı alım satıma taşı",
+      "depositTime": "yaklaşık {minutes} dk",
+      "total": "Cüzdanınızdan çıkacak toplam",
+      "howItWorks": "Nasıl çalışır",
+      "inProgress": "Alım satım hesabınız şu anda kuruluyor; bu takas, kurulum biter bitmez başlayabilir."
+    },
+    "moveNeeded": {
+      "title": "NAV önce alım satıma taşınacak",
+      "body": "{amount} NAV özel cüzdanınızdan alım satım hesabınıza gider (yaklaşık {minutes} dk), ardından takas kendiliğinden yürür."
+    },
+    "blocked": {
+      "insufficient": "Bu takas için cüzdanınızda yaklaşık {needed} NAV olmalı. Sizde {have} NAV var.",
+      "breakdown": "takas için {deposit} NAV + tek seferlik kurulum {setup} NAV + ağ ücreti",
+      "breakdownNoSetup": "takas için {deposit} NAV + ağ ücreti",
+      "belowMinimum": "Takaslar en az 10 USDC değerinde olmalı; güncel fiyatla yaklaşık {nav} NAV.",
+      "belowMinimumNoPrice": "Takaslar en az 10 USDC değerinde olmalı.",
+      "receive": "NAV al",
+      "otherAsset": "Alım satım hesabınızda yeterli {symbol} yok. Kullanılabilir: {available}.",
+      "setupBusy": "Alım satım hesabınız kuruluyor. Bu takas, kurulum bitince başlayabilir."
+    },
+    "review": {
+      "setupTitle": "Tek seferlik kurulum gerekli",
+      "setupBody": "Alım satım hesabınız henüz kurulmadı. Navio Go bu takası yapmadan önce hesabı otomatik olarak kurar.",
+      "willDo": "Navio Go şunları yapacak:",
+      "totalLeaving": "Cüzdanınızdan çıkacak toplam",
+      "plusFees": "+ ağ ücretleri",
+      "confirmPayments": "Onayla · {n} ödemeyi onaylar",
+      "confirmOne": "Takası onayla",
+      "setupDetails": "Kurulum ayrıntıları"
+    }
   },
   "ops": {
     "title": {
@@ -1414,8 +1470,8 @@
     "openNav": "NAV sayfasını aç",
     "moveDesc": "Takas, gerektiğinde NAV'ı sizin yerinize taşır. Yalnızca belirli bir yerde durmasını istiyorsanız kendiniz taşıyın.",
     "move": {
-      "toExchange": "Borsaya taşı",
-      "toWallet": "Cüzdana geri getir",
+      "toExchange": "NAV'ı alım satıma taşı",
+      "toWallet": "NAV'ı cüzdana geri getir",
       "from": "Nereden",
       "to": "Nereye",
       "walletAddress": "Cüzdan adresiniz",
@@ -1424,9 +1480,9 @@
     "where": {
       "wallet": "Cüzdanınızda",
       "walletHint": "Gizli. Göndermeye hazır.",
-      "exchange": "Borsada",
-      "exchangeHint": "Hyperliquid. Herkese açık. Takasa hazır.",
-      "exchangeHintOrders": "Hyperliquid. Herkese açık. {amount} açık emirlerde.",
+      "exchange": "Alım satıma hazır",
+      "exchangeHint": "Alım satım hesabınızda (Hyperliquid). Herkese açık.",
+      "exchangeHintOrders": "Alım satım hesabınızda. {amount} açık emirlerde.",
       "moving": "Yolda",
       "movingHint": "İkisi arasında taşınıyor.",
       "staked": "Stake'te",
@@ -1435,14 +1491,35 @@
     "links": {
       "trade": "Emir defteri",
       "tradeHint": "Limit emirler ve canlı NAV/USDC piyasası",
-      "hlTransfer": "Hyperliquid transferi",
+      "hlTransfer": "Hyperliquid içinde aktar",
       "hlTransferHint": "Başka bir Hyperliquid hesabına gönder veya ondan al",
-      "depositAddress": "Köprü yatırma adresi",
-      "depositAddressHint": "Borsayı başka bir Navio cüzdanından fonla",
-      "manualWithdraw": "Elle köprü çekimi",
-      "manualWithdrawHint": "Herhangi bir Navio adresine adım adım çek"
+      "depositAddress": "Başka bir cüzdandan alım satıma al",
+      "depositAddressHint": "Alım satım hesabınızın yatırma adresi",
+      "manualWithdraw": "NAV'ı herhangi bir adrese geri getir",
+      "manualWithdrawHint": "Alım satımdan herhangi bir Navio adresine çek",
+      "diagnostics": "Alım satım hesabı",
+      "diagnosticsHint": "Durum, adresler ve bakiyeler"
     },
-    "explain": "Borsadaki NAV, Navio–Hyperliquid köprüsünün sizin adınıza bire bir tuttuğu NAV'dır; Wrapped Navio adlı bir token olarak durur. Köprü emanetçidir ve cüzdanınızdaki NAV'ın aksine Hyperliquid'deki bakiyeler ve işlemler herkese açıktır."
+    "explain": "Borsadaki NAV, Navio–Hyperliquid köprüsünün sizin adınıza bire bir tuttuğu NAV'dır; Wrapped Navio adlı bir token olarak durur. Köprü emanetçidir ve cüzdanınızdaki NAV'ın aksine Hyperliquid'deki bakiyeler ve işlemler herkese açıktır.",
+    "diag": {
+      "title": "Alım satım hesabı",
+      "account": "Hyperliquid hesabı",
+      "registered": "Köprüye kayıtlı",
+      "gas": "Ağ ücreti bakiyesi (HYPE)",
+      "evmAddress": "Hesap adresi",
+      "depositAddress": "Köprü yatırma adresi",
+      "depositAddressNone": "Hesap kaydedilince kullanılabilir",
+      "navCore": "Alım satımdaki NAV",
+      "navEvm": "HyperEVM'deki NAV (çekim aşaması)",
+      "usdc": "USDC",
+      "yes": "Evet",
+      "no": "Henüz değil",
+      "ready": "Hazır",
+      "notReady": "Tek seferlik kurulum gerekiyor",
+      "setup": "Şimdi kur",
+      "setupCost": "Tek seferlik kurulum {amount} NAV tutar",
+      "refresh": "Yenile"
+    }
   },
   "staking": {
     "title": "Staking",
@@ -1719,11 +1796,115 @@
     "txHash": "İşlem",
     "copyHash": "Kimliği kopyala",
     "emptyFilter": "Bu ağda henüz işlem yok.",
-    "bscNote": "BNB Chain'de yalnızca bu cihazda, bu uygulamadan yapılan takaslar listelenir. Diğer hareketler için gezgine bakın."
+    "bscNote": "BNB Chain'de yalnızca bu cihazda, bu uygulamadan yapılan takaslar listelenir. Diğer hareketler için gezgine bakın.",
+    "operation": "İşlem",
+    "technicalSteps": "Teknik adımlar",
+    "stopped": "Durduruldu",
+    "inProgress": "Sürüyor"
   },
   "toast": {
     "received": "NAV alındı",
     "sent": "NAV gönderildi",
     "reward": "Staking ödülü"
+  },
+  "process": {
+    "activityTitle": "İşlemler",
+    "title": {
+      "swap": "Takas {from} → {to}",
+      "swapDone": "Takas edildi {from} → {to}",
+      "toExchange": "NAV alım satıma taşınıyor",
+      "toWallet": "NAV cüzdanınıza geri getiriliyor",
+      "receiveViaBridge": "Alım satım hesabınız kuruluyor"
+    },
+    "subtitle": {
+      "setupOnly": "Tek seferlik kurulum"
+    },
+    "status": {
+      "done": "Tamamlandı",
+      "cancelled": "Durduruldu",
+      "awaiting": "Onayınız gerekiyor",
+      "attention": "İlgi gerekiyor",
+      "starting": "Başlıyor…",
+      "running": "Sürüyor"
+    },
+    "progress": "{done} / {total}",
+    "step": {
+      "faucet": "Alım satım hesabını kur",
+      "register": "Köprüye kaydet",
+      "deposit": "{amount} NAV'ı alım satıma taşı",
+      "sell": "{base} sat, USDC al",
+      "buy": "USDC ile {base} al",
+      "toEvm": "NAV'ı çekime hazırla",
+      "burn": "NAV'ı cüzdanınıza gönder"
+    },
+    "stepDetail": {
+      "faucet": "{amount} NAV ile hesabınızı oluşturan ve ağ ücretlerini karşılayan küçük bir USDC + HYPE paketi alınır. Yalnızca bir kez.",
+      "faucetWaiting": "{amount} NAV gönderildi. 3 onay bekleniyor (yaklaşık 6 dk).",
+      "faucetDone": "{amount} NAV gönderildi. Alım satım hesabı oluşturuldu.",
+      "register": "Otomatik. NAV hareket etmez; küçük ücret aldığınız HYPE'tan ödenir.",
+      "movingGas": "Kayıt ücretini ödemek için biraz HYPE aktarılıyor…",
+      "deposit": "Özel cüzdanınızdan alım satım hesabınıza gönderildi.",
+      "depositWaiting": "Cüzdanınızdan gönderildi. Onaylar bekleniyor · yaklaşık {minutes} dk kaldı.",
+      "depositDone": "{amount} NAV alım satım hesabınıza ulaştı.",
+      "order": "{price} ya da daha iyi fiyattan; aksi halde hiç.",
+      "orderDone": "{size} {base}, {price} fiyattan gerçekleşti.",
+      "toEvmWaiting": "Borsa bekleniyor…",
+      "burn": "NAV borsadan çıkar; köprü birkaç dakika sonra cüzdanınıza öder.",
+      "burnDone": "Gönderildi. NAV birkaç dakika içinde cüzdanınıza ulaşır."
+    },
+    "leave": "Bu ekrandan ayrılabilirsiniz. Navio Go açıkken izlemeye devam eder, yeniden başlatıldığında kaldığı yerden sürdürür.",
+    "view": "İlerlemeyi gör",
+    "viewAll": "Tüm işlemler",
+    "open": "Aç",
+    "tray": {
+      "one": "{n} işlem sürüyor",
+      "many": "{n} işlem sürüyor",
+      "needsYou": "{n} işlem ilginizi bekliyor"
+    },
+    "approval": {
+      "title": "Devam etmek için onaylayın",
+      "setup_price_changed": "Kurulum fiyatı incelemenizden bu yana değişti: {approved} NAV yerine {amount} NAV. Henüz hiçbir şey gönderilmedi.",
+      "approve": "{amount} NAV'ı onayla",
+      "unknown": "Bu adımın sürmesi için yeni bir onay gerekiyor."
+    },
+    "failed": {
+      "title": "Bu adım gerçekleşmedi",
+      "keep": "Tamamlanan adımlar korunur. Yeniden deneme bu adımdan başlar."
+    },
+    "interrupted": {
+      "title": "Bu adımın gönderilip gönderilmediği belirsiz",
+      "body": "Gönderim sırasında uygulama kapandı ve bakiyeler soruyu netleştirmedi. Seçmeden önce Geçmiş'i kontrol edin.",
+      "checked": "Yeniden başlatma sonrası kontrol edildi: cüzdan bakiyesi, alım satım bakiyesi."
+    },
+    "actions": {
+      "retry": "Yeniden dene",
+      "stop": "Durdur",
+      "wentThrough": "Gönderildi",
+      "sendAgain": "Yeniden gönder",
+      "details": "Teknik ayrıntılar",
+      "dismiss": "Tamam",
+      "requote": "Güncel fiyattan takas et",
+      "keepWaiting": "Aynı fiyatı yeniden dene",
+      "back": "Geri",
+      "accept": "Takas et"
+    },
+    "empty": {
+      "title": "Süren işlem yok",
+      "body": "Başlattığınız takaslar ve NAV taşımaları, uygulamayı kapatsanız bile ilerlemeleriyle burada görünür."
+    },
+    "sections": {
+      "attention": "İlginizi bekliyor",
+      "active": "Sürüyor",
+      "recent": "Son işlemler"
+    },
+    "tech": {
+      "id": "İşlem",
+      "assumedDone": "gönderildi varsayıldı (sizin seçiminiz)",
+      "verified": "yeniden başlatma sonrası zincirde doğrulandı",
+      "received": "Alınan",
+      "lastError": "Son hata"
+    },
+    "stopConfirm": "Bu işlem durdurulsun mu? Tamamlanan adımlar korunur: taşınmış NAV olduğu yerde kalır ve NAV sayfasında görünür.",
+    "setupOnlyDone": "Alım satım hesabınız hazır."
   }
 }

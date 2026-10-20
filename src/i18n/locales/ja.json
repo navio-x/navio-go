@@ -142,10 +142,13 @@
     "unlockDurationDesc": "暗号化されたウォレットのパスワードをこのデバイスに記憶します。期間は最後にパスワードを入力した時点から数えます。その間、このデバイスにアクセスできる人は誰でもウォレットを開けます。",
     "autoOpenLastWallet": "最後のウォレットを自動で開く",
     "autoOpenLastWalletDesc": "起動時にウォレット一覧を省略し、最後に使用したウォレットを開きます。",
-    "logout": "ログアウト"
+    "logout": "ログアウト",
+    "developer": "開発者",
+    "developerDesc": "自分でサービスを運用する人向けの設定。"
   },
   "nav": {
-    "more": "その他"
+    "more": "その他",
+    "activity": "アクティビティ"
   },
   "pos": {
     "title": "POS",
@@ -852,7 +855,7 @@
   },
   "bridge": {
     "deposit": {
-      "title": "NAV を入金",
+      "title": "取引口座に受け取る",
       "activateTitle": "HyperCore アカウントを有効化",
       "activateDesc": "入金する前に、アドレスをブリッジに一度登録する必要があります。少額の HYPE ガス代がかかります。HyperCore アカウントの HYPE は自動的に移されます。",
       "activateButton": "有効化",
@@ -869,10 +872,19 @@
       "sendSuccess": "送信しました — この入金は、下記の承認数に達した後に反映されます。",
       "sendFailed": "送信中に問題が発生しました。もう一度お試しください。",
       "txId": "トランザクション ID",
-      "movingHype": "ガス代用の HYPE を HyperEVM に移動中…"
+      "movingHype": "ガス代用の HYPE を HyperEVM に移動中…",
+      "intro": "任意のNavioウォレットからこのアドレスへNAVを送ると、取引口座に届きます。",
+      "notReadyTitle": "先に初回セットアップが必要です",
+      "notReadyBody": "ブリッジが入金を反映するには、取引口座の初回セットアップが必要です。このウォレットから{amount} NAVがかかり、数分で完了します。以後、このアドレスはずっと使えます。",
+      "notReadyNoFunds": "初回セットアップには{amount} NAVが必要ですが、このウォレットには{have} NAVしかありません。先にウォレットへNAVを受け取るか、すでにNAVのあるウォレットからスワップしてください。",
+      "setupButton": "取引口座をセットアップ",
+      "settingUp": "取引口座をセットアップ中…",
+      "readyBadge": "受け取り可能",
+      "notReadyBodyFree": "ブリッジが入金を反映するには、取引口座の初回登録が必要です。自動で行われ、ウォレットから費用はかからず、1分ほどで完了します。以後、このアドレスはずっと使えます。",
+      "setupButtonFree": "今すぐ登録"
     },
     "withdraw": {
-      "title": "NAV を出金",
+      "title": "NAVを戻す",
       "onEvm": "HyperEVM 上",
       "onCore": "HyperCore 上",
       "moveToEvm": "HyperEVM に移動",
@@ -888,7 +900,11 @@
       "submit": "出金",
       "encrypting": "送信先を暗号化中…",
       "burning": "送信中…",
-      "done": "出金を送信しました — 通常、数分以内に Navio に着金します。"
+      "done": "出金を送信しました — 通常、数分以内に Navio に着金します。",
+      "intro": "取引口座のNAVを任意のNavioアドレスへ引き出します。",
+      "available": "取引口座で利用可能",
+      "ownWallet": "自分のウォレットアドレスを使う",
+      "notReady": "取引口座はまだ登録されていません。引き出すものはありません。"
     },
     "errors": {
       "wallet_locked": "ウォレットがロックされています — 続行するにはロックを解除してください。",
@@ -1336,7 +1352,47 @@
       "setup_unavailable": "初回のアカウント設定は現在利用できません。後でもう一度お試しください。",
       "wallet_locked": "ウォレットがロックされています — 続行するにはロックを解除してください。"
     },
-    "walletHint": "ウォレットにあと {amount} NAV あります。利用可能額より多く入力すると、スワップの前にその分が取引所へ移されます（数分かかります）。"
+    "walletHint": "ウォレットにあと {amount} NAV あります。利用可能額より多く入力すると、スワップの前にその分が取引所へ移されます（数分かかります）。",
+    "available": "利用可能",
+    "where": "ウォレット {wallet} · 取引可能 {exchange}",
+    "whereMoving": " · 移動中 {moving}",
+    "setupNeeded": {
+      "title": "初回セットアップが必要です",
+      "body": "取引口座はまだセットアップされていません。Navio Goがこのスワップの一環として代わりに行います:",
+      "faucet": "取引口座をセットアップ",
+      "faucetCost": "{amount} NAV、1回のみ",
+      "register": "ブリッジに登録",
+      "registerCost": "自動",
+      "deposit": "{amount} NAVを取引口座へ移動",
+      "depositTime": "約{minutes}分",
+      "total": "ウォレットからの合計",
+      "howItWorks": "仕組み",
+      "inProgress": "取引口座をセットアップ中です。完了次第、このスワップを開始できます。"
+    },
+    "moveNeeded": {
+      "title": "先にNAVを取引口座へ移動します",
+      "body": "{amount} NAVがプライベートウォレットから取引口座へ移動し（約{minutes}分）、その後スワップが自動で実行されます。"
+    },
+    "blocked": {
+      "insufficient": "このスワップにはウォレットに約{needed} NAVが必要です。現在{have} NAVです。",
+      "breakdown": "取引分 {deposit} NAV + 初回セットアップ {setup} NAV + ネットワーク手数料",
+      "breakdownNoSetup": "取引分 {deposit} NAV + ネットワーク手数料",
+      "belowMinimum": "取引は10 USDC以上（現在価格で約{nav} NAV）である必要があります。",
+      "belowMinimumNoPrice": "取引は10 USDC以上である必要があります。",
+      "receive": "NAVを受け取る",
+      "otherAsset": "取引口座の{symbol}が不足しています。利用可能: {available}。",
+      "setupBusy": "取引口座をセットアップ中です。完了後にこのスワップを開始できます。"
+    },
+    "review": {
+      "setupTitle": "初回セットアップが必要です",
+      "setupBody": "取引口座はまだセットアップされていません。Navio Goはこのスワップの実行前に自動でセットアップします。",
+      "willDo": "Navio Goが行うこと:",
+      "totalLeaving": "ウォレットから出る合計",
+      "plusFees": "+ ネットワーク手数料",
+      "confirmPayments": "確認 · {n}件の支払いを承認",
+      "confirmOne": "スワップを確認",
+      "setupDetails": "セットアップの詳細"
+    }
   },
   "ops": {
     "title": {
@@ -1414,8 +1470,8 @@
     "openNav": "NAV を開く",
     "moveDesc": "必要なときはスワップが自動で NAV を移動します。特定の場所に置きたい場合のみ、自分で移動してください。",
     "move": {
-      "toExchange": "取引所に移動",
-      "toWallet": "ウォレットに戻す",
+      "toExchange": "NAVを取引口座へ移動",
+      "toWallet": "NAVをウォレットへ戻す",
       "from": "移動元",
       "to": "移動先",
       "walletAddress": "あなたのウォレットアドレス",
@@ -1424,9 +1480,9 @@
     "where": {
       "wallet": "ウォレット内",
       "walletHint": "プライベート。送信できます。",
-      "exchange": "取引所",
-      "exchangeHint": "Hyperliquid。公開。スワップできます。",
-      "exchangeHintOrders": "Hyperliquid。公開。未約定の注文に {amount}。",
+      "exchange": "取引可能",
+      "exchangeHint": "取引口座（Hyperliquid）。公開。",
+      "exchangeHintOrders": "取引口座。{amount}が未約定注文中。",
       "moving": "移動中",
       "movingHint": "両者の間を移動しています。",
       "staked": "ステーキング中",
@@ -1435,14 +1491,35 @@
     "links": {
       "trade": "オーダーブック",
       "tradeHint": "指値注文とリアルタイムの NAV/USDC 市場",
-      "hlTransfer": "Hyperliquid 送金",
+      "hlTransfer": "Hyperliquid内で送金",
       "hlTransferHint": "別の Hyperliquid アカウントとの間で送受信",
-      "depositAddress": "ブリッジの入金アドレス",
-      "depositAddressHint": "別の Navio ウォレットから取引所に入金",
-      "manualWithdraw": "ブリッジからの手動出金",
-      "manualWithdrawHint": "任意の Navio アドレスへ、手順を追って出金"
+      "depositAddress": "他のウォレットから取引口座に受け取る",
+      "depositAddressHint": "取引口座の入金アドレス",
+      "manualWithdraw": "NAVを任意のアドレスへ戻す",
+      "manualWithdrawHint": "取引口座から任意のNavioアドレスへ引き出す",
+      "diagnostics": "取引口座",
+      "diagnosticsHint": "状態、アドレス、残高"
     },
-    "explain": "取引所の NAV は、Navio–Hyperliquid ブリッジが 1 対 1 であなたのために預かっている NAV で、Wrapped Navio というトークンの形をとります。このブリッジはカストディ型で、ウォレット内の NAV と異なり、Hyperliquid 上の残高と取引は公開されます。"
+    "explain": "取引所の NAV は、Navio–Hyperliquid ブリッジが 1 対 1 であなたのために預かっている NAV で、Wrapped Navio というトークンの形をとります。このブリッジはカストディ型で、ウォレット内の NAV と異なり、Hyperliquid 上の残高と取引は公開されます。",
+    "diag": {
+      "title": "取引口座",
+      "account": "Hyperliquidアカウント",
+      "registered": "ブリッジに登録済み",
+      "gas": "ネットワーク手数料の残高（HYPE）",
+      "evmAddress": "アカウントアドレス",
+      "depositAddress": "ブリッジ入金アドレス",
+      "depositAddressNone": "アカウント登録後に利用可能",
+      "navCore": "取引口座のNAV",
+      "navEvm": "HyperEVM上のNAV（引き出し段階）",
+      "usdc": "USDC",
+      "yes": "はい",
+      "no": "まだ",
+      "ready": "準備完了",
+      "notReady": "初回セットアップが必要",
+      "setup": "今すぐセットアップ",
+      "setupCost": "初回セットアップには{amount} NAVがかかります",
+      "refresh": "更新"
+    }
   },
   "staking": {
     "title": "ステーキング",
@@ -1719,11 +1796,115 @@
     "txHash": "トランザクション",
     "copyHash": "ID をコピー",
     "emptyFilter": "このネットワークにはまだ何もありません。",
-    "bscNote": "BNB Chain には、このデバイスのこのアプリで行ったスワップが表示されます。その他のアクティビティはエクスプローラーで確認できます。"
+    "bscNote": "BNB Chain には、このデバイスのこのアプリで行ったスワップが表示されます。その他のアクティビティはエクスプローラーで確認できます。",
+    "operation": "操作",
+    "technicalSteps": "技術的なステップ",
+    "stopped": "停止",
+    "inProgress": "進行中"
   },
   "toast": {
     "received": "NAV を受け取りました",
     "sent": "NAV を送信しました",
     "reward": "ステーキング報酬"
+  },
+  "process": {
+    "activityTitle": "アクティビティ",
+    "title": {
+      "swap": "スワップ {from} → {to}",
+      "swapDone": "スワップ完了 {from} → {to}",
+      "toExchange": "NAVを取引口座へ移動中",
+      "toWallet": "NAVをウォレットへ戻し中",
+      "receiveViaBridge": "取引口座をセットアップ中"
+    },
+    "subtitle": {
+      "setupOnly": "初回セットアップ"
+    },
+    "status": {
+      "done": "完了",
+      "cancelled": "停止",
+      "awaiting": "承認が必要",
+      "attention": "要対応",
+      "starting": "開始中…",
+      "running": "進行中"
+    },
+    "progress": "{done} / {total}",
+    "step": {
+      "faucet": "取引口座をセットアップ",
+      "register": "ブリッジに登録",
+      "deposit": "{amount} NAVを取引口座へ移動",
+      "sell": "{base}を売ってUSDCに",
+      "buy": "USDCで{base}を買う",
+      "toEvm": "NAVの引き出し準備",
+      "burn": "NAVをウォレットへ送る"
+    },
+    "stepDetail": {
+      "faucet": "{amount} NAVで少量のUSDC + HYPEパッケージを購入します。これでアカウントが作成され、ネットワーク手数料がまかなわれます。1回のみ。",
+      "faucetWaiting": "{amount} NAVを送信しました。3承認を待っています（約6分）。",
+      "faucetDone": "{amount} NAVを送信しました。取引口座が作成されました。",
+      "register": "自動。NAVは動きません。わずかな手数料は受け取ったHYPEから支払われます。",
+      "movingGas": "登録手数料のために少量のHYPEを移動中…",
+      "deposit": "プライベートウォレットから取引口座へ送信しました。",
+      "depositWaiting": "ウォレットから送信済み。承認待ち · 残り約{minutes}分。",
+      "depositDone": "{amount} NAVが取引口座に届きました。",
+      "order": "{price}以上の価格で約定、または不成立。",
+      "orderDone": "{size} {base}を{price}で約定。",
+      "toEvmWaiting": "取引所を待っています…",
+      "burn": "NAVが取引所を離れ、数分後にブリッジがウォレットへ支払います。",
+      "burnDone": "送信済み。NAVは数分でウォレットに届きます。"
+    },
+    "leave": "この画面を離れても大丈夫です。Navio Goは開いている間追跡を続け、再起動後も中断した所から再開します。",
+    "view": "進捗を見る",
+    "viewAll": "すべてのアクティビティ",
+    "open": "開く",
+    "tray": {
+      "one": "{n}件の操作が進行中",
+      "many": "{n}件の操作が進行中",
+      "needsYou": "{n}件が対応待ち"
+    },
+    "approval": {
+      "title": "続行するには承認してください",
+      "setup_price_changed": "確認後にセットアップ価格が変わりました: {approved} NAVではなく{amount} NAV。まだ何も送信されていません。",
+      "approve": "{amount} NAVを承認",
+      "unknown": "このステップを続けるには新たな承認が必要です。"
+    },
+    "failed": {
+      "title": "このステップは完了しませんでした",
+      "keep": "完了したステップは保持されます。再試行はこのステップから始まります。"
+    },
+    "interrupted": {
+      "title": "このステップが送信されたか不明です",
+      "body": "送信中にアプリが閉じられ、残高からは判断できませんでした。選ぶ前に履歴を確認してください。",
+      "checked": "再起動後に確認済み: ウォレット残高、取引口座残高。"
+    },
+    "actions": {
+      "retry": "再試行",
+      "stop": "停止",
+      "wentThrough": "送信された",
+      "sendAgain": "再送信",
+      "details": "技術的な詳細",
+      "dismiss": "OK",
+      "requote": "現在価格でスワップ",
+      "keepWaiting": "同じ価格で再試行",
+      "back": "戻る",
+      "accept": "スワップ"
+    },
+    "empty": {
+      "title": "進行中の操作はありません",
+      "body": "開始したスワップやNAVの移動は、アプリを閉じた後も進捗とともにここに表示されます。"
+    },
+    "sections": {
+      "attention": "対応が必要",
+      "active": "進行中",
+      "recent": "最近"
+    },
+    "tech": {
+      "id": "操作",
+      "assumedDone": "送信済みと見なす（ユーザーの選択）",
+      "verified": "再起動後にチェーン上で検証済み",
+      "received": "受け取り",
+      "lastError": "最後のエラー"
+    },
+    "stopConfirm": "この操作を停止しますか？完了したステップは保持されます。すでに移動したNAVはその場に残り、NAVページに表示されます。",
+    "setupOnlyDone": "取引口座の準備ができました。"
   }
 }

@@ -142,10 +142,13 @@
     "unlockDurationDesc": "在此设备上记住加密钱包的密码，从您上次输入密码时开始计时。在此期间，任何能够使用此设备的人都可以打开钱包。",
     "autoOpenLastWallet": "自动打开上次使用的钱包",
     "autoOpenLastWalletDesc": "启动时跳过钱包列表，直接打开您上次使用的钱包。",
-    "logout": "退出登录"
+    "logout": "退出登录",
+    "developer": "开发者",
+    "developerDesc": "面向自行运行服务的用户的设置。"
   },
   "nav": {
-    "more": "更多"
+    "more": "更多",
+    "activity": "活动"
   },
   "pos": {
     "title": "POS",
@@ -852,7 +855,7 @@
   },
   "bridge": {
     "deposit": {
-      "title": "存入 NAV",
+      "title": "接收到交易账户",
       "activateTitle": "激活您的 HyperCore 账户",
       "activateDesc": "存款之前，您的地址需要在跨链桥上注册一次。这会消耗少量 HYPE 作为 Gas——您 HyperCore 账户中的 HYPE 会自动转过去。",
       "activateButton": "激活",
@@ -869,10 +872,19 @@
       "sendSuccess": "已发送——此存款将在达到下方所示的确认数后入账。",
       "sendFailed": "发送时出了点问题。请重试。",
       "txId": "交易 ID",
-      "movingHype": "正在将 HYPE 转至 HyperEVM 用作 Gas…"
+      "movingHype": "正在将 HYPE 转至 HyperEVM 用作 Gas…",
+      "intro": "从任意 Navio 钱包向此地址发送 NAV，即可到达你的交易账户。",
+      "notReadyTitle": "需要先完成一次性设置",
+      "notReadyBody": "在跨链桥能够记入存款之前，你的交易账户需要一次性设置。这会从此钱包扣除 {amount} NAV，耗时几分钟。之后此地址将永久可用。",
+      "notReadyNoFunds": "一次性设置需要 {amount} NAV，而此钱包只有 {have} NAV。请先向钱包接收 NAV，或从已持有 NAV 的钱包进行兑换。",
+      "setupButton": "设置交易账户",
+      "settingUp": "正在设置你的交易账户…",
+      "readyBadge": "可以接收",
+      "notReadyBodyFree": "在跨链桥能够记入存款之前，你的交易账户需要一次性注册。注册自动完成，不花费钱包资金，大约一分钟。之后此地址将永久可用。",
+      "setupButtonFree": "立即注册"
     },
     "withdraw": {
-      "title": "提取 NAV",
+      "title": "取回 NAV",
       "onEvm": "在 HyperEVM 上",
       "onCore": "在 HyperCore 上",
       "moveToEvm": "转至 HyperEVM",
@@ -888,7 +900,11 @@
       "submit": "提款",
       "encrypting": "正在加密目标地址…",
       "burning": "正在提交…",
-      "done": "提款已提交——资金通常会在几分钟内到达 Navio。"
+      "done": "提款已提交——资金通常会在几分钟内到达 Navio。",
+      "intro": "把交易账户中的 NAV 提取到任意 Navio 地址。",
+      "available": "交易账户可用",
+      "ownWallet": "使用我的钱包地址",
+      "notReady": "你的交易账户尚未注册，没有可提取的资产。"
     },
     "errors": {
       "wallet_locked": "钱包已锁定——请解锁后继续。",
@@ -1336,7 +1352,47 @@
       "setup_unavailable": "一次性账户设置暂时不可用。请稍后再试。",
       "wallet_locked": "钱包已锁定——请解锁后继续。"
     },
-    "walletHint": "您的钱包中还有 {amount} NAV。输入超过可用金额的数值，兑换时会先将其转入交易所（需要几分钟）。"
+    "walletHint": "您的钱包中还有 {amount} NAV。输入超过可用金额的数值，兑换时会先将其转入交易所（需要几分钟）。",
+    "available": "可用",
+    "where": "钱包 {wallet} · 可交易 {exchange}",
+    "whereMoving": " · 转移中 {moving}",
+    "setupNeeded": {
+      "title": "需要一次性设置",
+      "body": "你的交易账户尚未设置。Navio Go 会在本次兑换中为你完成：",
+      "faucet": "设置交易账户",
+      "faucetCost": "{amount} NAV，仅一次",
+      "register": "在跨链桥注册",
+      "registerCost": "自动",
+      "deposit": "将 {amount} NAV 转入交易账户",
+      "depositTime": "约 {minutes} 分钟",
+      "total": "从钱包支出合计",
+      "howItWorks": "工作原理",
+      "inProgress": "你的交易账户正在设置中，设置完成后即可开始本次兑换。"
+    },
+    "moveNeeded": {
+      "title": "将先把 NAV 转入交易账户",
+      "body": "{amount} NAV 会从你的私密钱包转入交易账户（约 {minutes} 分钟），然后兑换自动执行。"
+    },
+    "blocked": {
+      "insufficient": "本次兑换需要钱包中约有 {needed} NAV。你有 {have} NAV。",
+      "breakdown": "用于交易的 {deposit} NAV + 一次性设置 {setup} NAV + 网络手续费",
+      "breakdownNoSetup": "用于交易的 {deposit} NAV + 网络手续费",
+      "belowMinimum": "交易金额至少需要 10 USDC，按当前价格约 {nav} NAV。",
+      "belowMinimumNoPrice": "交易金额至少需要 10 USDC。",
+      "receive": "接收 NAV",
+      "otherAsset": "交易账户中的 {symbol} 不足。可用：{available}。",
+      "setupBusy": "你的交易账户正在设置中，设置完成后即可开始本次兑换。"
+    },
+    "review": {
+      "setupTitle": "需要一次性设置",
+      "setupBody": "你的交易账户尚未设置。Navio Go 会在执行本次兑换前自动完成设置。",
+      "willDo": "Navio Go 将：",
+      "totalLeaving": "从钱包支出合计",
+      "plusFees": "+ 网络手续费",
+      "confirmPayments": "确认 · 批准 {n} 笔付款",
+      "confirmOne": "确认兑换",
+      "setupDetails": "设置详情"
+    }
   },
   "ops": {
     "title": {
@@ -1414,8 +1470,8 @@
     "openNav": "打开 NAV",
     "moveDesc": "需要时，兑换功能会自动为您转移 NAV。只有当您希望它存放在特定位置时，才需自行转移。",
     "move": {
-      "toExchange": "转入交易所",
-      "toWallet": "转回钱包",
+      "toExchange": "将 NAV 转入交易账户",
+      "toWallet": "将 NAV 转回钱包",
       "from": "从",
       "to": "至",
       "walletAddress": "您的钱包地址",
@@ -1424,9 +1480,9 @@
     "where": {
       "wallet": "在您的钱包中",
       "walletHint": "隐私。可随时发送。",
-      "exchange": "在交易所",
-      "exchangeHint": "Hyperliquid。公开。可随时兑换。",
-      "exchangeHintOrders": "Hyperliquid。公开。{amount} 在未成交订单中。",
+      "exchange": "可交易",
+      "exchangeHint": "在你的交易账户（Hyperliquid）中。公开。",
+      "exchangeHintOrders": "在你的交易账户中。{amount} 处于未成交订单。",
       "moving": "转移途中",
       "movingHint": "正在两者之间转移。",
       "staked": "质押中",
@@ -1435,14 +1491,35 @@
     "links": {
       "trade": "订单簿",
       "tradeHint": "限价单和实时 NAV/USDC 市场",
-      "hlTransfer": "Hyperliquid 转账",
+      "hlTransfer": "在 Hyperliquid 内转账",
       "hlTransferHint": "向另一个 Hyperliquid 账户发送，或从其接收",
-      "depositAddress": "跨链桥存款地址",
-      "depositAddressHint": "从另一个 Navio 钱包向交易所充值",
-      "manualWithdraw": "手动从跨链桥提款",
-      "manualWithdrawHint": "分步提款到任意 Navio 地址"
+      "depositAddress": "从其他钱包接收到交易账户",
+      "depositAddressHint": "你的交易账户的存款地址",
+      "manualWithdraw": "将 NAV 取回到任意地址",
+      "manualWithdrawHint": "从交易账户提取到任意 Navio 地址",
+      "diagnostics": "交易账户",
+      "diagnosticsHint": "状态、地址和余额"
     },
-    "explain": "交易所里的 NAV 是由 Navio–Hyperliquid 跨链桥按一比一为您保管的 NAV，以名为 Wrapped Navio 的代币形式存在。该跨链桥是托管式的，并且与钱包中的 NAV 不同，Hyperliquid 上的余额和交易是公开的。"
+    "explain": "交易所里的 NAV 是由 Navio–Hyperliquid 跨链桥按一比一为您保管的 NAV，以名为 Wrapped Navio 的代币形式存在。该跨链桥是托管式的，并且与钱包中的 NAV 不同，Hyperliquid 上的余额和交易是公开的。",
+    "diag": {
+      "title": "交易账户",
+      "account": "Hyperliquid 账户",
+      "registered": "已在跨链桥注册",
+      "gas": "网络手续费余额（HYPE）",
+      "evmAddress": "账户地址",
+      "depositAddress": "跨链桥存款地址",
+      "depositAddressNone": "账户注册后可用",
+      "navCore": "交易账户中的 NAV",
+      "navEvm": "HyperEVM 上的 NAV（提取阶段）",
+      "usdc": "USDC",
+      "yes": "是",
+      "no": "尚未",
+      "ready": "就绪",
+      "notReady": "需要一次性设置",
+      "setup": "立即设置",
+      "setupCost": "一次性设置需要 {amount} NAV",
+      "refresh": "刷新"
+    }
   },
   "staking": {
     "title": "质押",
@@ -1719,11 +1796,115 @@
     "txHash": "交易",
     "copyHash": "复制 ID",
     "emptyFilter": "此网络上暂无记录。",
-    "bscNote": "BNB Chain 仅显示在此设备上通过本应用进行的兑换。其他活动请在区块浏览器中查看。"
+    "bscNote": "BNB Chain 仅显示在此设备上通过本应用进行的兑换。其他活动请在区块浏览器中查看。",
+    "operation": "操作",
+    "technicalSteps": "技术步骤",
+    "stopped": "已停止",
+    "inProgress": "进行中"
   },
   "toast": {
     "received": "已收到 NAV",
     "sent": "已发送 NAV",
     "reward": "质押奖励"
+  },
+  "process": {
+    "activityTitle": "活动",
+    "title": {
+      "swap": "兑换 {from} → {to}",
+      "swapDone": "已兑换 {from} → {to}",
+      "toExchange": "正在将 NAV 转入交易账户",
+      "toWallet": "正在将 NAV 转回你的钱包",
+      "receiveViaBridge": "正在设置你的交易账户"
+    },
+    "subtitle": {
+      "setupOnly": "一次性设置"
+    },
+    "status": {
+      "done": "已完成",
+      "cancelled": "已停止",
+      "awaiting": "需要你的批准",
+      "attention": "需要处理",
+      "starting": "启动中…",
+      "running": "进行中"
+    },
+    "progress": "{done} / {total}",
+    "step": {
+      "faucet": "设置交易账户",
+      "register": "在跨链桥注册",
+      "deposit": "将 {amount} NAV 转入交易账户",
+      "sell": "卖出 {base} 换 USDC",
+      "buy": "用 USDC 买入 {base}",
+      "toEvm": "准备提取 NAV",
+      "burn": "将 NAV 发送到你的钱包"
+    },
+    "stepDetail": {
+      "faucet": "用 {amount} NAV 购买一小份 USDC + HYPE 套餐，用于创建你的账户并支付其网络手续费。仅一次。",
+      "faucetWaiting": "已发送 {amount} NAV。等待 3 次确认（约 6 分钟）。",
+      "faucetDone": "已发送 {amount} NAV。交易账户已创建。",
+      "register": "自动完成。NAV 不会移动；极小的手续费由你收到的 HYPE 支付。",
+      "movingGas": "正在转移少量 HYPE 以支付注册费用…",
+      "deposit": "已从你的私密钱包发送到交易账户。",
+      "depositWaiting": "已从钱包发送。等待确认 · 还需约 {minutes} 分钟。",
+      "depositDone": "{amount} NAV 已到达你的交易账户。",
+      "order": "以 {price} 或更优价格成交，否则不成交。",
+      "orderDone": "已成交：{size} {base}，价格 {price}。",
+      "toEvmWaiting": "等待交易所…",
+      "burn": "NAV 离开交易所；几分钟后跨链桥会把它支付到你的钱包。",
+      "burnDone": "已提交。NAV 将在几分钟内到达你的钱包。"
+    },
+    "leave": "你可以离开此屏幕。Navio Go 在打开期间会持续跟踪，重启后也会从中断处继续。",
+    "view": "查看进度",
+    "viewAll": "全部活动",
+    "open": "打开",
+    "tray": {
+      "one": "{n} 项操作进行中",
+      "many": "{n} 项操作进行中",
+      "needsYou": "{n} 项需要你处理"
+    },
+    "approval": {
+      "title": "批准以继续",
+      "setup_price_changed": "设置价格在你审核后发生了变化：{amount} NAV，而不是 {approved} NAV。尚未发送任何内容。",
+      "approve": "批准 {amount} NAV",
+      "unknown": "此步骤需要重新批准才能继续。"
+    },
+    "failed": {
+      "title": "此步骤未能完成",
+      "keep": "已完成的步骤会保留。重试从此步骤开始。"
+    },
+    "interrupted": {
+      "title": "无法确定此步骤是否已发送",
+      "body": "发送过程中应用被关闭，余额无法说明结果。请先查看历史记录再做选择。",
+      "checked": "重启后已检查：钱包余额、交易账户余额。"
+    },
+    "actions": {
+      "retry": "重试",
+      "stop": "停止",
+      "wentThrough": "已发送成功",
+      "sendAgain": "重新发送",
+      "details": "技术详情",
+      "dismiss": "好的",
+      "requote": "按当前价格兑换",
+      "keepWaiting": "以相同价格再试",
+      "back": "返回",
+      "accept": "兑换"
+    },
+    "empty": {
+      "title": "没有进行中的操作",
+      "body": "你发起的兑换和 NAV 转移会连同进度显示在这里，即使关闭了应用也一样。"
+    },
+    "sections": {
+      "attention": "需要你处理",
+      "active": "进行中",
+      "recent": "最近"
+    },
+    "tech": {
+      "id": "操作",
+      "assumedDone": "视为已发送（你的选择）",
+      "verified": "重启后已在链上验证",
+      "received": "收到",
+      "lastError": "最后一次错误"
+    },
+    "stopConfirm": "停止此操作？已完成的步骤会保留：已转移的 NAV 留在原处，并显示在 NAV 页面上。",
+    "setupOnlyDone": "你的交易账户已就绪。"
   }
 }
