@@ -32,6 +32,9 @@ export default defineConfig({
         injectRegister: "auto",
         manifest: false,
         workbox: {
+          // Headroom above the 2 MiB default: a chunk over the limit is
+          // silently left out of the offline cache and fails the build.
+          maximumFileSizeToCacheInBytes: 3 * 1024 * 1024,
           globPatterns: ["**/*.{js,css,html,ico,png,svg,webp}"],
           globIgnores: ["**/*.wasm"],
           navigateFallback: "/wallet/index.html",

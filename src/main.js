@@ -2,7 +2,7 @@ import { createApp } from "vue";
 import { createPinia } from "pinia";
 import App from "./App.vue";
 import router from "./router";
-import i18n from "./i18n";
+import i18n, { setLanguage, getBrowserLanguage } from "./i18n";
 import './style.css'
 import { Buffer } from "buffer";
 import { Capacitor } from '@capacitor/core';
@@ -36,4 +36,5 @@ router.onError((error, to, from) => {
   console.error("[router] navigation failed:", to.fullPath, "from", from.fullPath, error);
 });
 
-app.mount("#app");
+// The chosen language is fetched before the first render, so nothing flashes in English.
+setLanguage(getBrowserLanguage()).finally(() => app.mount("#app"));

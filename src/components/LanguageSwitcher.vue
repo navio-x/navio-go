@@ -27,13 +27,14 @@
 <script setup>
 import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { setLanguage } from '@/i18n'
 
 const { locale } = useI18n()
 const currentLocale = ref(locale.value)
 
-const changeLanguage = () => {
-  locale.value = currentLocale.value
+const changeLanguage = async () => {
   localStorage.setItem('language', currentLocale.value)
+  await setLanguage(currentLocale.value)
 }
 </script>
 

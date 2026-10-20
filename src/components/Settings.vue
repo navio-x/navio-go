@@ -692,6 +692,7 @@
 import { ref, watch, onMounted, computed } from 'vue'
 import { wallpapers } from '@/assets/wallpapers'
 import { useI18n } from 'vue-i18n'
+import { setLanguage } from '@/i18n'
 import { useRouter } from 'vue-router'
 import { Store, LogOut } from 'lucide-vue-next'
 import { settings } from '../stores/settings'
@@ -743,9 +744,9 @@ watch(locale, () => {
   ]
 })
 
-const changeLanguage = () => {
-  locale.value = currentLanguage.value
+const changeLanguage = async () => {
   settings.language = currentLanguage.value
+  await setLanguage(currentLanguage.value)
 }
 
 onMounted(() => {
