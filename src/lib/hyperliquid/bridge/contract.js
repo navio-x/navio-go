@@ -1,5 +1,8 @@
 import { getHyperEvmPublicClient, getHyperEvmWalletClient } from "./client";
 import { BRIDGE_CONTRACT_ADDRESS } from "./config";
+import { scenarioEnabled, readScenario } from "@/dev/scenario";
+
+const sim = () => (scenarioEnabled() ? readScenario() : null);
 
 // Minimal ABI — only what this app calls. Function names/selectors were
 // cross-checked against the live contract via eth_call before writing this
@@ -35,6 +38,7 @@ const BRIDGE_ABI = [
 ];
 
 export async function readCoreUserExists(address) {
+  if (sim()) return sim().coreExists;
   const client = getHyperEvmPublicClient();
   return client.readContract({
     address: BRIDGE_CONTRACT_ADDRESS,
@@ -46,6 +50,7 @@ export async function readCoreUserExists(address) {
 
 /** True once the address has called register(); only then are its deposits credited. */
 export async function readIsRegistered(address) {
+  if (sim()) return sim().registered;
   const client = getHyperEvmPublicClient();
   return client.readContract({
     address: BRIDGE_CONTRACT_ADDRESS,
@@ -79,11 +84,13 @@ export async function readMinBurnValue() {
 }
 
 export async function readPaused() {
+  if (sim()) return sim().paused;
   const client = getHyperEvmPublicClient();
   return client.readContract({ address: BRIDGE_CONTRACT_ADDRESS, abi: BRIDGE_ABI, functionName: "paused" });
 }
 
 export async function readNavEvmBalance(address) {
+  if (sim()) return BigInt(Math.round(sim().navEvm * 1e8));
   const client = getHyperEvmPublicClient();
   return client.readContract({
     address: BRIDGE_CONTRACT_ADDRESS,
@@ -94,6 +101,7 @@ export async function readNavEvmBalance(address) {
 }
 
 export async function readHypeBalance(address) {
+  if (sim()) return BigInt(Math.round(sim().hypeEvm * 1e18));
   const client = getHyperEvmPublicClient();
   return client.getBalance({ address });
 }

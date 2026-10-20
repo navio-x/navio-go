@@ -2,7 +2,7 @@ import { parseUnits, formatUnits } from "viem";
 import { getNavioClient, balance } from "@/stores/navio";
 import { getReservedAmount, getSendableUtxos, loadReservations } from "@/stores/trade";
 import { getEvmAccount } from "@/composables/useEvmAccount";
-import { fetchSpotClearinghouseState, fetchL2Book, fetchUserFees } from "@/lib/hyperliquid/api";
+import { fetchSpotClearinghouseState, fetchL2Book, fetchUserFees, fetchOrderStatus } from "@/lib/hyperliquid/api";
 import { getSpotMeta, resolveTokens } from "@/lib/hyperliquid/meta";
 import { HL_SPOT_MARKETS } from "@/lib/hyperliquid/market";
 import { placeSpotOrder, spotSendNavToEvm } from "@/lib/hyperliquid/exchange";
@@ -24,14 +24,19 @@ import { deriveDepositAddress } from "@/lib/hyperliquid/bridge/depositAddress";
 import { encryptWithdrawalNote } from "@/lib/hyperliquid/bridge/noteEncryption";
 import { ensureEvmGas, estimateBridgeGasCost } from "@/lib/hyperliquid/bridge/gas";
 import { floorTo, toDecimalString, FALLBACK_FEE_RATE } from "./quote";
-import { MIN_BRIDGE_NAV } from "./router";
+import { MIN_BRIDGE_NAV } from "./requirements";
+import { STEP_TYPES } from "./steps";
 import { isMainnet } from "@/stores/network";
+import { scenarioEnabled, scenarioAccountState, scenarioExchangeBalances } from "@/dev/scenario";
 
 const POLL_MS = 15_000;
 // A credited deposit is accepted as "arrived" within this margin of the
 // expected amount, so an operation never waits forever on a rounding
 // difference between what was sent and what the bridge credits.
 const CREDIT_TOLERANCE = 0.01;
+// The setup price is only held for a while; a quote this much above the
+// approved amount is not paid without a fresh OK.
+const SETUP_PRICE_TOLERANCE = 0.02;
 // The bridge only exists on Navio mainnet; an unknown network counts as not.
 const onMainnet = () => isMainnet.value;
 
@@ -41,11 +46,20 @@ function fail(code, detail) {
   return err;
 }
 
+/** Stops the engine for a fresh OK: the cost differs from what was approved. */
+function askApproval(code, approval) {
+  const err = new Error("needs_approval");
+  err.approval = { code, ...approval };
+  return err;
+}
+
 function requireAccount() {
   const account = getEvmAccount();
   if (!account) throw fail("wallet_locked");
   return account;
 }
+
+const walletNav = () => Number(balance.value) || 0;
 
 /** Runs a bridge call, turning contract/RPC errors into this app's error codes. */
 async function bridgeCall(fn) {
@@ -59,6 +73,7 @@ async function bridgeCall(fn) {
 
 /** Hyperliquid spot balances for `address`: { available: { SYM: n }, total: { SYM: n } }. */
 export async function readExchangeBalances(address) {
+  if (scenarioEnabled()) return scenarioExchangeBalances();
   const [meta, state] = await Promise.all([getSpotMeta(), fetchSpotClearinghouseState(address)]);
   const available = {};
   const total = {};
@@ -75,6 +90,7 @@ export async function readExchangeBalances(address) {
  * `faucet` is only fetched when the account can't pay for its own setup.
  */
 export async function readAccountState(address) {
+  if (scenarioEnabled()) return scenarioAccountState();
   const [coreExists, registered, paused, hypeEvm, gasCost, navEvmRaw, exchange] = await Promise.all([
     readCoreUserExists(address),
     readIsRegistered(address),
@@ -87,26 +103,34 @@ export async function readAccountState(address) {
   const gasReady = hypeEvm >= gasCost || exchange.available.HYPE > 0;
 
   let faucet = null;
+  let faucetError = null;
   if (!registered && (!coreExists || !gasReady)) {
     try {
       const quote = await fetchFaucetQuote(address);
-      faucet = { amountNav: quote.amountNav, usdc: quote.payout?.usdc, hype: quote.payout?.hype };
+      faucet = { amountNav: quote.amountNav, usdc: quote.payout?.usdc, hype: quote.payout?.hype, expiresAt: quote.expiresAt };
     } catch (e) {
+      faucetError = e.message;
       console.error("[intent] setup quote unavailable:", e.message);
     }
   }
 
   return {
-    navWallet: Number(balance.value) || 0,
+    navWallet: walletNav(),
     navExchange: exchange.available.NAV ?? 0,
     navEvm: Number(formatUnits(navEvmRaw, NAV_DECIMALS)),
     balances: exchange.available,
+    totals: exchange.total,
     registered,
     coreExists,
     paused,
     gasReady,
+    hypeEvm: Number(formatUnits(hypeEvm, 18)),
+    hypeCore: exchange.available.HYPE ?? 0,
     faucet,
+    faucetError,
     bridgeUnavailable: !onMainnet(),
+    depositAddress: registered ? deriveDepositAddress(address).bech32mAddress : null,
+    readAt: Date.now(),
   };
 }
 
@@ -141,12 +165,33 @@ function mapOrderError(message) {
   return "exchange_rejected";
 }
 
+/** A 16-byte client order id, chosen before the order is sent. */
+function newCloid() {
+  const bytes = new Uint8Array(16);
+  crypto.getRandomValues(bytes);
+  return `0x${Array.from(bytes, (b) => b.toString(16).padStart(2, "0")).join("")}`;
+}
+
+/**
+ * Was a wallet send of `amount` made since `step.walletBefore` was recorded?
+ * The wallet balance is the only thing a light wallet can read about its own
+ * sends right away (the recipient output is not ours), so it is compared
+ * with what was there before the step started.
+ */
+function walletSendOutcome(step, amount) {
+  if (step.walletBefore == null) return "unknown";
+  const now = walletNav();
+  if (now <= step.walletBefore - amount * (1 - CREDIT_TOLERANCE)) return "done";
+  if (now >= step.walletBefore - 0.001) return "not_sent";
+  return "unknown";
+}
+
 // One entry per step type in steps.js (which also says which ones move funds).
 export const executors = {
   // One-time setup, part 1: buy a small USDC + HYPE package with NAV. Its
   // arrival creates the Hyperliquid account and provides gas.
   faucet: {
-    async run(step) {
+    async run(step, op, api) {
       const account = requireAccount();
       const [exists, exchange] = await Promise.all([
         readCoreUserExists(account.address),
@@ -160,17 +205,35 @@ export const executors = {
       } catch (e) {
         throw fail("setup_unavailable", e.message);
       }
-      // The price is only held for a while; never pay noticeably more than was reviewed.
-      if (Number(quote.amountNav) > Number(step.amountNav) * 1.02) {
-        throw fail("setup_price_changed", `${quote.amountNav} NAV`);
+      // Never pay noticeably more than was approved: ask again instead.
+      const approved = Number(step.approved?.amountNav ?? step.amountNav);
+      if (Number(quote.amountNav) > approved * (1 + SETUP_PRICE_TOLERANCE)) {
+        throw askApproval("setup_price_changed", { amountNav: Number(quote.amountNav), approvedNav: approved, usdc: quote.payout?.usdc, hype: quote.payout?.hype });
       }
+      if (Number(quote.amountNav) + 0.01 > walletNav()) throw fail("insufficient_wallet");
+
+      step.amountNav = quote.amountNav;
+      step.walletBefore = walletNav();
+      step.sentAt = api.now();
+      api.save();
       let result;
       try {
         result = await sendFaucetPayment(quote);
       } catch (e) {
         throw fail("send_failed", e?.message);
       }
-      return { setupTxId: result?.txId || "" };
+      step.txId = result?.txId || "";
+      return { setupTxId: step.txId };
+    },
+    async verify(step) {
+      const { address } = requireAccount();
+      try {
+        const [exists, exchange] = await Promise.all([readCoreUserExists(address), readExchangeBalances(address)]);
+        if (exists && exchange.available.HYPE > 0) return "done";
+      } catch (e) {
+        console.error("[intent] faucet verify read failed:", e.message);
+      }
+      return walletSendOutcome(step, Number(step.amountNav));
     },
   },
 
@@ -191,13 +254,21 @@ export const executors = {
 
   // One-time setup, part 2. Checks first, so running it again is harmless.
   register: {
-    async run() {
+    async run(step, _op, api) {
       const account = requireAccount();
       return bridgeCall(async () => {
         if (await readIsRegistered(account.address)) return null;
         if (!(await readCoreUserExists(account.address))) throw new Error("SenderNotActivated");
-        await ensureEvmGas(account, await estimateRegisterGasCost(account));
-        await registerCoreUser(account);
+        await ensureEvmGas(account, await estimateRegisterGasCost(account), {
+          onMoving: () => {
+            step.detail = "moving_gas";
+            api.save();
+          },
+        });
+        step.detail = "registering";
+        api.save();
+        const receipt = await registerCoreUser(account);
+        step.hash = receipt?.transactionHash || "";
         return null;
       });
     },
@@ -205,7 +276,7 @@ export const executors = {
 
   // Wallet -> exchange: a normal NAV send to this account's bridge address.
   deposit: {
-    async run(step) {
+    async run(step, _op, api) {
       const account = requireAccount();
       if (!onMainnet()) throw fail("bridge_unavailable");
       const [paused, registered, exchange] = await bridgeCall(() =>
@@ -215,7 +286,7 @@ export const executors = {
       // Deposits to an unregistered address are not credited.
       if (!registered) throw fail("SenderNotActivated");
       if (step.amount < MIN_BRIDGE_NAV) throw fail("below_minimum");
-      if (step.amount > (Number(balance.value) || 0)) throw fail("insufficient_wallet");
+      if (step.amount > walletNav()) throw fail("insufficient_wallet");
 
       // Same coin-locking rule as the Send screen: never spend outputs
       // committed to an open trade.
@@ -224,10 +295,15 @@ export const executors = {
         ? (await getSendableUtxos(null)).map((u) => u.outputHash)
         : undefined;
 
+      step.address = deriveDepositAddress(account.address).bech32mAddress;
+      step.walletBefore = walletNav();
+      step.creditBaseline = exchange.total.NAV ?? 0;
+      step.sentAt = api.now();
+      api.save();
       let result;
       try {
         result = await getNavioClient().sendTransaction({
-          address: deriveDepositAddress(account.address).bech32mAddress,
+          address: step.address,
           amount: parseUnits(toDecimalString(step.amount, NAV_DECIMALS), NAV_DECIMALS),
           // The bridge credits exactly what arrives; the fee is paid on top.
           subtractFeeFromAmount: false,
@@ -236,7 +312,18 @@ export const executors = {
       } catch (e) {
         throw fail("send_failed", e?.message);
       }
-      return { depositTxId: result?.txId || "", creditBaseline: exchange.total.NAV ?? 0 };
+      step.txId = result?.txId || "";
+      return { depositTxId: step.txId, creditBaseline: step.creditBaseline };
+    },
+    async verify(step) {
+      const { address } = requireAccount();
+      try {
+        const exchange = await readExchangeBalances(address);
+        if (step.creditBaseline != null && exchange.total.NAV >= step.creditBaseline + step.amount * (1 - CREDIT_TOLERANCE)) return "done";
+      } catch (e) {
+        console.error("[intent] deposit verify read failed:", e.message);
+      }
+      return walletSendOutcome(step, Number(step.amount));
     },
   },
 
@@ -283,6 +370,12 @@ export const executors = {
       }
       if (!(size > 0)) throw fail("order_too_small");
 
+      // Chosen and persisted before sending, so an interrupted order can be
+      // found again by this id (verify below).
+      step.cloid = newCloid();
+      step.sentSize = size;
+      step.sentAt = api.now();
+      api.save();
       let result;
       try {
         result = await placeSpotOrder(account, {
@@ -291,6 +384,7 @@ export const executors = {
           price: step.limitPx,
           size: toDecimalString(size, decimals),
           tif: "Ioc",
+          cloid: step.cloid,
         });
       } catch (e) {
         throw fail(mapOrderError(e?.message), e?.message);
@@ -300,6 +394,7 @@ export const executors = {
       const filled = status?.filled;
       if (!filled) throw fail("price_moved");
 
+      step.oid = filled.oid;
       step.filledSz = Number(filled.totalSz);
       step.avgPx = Number(filled.avgPx);
       api.save();
@@ -329,22 +424,64 @@ export const executors = {
         ...(step.side === "sell" ? { proceeds: received, sold: step.filledSz } : {}),
       };
     },
+    async verify(step, op) {
+      if (!step.cloid) return "not_sent";
+      const { address } = requireAccount();
+      try {
+        const res = await fetchOrderStatus(address, step.cloid);
+        if (res?.status === "unknownOid") return "not_sent";
+        const st = res?.order?.status;
+        if (st === "filled") {
+          step.filledSz = step.filledSz ?? Number(res.order.order?.origSz ?? step.sentSize);
+          const gross = step.side === "sell" ? step.filledSz * Number(res.order.order?.limitPx ?? step.limitPx) : step.filledSz;
+          op.ctx.received = op.ctx.received ?? gross * (1 - FALLBACK_FEE_RATE);
+          op.ctx.receivedSymbol = step.side === "sell" ? "USDC" : step.base;
+          if (step.side === "sell") {
+            op.ctx.proceeds = op.ctx.received;
+            op.ctx.sold = step.filledSz;
+          }
+          return "done";
+        }
+        // An IOC that did not fill is gone: safe to send again.
+        if (st === "canceled" || st === "rejected" || st === "marginCanceled") return "not_sent";
+      } catch (e) {
+        console.error("[intent] order verify failed:", e.message);
+      }
+      return "unknown";
+    },
   },
 
   // Exchange -> HyperEVM: the bridge can only burn NAV held as the ERC20.
   toEvm: {
-    async run(step, op) {
+    async run(step, op, api) {
       const account = requireAccount();
       const { available } = await readExchangeBalances(account.address);
       const wanted = step.amount ?? op.ctx.received ?? 0;
       const amount = floorTo(Math.min(wanted, available.NAV ?? 0), NAV_DECIMALS);
       if (amount < MIN_BRIDGE_NAV) throw fail("below_minimum");
+      step.exchangeBefore = available.NAV ?? 0;
+      step.moveAmount = amount;
+      api.save();
       try {
         await spotSendNavToEvm(account, toDecimalString(amount, NAV_DECIMALS));
       } catch (e) {
         throw fail(mapBridgeError(e) === "unknown" ? "exchange_rejected" : mapBridgeError(e), e?.message);
       }
       return { burnAmount: amount };
+    },
+    async verify(step, op) {
+      const { address } = requireAccount();
+      try {
+        const { available } = await readExchangeBalances(address);
+        if (step.exchangeBefore != null && available.NAV <= step.exchangeBefore - step.moveAmount * (1 - CREDIT_TOLERANCE)) {
+          op.ctx.burnAmount = op.ctx.burnAmount ?? step.moveAmount;
+          return "done";
+        }
+        if (step.exchangeBefore != null && available.NAV >= step.exchangeBefore - 1e-9) return "not_sent";
+      } catch (e) {
+        console.error("[intent] toEvm verify failed:", e.message);
+      }
+      return "unknown";
     },
   },
 
@@ -383,10 +520,31 @@ export const executors = {
         if (raw > evmBalance) throw new Error("insufficient_balance");
 
         await ensureEvmGas(account, await estimateBridgeGasCost());
+        step.evmBefore = Number(formatUnits(evmBalance, NAV_DECIMALS));
+        step.burnAmount = amount;
+        step.walletBefore = walletNav();
+        api.save();
         const note = encryptWithdrawalNote(step.destination, account.address);
-        await burnWithNote(account, raw, note);
-        return { payout: { amount, baseline: Number(balance.value) || 0, at: api.now() } };
+        const receipt = await burnWithNote(account, raw, note);
+        step.hash = receipt?.transactionHash || "";
+        return { payout: { amount, baseline: step.walletBefore, at: api.now() } };
       });
+    },
+    async verify(step, op, api) {
+      const { address } = requireAccount();
+      try {
+        const evm = Number(formatUnits(await readNavEvmBalance(address), NAV_DECIMALS));
+        if (step.evmBefore != null && evm <= step.evmBefore - step.burnAmount * (1 - CREDIT_TOLERANCE)) {
+          op.ctx.payout = op.ctx.payout ?? { amount: step.burnAmount, baseline: step.walletBefore ?? walletNav(), at: api.now() };
+          return "done";
+        }
+        if (step.evmBefore != null && evm >= step.evmBefore - 1e-9) return "not_sent";
+      } catch (e) {
+        console.error("[intent] burn verify failed:", e.message);
+      }
+      return "unknown";
     },
   },
 };
+
+for (const [type, def] of Object.entries(executors)) Object.assign(def, STEP_TYPES[type]);

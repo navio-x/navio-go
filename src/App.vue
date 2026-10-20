@@ -13,6 +13,7 @@
     >
       <router-view />
     </div>
+    <ProcessTray v-if="showNavbar" />
     <BottomNavbar v-if="showNavbar" />
     <TxToasts />
     <PwaInstallPrompt v-if="!isExtension" />
@@ -66,6 +67,7 @@ import { hlEnabled } from './stores/network'
 import { syncSystemBarsToPage } from './lib/systemBars'
 import { isExtensionContext } from './lib/extensionSession'
 import BottomNavbar from './components/BottomNavbar.vue'
+import ProcessTray from './components/process/ProcessTray.vue'
 import TxToasts from './components/TxToasts.vue'
 import PwaInstallPrompt from './components/PwaInstallPrompt.vue'
 

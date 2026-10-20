@@ -1,5 +1,30 @@
 # Changelog
 
+## 0.1.3-alpha
+
+### Added
+- **Guided processes.** Swap, "Move NAV to trading", "Bring NAV back" and "Receive into trading" now state what they want, and Navio Go works out the prerequisites (one-time trading-account setup, bridge registration, moving NAV to trading), lists them with cost and time before Review, takes one approval and runs the steps as a process
+- **Activity** page (More → Activity) and a page per operation: timeline with minutes left, approve / retry / stop, technical details (transaction ids, hashes, errors)
+- A process tray above the navigation on every screen and a progress card on Home, Swap and the NAV page, so an operation is never out of sight
+- Operations resume after a restart and are **verified on chain** before any interrupted send is repeated; the user is asked only when the outcome cannot be known
+- A fresh approval is requested when the setup price moves more than 2 % after Review, instead of failing
+- Several operations can run at once; funds reserved by one are kept out of the next plan, only the one-time setup is serialised
+- History shows one row per finished operation with its technical steps underneath; the raw exchange rows it produced are folded in
+- *Trading account* diagnostics sheet under NAV → Advanced (status, addresses, balances)
+- Dev-only scenario harness (`src/dev/scenario.js`, inert in production builds) to exercise every account state without funds
+- UX audit, architecture notes and before/after screenshots under `ux-audit/`
+
+### Changed
+- Swap shows the NAV you own ("Available" = wallet + trading account, with "In wallet · Ready to trade" underneath); Max is what can actually be swapped
+- A wallet that cannot afford the setup or the 10 USDC exchange minimum is told the exact NAV needed and offered *Receive NAV*, instead of "Available: 0"
+- Review lists every step and every payment it approves ("Confirm · approves 2 payments")
+- NAV → Advanced: "Bridge deposit address" is now *Receive into trading from another wallet* and starts the setup process when needed; the manual Activate and faucet buttons are gone. "Manual bridge withdrawal" is *Bring NAV back to any address* and runs as a process
+- Settings: Faucet URL moved under a collapsed Developer group
+- Copy no longer uses HyperCore / HyperEVM / HYPE gas / register outside the technical details
+
+### Removed
+- The per-page operation card (`OperationCard.vue`), replaced by the process components
+
 ## 0.1.2-alpha
 
 ### Added

@@ -1,13 +1,29 @@
-import { confirmationsForAmount } from "@/lib/hyperliquid/bridge/config";
+/**
+ * Turns an intent (swap, move NAV, receive via the bridge) plus the account
+ * snapshot into a plan: the requirements that are unmet, the steps the engine
+ * runs to meet them and then do the thing, and everything the review screen
+ * needs to say. Pure; see requirements.js for the individual checks.
+ */
+import { STAGE_OF } from "./steps";
+import {
+  MIN_BRIDGE_NAV,
+  NAV_FEE_RESERVE,
+  r8,
+  evaluateFunding,
+  evaluateDelivery,
+  evaluateSetup,
+  evaluateBridgeOpen,
+  walletSpendable,
+  exchangeSpendable,
+  setupCostNav,
+  stepsOf,
+  firstBlocked,
+  costOf,
+  minutesOf,
+  unmetIds,
+} from "./requirements";
 
-// The bridge credits/pays out whole deposits and burns of at least 1 NAV.
-export const MIN_BRIDGE_NAV = 1;
-// Kept back in the wallet for the Navio network fee, which is added on top
-// of the amount sent (the SDK doesn't expose a fee estimate up front).
-export const NAV_FEE_RESERVE = 0.01;
-const NAVIO_BLOCK_MINUTES = 2;
-
-const r8 = (n) => Math.round(Number(n) * 1e8) / 1e8;
+export { MIN_BRIDGE_NAV, NAV_FEE_RESERVE };
 
 /**
  * What the user can spend of `symbol` in one action. NAV is one asset to the
@@ -15,127 +31,103 @@ const r8 = (n) => Math.round(Number(n) * 1e8) / 1e8;
  */
 export function spendable(symbol, state) {
   if (symbol !== "NAV") return Number(state.balances?.[symbol] ?? 0);
-  return r8(state.navExchange + Math.max(0, state.navWallet - NAV_FEE_RESERVE));
+  return r8(exchangeSpendable(state) + walletSpendable(state));
 }
 
-/**
- * Steps that make the account able to use the bridge at all: a Hyperliquid
- * account holding HYPE for gas (bought once with NAV through the faucet
- * service) and a one-time registration with the bridge contract.
- */
-function setupSteps(state) {
-  if (state.registered) return { steps: [], walletCost: 0 };
-  const needsFaucet = !state.coreExists || !state.gasReady;
-  if (!needsFaucet) return { steps: [{ type: "register" }], walletCost: 0 };
-  if (!state.faucet) return { blocker: state.coreExists ? "no_gas" : "setup_unavailable" };
+/** NAV the wallet can put towards a swap once the setup has been paid for. */
+export function swappableNav(state) {
+  const setup = setupCostNav(state);
+  return r8(exchangeSpendable(state) + Math.max(0, walletSpendable(state) - setup));
+}
+
+function basePlan(kind, fields) {
   return {
-    steps: [
-      { type: "faucet", amountNav: state.faucet.amountNav },
-      { type: "waitAccount" },
-      { type: "register" },
-    ],
-    walletCost: Number(state.faucet.amountNav),
-    setup: state.faucet,
+    kind,
+    steps: [],
+    notes: [],
+    requirements: [],
+    unmet: [],
+    minutes: 0,
+    leavesWallet: 0, // NAV that moves from the private wallet to the public exchange
+    setup: null, // the faucet quote when the one-time setup is part of this plan
+    setupCost: 0,
+    blocker: null, // code
+    blocked: null, // the requirement that blocked, with its numbers
+    ...fields,
   };
 }
 
-/** Steps that bring `amount` more NAV from the wallet onto the exchange, until `target` is available there. */
-function fundingSteps(amount, target, state) {
-  if (state.bridgeUnavailable) return { blocker: "bridge_unavailable" };
-  if (state.paused) return { blocker: "bridge_paused" };
-  const deposit = r8(Math.max(amount, MIN_BRIDGE_NAV));
-  const setup = setupSteps(state);
-  if (setup.blocker) return setup;
-
-  const walletNeeded = r8(deposit + setup.walletCost + NAV_FEE_RESERVE);
-  if (walletNeeded > state.navWallet + 1e-9) return { blocker: "insufficient_balance", walletNeeded };
-
-  return {
-    steps: [...setup.steps, { type: "deposit", amount: deposit }, { type: "waitCredit", need: r8(target) }],
-    deposit,
-    setup: setup.setup ?? null,
-    minutes: confirmationsForAmount(deposit) * NAVIO_BLOCK_MINUTES,
-  };
-}
-
-/**
- * Steps that take NAV off the exchange into the wallet. `amount` null means
- * "whatever the preceding order bought". Returns { keep: reason } when the
- * NAV has to stay on the exchange instead — never a dead end, just a note.
- */
-function deliverySteps({ amount, minAmount, state, destination }) {
-  if (!destination) return { keep: "no_destination" };
-  if (state.bridgeUnavailable) return { keep: "bridge_unavailable" };
-  if (state.paused) return { keep: "bridge_paused" };
-  if (minAmount < MIN_BRIDGE_NAV) return { keep: "below_minimum" };
-  if (!state.gasReady) return { keep: "no_gas" };
-
-  const steps = [];
-  if (!state.registered) steps.push({ type: "register" });
-  steps.push({ type: "toEvm", amount }, { type: "waitEvm" }, { type: "burn", destination });
-  return { steps };
+function finish(plan, reqs) {
+  plan.requirements = reqs;
+  plan.unmet = unmetIds(reqs);
+  const blocked = firstBlocked(reqs);
+  if (blocked) {
+    plan.blocker = blocked.reason;
+    plan.blocked = blocked;
+    return plan;
+  }
+  const setupReq = reqs.find((r) => r.id === "tradingAccount" && !r.satisfied);
+  plan.setup = setupReq?.setup ?? null;
+  plan.setupCost = setupReq?.costNav ?? 0;
+  plan.minutes = minutesOf(reqs);
+  return plan;
 }
 
 /**
  * Plans a swap from an already-computed quote (see quote.js). The result's
  * `steps` are what the engine runs; everything else is for the review
- * screen. `state` is the account snapshot from executors.js's readState().
+ * screen. `state` is the account snapshot from executors.js's readAccountState().
  */
 export function planSwap({ from, to, quote, state, destination, deliverToWallet = true }) {
-  const plan = {
-    kind: "swap",
+  const plan = basePlan("swap", {
     from,
     to,
     send: quote.send,
     estReceive: quote.estReceive,
     minReceive: quote.minReceive,
-    steps: [],
-    notes: [],
-    minutes: 0,
-    leavesWallet: 0, // NAV that moves from the private wallet to the public exchange
-    setup: null,
-    blocker: null,
-  };
+    intent: { from, to, amount: quote.send, deliverToWallet },
+  });
+  const reqs = [];
 
   if (from === "NAV") {
     const size = quote.legs[0].size;
-    const fromExchange = Math.min(size, state.navExchange);
+    const fromExchange = Math.min(size, exchangeSpendable(state));
     const need = r8(size - fromExchange);
     if (need > 0) {
-      const funding = fundingSteps(need, size, state);
-      if (funding.blocker) return { ...plan, blocker: funding.blocker };
-      plan.steps.push(...funding.steps);
-      plan.leavesWallet = funding.deposit;
-      plan.setup = funding.setup;
-      plan.minutes = funding.minutes;
-      if (funding.deposit > need) plan.notes.push("deposit_rounded_up");
+      const funding = evaluateFunding({ amount: need, target: size, state });
+      reqs.push(...funding);
+      if (firstBlocked(funding)) return finish(plan, reqs);
+      const deposit = funding.find((r) => r.id === "tradingBalance");
+      plan.leavesWallet = deposit.deposit;
+      if (deposit.roundedUp) plan.notes.push("deposit_rounded_up");
     }
   } else if (quote.send > spendable(from, state) + 1e-9) {
-    return { ...plan, blocker: "insufficient_balance" };
+    reqs.push({ id: "tradingBalance", satisfied: false, resolution: "blocked", reason: "insufficient_balance", steps: [], have: spendable(from, state), symbol: from });
+    return finish(plan, reqs);
   }
 
-  quote.legs.forEach((leg, i) => {
-    plan.steps.push({
-      type: "order",
-      pair: leg.pair,
-      base: leg.base,
-      side: leg.side,
-      limitPx: leg.limitPx,
-      // A buy that follows a sell spends what the sell actually paid.
-      size: leg.side === "buy" && i > 0 ? null : leg.size,
-      minOut: leg.minOut,
-    });
-  });
+  const orders = quote.legs.map((leg, i) => ({
+    type: "order",
+    pair: leg.pair,
+    base: leg.base,
+    side: leg.side,
+    limitPx: leg.limitPx,
+    // A buy that follows a sell spends what the sell actually paid.
+    size: leg.side === "buy" && i > 0 ? null : leg.size,
+    minOut: leg.minOut,
+  }));
 
   if (to === "NAV" && deliverToWallet) {
-    const delivery = deliverySteps({ amount: null, minAmount: quote.minReceive, state, destination });
-    if (delivery.keep) plan.notes.push(`stays_on_exchange:${delivery.keep}`);
+    const delivery = evaluateDelivery({ amount: null, minAmount: quote.minReceive, state, destination });
+    if (delivery.resolution === "blocked") plan.notes.push(`stays_on_exchange:${delivery.reason}`);
     else {
-      plan.steps.push(...delivery.steps);
+      reqs.push({ ...delivery, afterOrders: true });
       plan.deliversToWallet = true;
     }
   }
 
+  finish(plan, reqs);
+  plan.steps = [...stepsOf(reqs.filter((r) => !r.afterOrders)), ...orders, ...stepsOf(reqs.filter((r) => r.afterOrders))];
   return plan;
 }
 
@@ -145,42 +137,67 @@ export function planSwap({ from, to, quote, state, destination, deliverToWallet 
  */
 export function planMove({ direction, amount, state, destination }) {
   const value = r8(amount);
-  const plan = { kind: direction, from: "NAV", to: "NAV", send: value, steps: [], notes: [], minutes: 0, setup: null, blocker: null, leavesWallet: 0 };
+  const plan = basePlan(direction, { from: "NAV", to: "NAV", send: value, intent: { amount: value, destination } });
   if (!(value > 0)) return { ...plan, blocker: "invalid_amount" };
   if (value < MIN_BRIDGE_NAV) return { ...plan, blocker: "below_minimum" };
 
   if (direction === "toExchange") {
-    const funding = fundingSteps(value, null, state);
-    if (funding.blocker) return { ...plan, blocker: funding.blocker };
-    // Explicit moves wait for the deposit itself, not for a sell size.
-    const steps = funding.steps.map((s) => (s.type === "waitCredit" ? { type: "waitCredit", need: null, added: value } : s));
-    return { ...plan, steps, minutes: funding.minutes, setup: funding.setup, leavesWallet: value };
+    const funding = evaluateFunding({ amount: value, target: null, state });
+    finish(plan, funding);
+    if (plan.blocker) return plan;
+    plan.steps = stepsOf(funding);
+    plan.leavesWallet = value;
+    return plan;
   }
 
-  const onExchange = r8(state.navExchange + state.navEvm);
-  if (value > onExchange + 1e-9) return { ...plan, blocker: "insufficient_balance" };
-  const fromEvm = Math.min(value, state.navEvm);
+  const onExchange = r8(exchangeSpendable(state) + (state.navEvm || 0));
+  if (value > onExchange + 1e-9) return { ...plan, blocker: "insufficient_balance", blocked: { id: "tradingBalance", reason: "insufficient_balance", have: onExchange } };
+  const fromEvm = Math.min(value, state.navEvm || 0);
   const toMove = r8(value - fromEvm);
-  const delivery = deliverySteps({ amount: toMove, minAmount: value, state, destination });
-  if (delivery.keep) return { ...plan, blocker: delivery.keep };
-  const steps = delivery.steps
+  const delivery = evaluateDelivery({ amount: toMove, minAmount: value, state, destination });
+  if (delivery.resolution === "blocked") return { ...plan, blocker: delivery.reason, blocked: delivery };
+  finish(plan, [delivery]);
+  plan.steps = delivery.steps
     .filter((s) => s.type !== "toEvm" || toMove > 0)
     .map((s) => (s.type === "burn" ? { ...s, amount: value } : s));
-  return { ...plan, steps, deliversToWallet: true };
+  plan.deliversToWallet = true;
+  return plan;
 }
 
-/** The few stages shown to the user, each covering one or more engine steps. */
-const STAGE_OF = {
-  faucet: "setup",
-  waitAccount: "setup",
-  register: "setup",
-  deposit: "prepare",
-  waitCredit: "prepare",
-  order: "swap",
-  toEvm: "deliver",
-  waitEvm: "deliver",
-  burn: "deliver",
-};
+/**
+ * Plans "receive NAV into trading from another wallet": nothing moves, the
+ * account just has to be ready for the bridge to credit deposits.
+ */
+export function planReceiveViaBridge({ state }) {
+  const plan = basePlan("receiveViaBridge", { from: "NAV", to: "NAV", send: 0, intent: {} });
+  const reqs = [evaluateBridgeOpen(state)];
+  if (!firstBlocked(reqs)) reqs.push(...evaluateSetup(state));
+  if (!firstBlocked(reqs)) {
+    const cost = costOf(reqs);
+    if (cost + NAV_FEE_RESERVE > (state.navWallet || 0) + 1e-9) {
+      reqs.push({ id: "walletFunds", satisfied: false, resolution: "blocked", reason: "insufficient_balance", steps: [], needed: r8(cost + NAV_FEE_RESERVE), have: r8(state.navWallet || 0), shortfall: r8(cost + NAV_FEE_RESERVE - (state.navWallet || 0)), setupCost: cost, deposit: 0 });
+    }
+  }
+  finish(plan, reqs);
+  if (!plan.blocker) plan.steps = stepsOf(reqs);
+  plan.leavesWallet = plan.setupCost;
+  return plan;
+}
+
+/** One entry point for every intent: { kind: 'swap' | 'toExchange' | 'toWallet' | 'receiveViaBridge', ... }. */
+export function planIntent(intent, state) {
+  switch (intent.kind) {
+    case "swap":
+      return planSwap({ ...intent, state });
+    case "toExchange":
+    case "toWallet":
+      return planMove({ direction: intent.kind, amount: intent.amount, state, destination: intent.destination });
+    case "receiveViaBridge":
+      return planReceiveViaBridge({ state });
+    default:
+      throw new Error(`unknown intent ${intent.kind}`);
+  }
+}
 
 /** Collapses engine steps into ordered user-facing stages: [{ id, status }]. */
 export function stagesOf(steps) {

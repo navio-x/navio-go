@@ -171,6 +171,8 @@ import { fetchUserFills, fetchUserLedger } from "@/lib/hyperliquid/api";
 import { getSpotMeta } from "@/lib/hyperliquid/meta";
 import { normalizeHlActivity } from "@/lib/hyperliquid/history";
 import { readSwapLog } from "@/lib/evm/swapLog";
+import { finishedOperations } from "@/stores/operations";
+import { titleOf, technicalDetails } from "@/lib/intent/present";
 import { getNetworkConfig } from "@/lib/evm/networkRegistry";
 import { formatAmount } from "@/lib/displayFormat";
 import TokenIcon from "@/components/TokenIcon.vue";
@@ -179,6 +181,7 @@ const { t, te, locale } = useI18n();
 
 // Each network's mark is its own coin's icon.
 const NETWORKS = {
+  op: { logo: "wnav-light.svg" },
   navio: { logo: "wnav-light.svg" },
   hl: { logo: "hype.jpg" },
   bsc: { logo: "wbnb.webp" },
@@ -323,6 +326,57 @@ const hlRows = computed(() =>
   })
 );
 
+// --- Operations (swaps and NAV moves this app ran) — one row each; the
+// chain actions behind them are under the row's details, and the raw
+// exchange rows they produced are folded into them (see foldedHlIds).
+const opRows = computed(() =>
+  finishedOperations.value.map((op) => {
+    const { title, subtitle } = titleOf(op, t);
+    const done = op.status === "done";
+    const received = done && op.ctx.received != null ? op.ctx.received : null;
+    const sent = done && op.ctx.sold != null ? op.ctx.sold : op.send;
+    let amount = "";
+    let secondary = "";
+    if (op.kind === "swap") {
+      amount = received != null ? `+${formatAmount(received)} ${op.ctx.receivedSymbol ?? op.to}` : `≈ ${formatAmount(op.estReceive)} ${op.to}`;
+      secondary = `−${formatAmount(sent, 8)} ${op.from}`;
+    } else {
+      amount = `${formatAmount(op.send, 8)} NAV`;
+    }
+    const tech = technicalDetails(op, t).map((row) => ({ label: row.label, value: row.value, mono: row.mono }));
+    return {
+      id: `op-${op.id}`,
+      source: "op",
+      time: op.finishedAt ?? op.updatedAt,
+      icon: op.kind === "swap" ? Repeat : op.kind === "toWallet" ? ArrowDownLeft : ArrowUpRight,
+      tone: done ? TONES.swap : TONES.neutral,
+      title,
+      subtitle: joined(timeOf(op.finishedAt ?? op.updatedAt), op.status === "cancelled" ? t("history.stopped") : subtitle),
+      pending: false,
+      amount,
+      amountClass: done && op.kind === "swap" ? POSITIVE : NEUTRAL,
+      secondary,
+      hash: null,
+      details: [{ label: t("history.network"), value: "Navio · Hyperliquid" }, { label: t("history.technicalSteps"), value: "" }, ...tech],
+    };
+  })
+);
+
+// Raw exchange rows that an operation already accounts for: its own fills
+// (by order id) and the bridge/gas transfers in its time window.
+const foldedHlIds = computed(() => {
+  const ids = new Set();
+  for (const op of finishedOperations.value) {
+    const start = op.createdAt - 60_000;
+    const end = (op.finishedAt ?? op.updatedAt) + 60 * 60_000;
+    for (const step of op.steps) if (step.oid != null) ids.add(`hl-fill-${step.oid}`);
+    for (const item of hlActivity.value) {
+      if ((item.via === "bridge" || item.via === "gas") && item.time >= start && item.time <= end) ids.add(item.id);
+    }
+  }
+  return ids;
+});
+
 // --- BNB Chain (swaps made in this app) ---
 const bscRows = computed(() =>
   bscSwaps.value.map((swap) => {
@@ -352,7 +406,11 @@ const hasBsc = computed(() => bscRows.value.length > 0);
 // --- One list ---
 const shown = computed(() => {
   const sources = { navio: navioRows.value, hl: hlRows.value, bsc: bscRows.value };
-  const rows = filter.value === "all" ? Object.values(sources).flat() : sources[filter.value];
+  // "All" tells the story in the user's terms: one row per operation, with
+  // the exchange rows it produced folded in. The Hyperliquid filter is raw.
+  const rows = filter.value === "all"
+    ? [...opRows.value, ...navioRows.value, ...hlRows.value.filter((r) => !foldedHlIds.value.has(r.id)), ...bscRows.value]
+    : sources[filter.value];
   // Rows without a known time sink to the bottom.
   return [...rows].sort((a, b) => (b.time ?? 0) - (a.time ?? 0));
 });

@@ -5,6 +5,7 @@ import { HL_TOKENS } from "@/lib/hyperliquid/config";
 import { fetchSpotClearinghouseState, fetchSpotMetaAndAssetCtxs } from "@/lib/hyperliquid/api";
 import { getSpotMeta, resolveTokens } from "@/lib/hyperliquid/meta";
 import { safeParseUnits } from "@/lib/hyperliquid/decimal";
+import { scenarioEnabled, scenarioBalanceRows } from "@/dev/scenario";
 
 function zeroRow(symbol) {
   return { symbol, total: "0", hold: "0", available: "0", priceUsd: symbol === "USDC" ? 1 : null, valueUsd: null };
@@ -50,6 +51,12 @@ export function useHyperliquidBalances(address) {
     inFlight = true;
     loading.value = true;
     try {
+      if (scenarioEnabled()) {
+        balances.value = scenarioBalanceRows(HL_TOKENS.map((t) => t.symbol));
+        error.value = null;
+        fromCache.value = false;
+        return;
+      }
       const meta = await getSpotMeta();
       const resolved = resolveTokens(meta);
       const [state, [ctxMeta, ctxs]] = await Promise.all([

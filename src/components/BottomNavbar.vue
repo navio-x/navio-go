@@ -94,6 +94,10 @@
         >
           {{ $t(item.labelKey) }}
         </span>
+        <span
+          v-if="item.name === 'activity' && activeOperations.length"
+          class="ml-auto min-w-[20px] h-5 px-1.5 rounded-full flex items-center justify-center text-[11px] font-bold tabular-nums bg-blue-600 text-white"
+        >{{ activeOperations.length }}</span>
       </button>
     </div>
   </div>
@@ -102,11 +106,12 @@
 <script setup>
 import { ref, computed, watch, onMounted, onUnmounted, nextTick } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { Wallet, ArrowDownLeft, ArrowUpRight, Layers, History, Settings, Briefcase, Store, Repeat, ArrowLeftRight, MessageCircle, MoreHorizontal, CandlestickChart } from 'lucide-vue-next'
+import { Wallet, ArrowDownLeft, ArrowUpRight, Layers, History, Settings, Briefcase, Store, Repeat, ArrowLeftRight, MessageCircle, MoreHorizontal, CandlestickChart, Activity } from 'lucide-vue-next'
 import { Capacitor } from '@capacitor/core'
 import { settings } from '@/stores/settings'
 import { hlEnabled } from '@/stores/network'
 import { pendingTxCount } from '@/stores/navio'
+import { activeOperations } from '@/stores/operations'
 
 const isIosNative = Capacitor.getPlatform() === 'ios'
 const isIosPwa = /iphone|ipad|ipod/i.test(navigator.userAgent) && !window.MSStream && window.navigator.standalone === true
@@ -131,6 +136,7 @@ const fixedNavItems = computed(() => [
 ])
 
 const overflowManifest = [
+  { name: 'activity', path: '/activity',      icon: Activity,  labelKey: 'process.activityTitle' },
   { name: 'assets',   path: '/wallet/assets', icon: Layers,    labelKey: 'assets.title' },
   { name: 'payroll',  path: '/payroll',       icon: Briefcase, labelKey: 'payroll.title',  enabled: () => settings.employerMode },
   { name: 'pos',      path: '/pos',           icon: Store,     labelKey: 'pos.title',      enabled: () => settings.merchantMode },

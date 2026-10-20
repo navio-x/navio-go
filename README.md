@@ -35,7 +35,8 @@ No account, no sign-up, no backend and no telemetry. Navio Go talks directly to 
 Activity on Hyperliquid and BNB Smart Chain is public, unlike native NAV transfers. These features can be switched off in Settings; while they are off, the wallet makes no requests to either network.
 
 - **Hyperliquid spot trading.** Limit and market orders on USDC pairs (NAV, BTC, ETH, SOL, HYPE, ZEC, AVAX), with a live order book, candlestick chart and recent trades.
-- **Navio–Hyperliquid bridge.** Deposit NAV to receive wrapped NAV on Hyperliquid, and withdraw back to a Navio address. The bridge is custodial and **mainnet only**; on other networks bridge and NAV trading are turned off.
+- **Swap with guided setup.** Tell Navio Go what to swap; it works out what the trading account still needs (one-time setup, moving NAV to trading), lists it with cost and time, takes one approval and runs the steps as a process you can leave and come back to — visible on every screen and under More → Activity, resumed and verified after a restart.
+- **Navio–Hyperliquid bridge.** NAV moves between the private wallet and the trading account through a custodial bridge, **mainnet only**; on other networks bridge and NAV trading are turned off. Receiving into trading from another wallet and bringing NAV back to any address are under the NAV page's Advanced section.
 - **BNB Smart Chain account** derived from the same recovery phrase, with BNB and custom token balances.
 - **On-chain token swaps** on BNB Smart Chain through PancakeSwap, with a slippage limit and a price-impact check.
 - **Peer-to-peer swaps on Navio** *(experimental).* Request quotes anonymously or make a market with standing orders. Swaps settle atomically on-chain.

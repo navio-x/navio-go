@@ -1,4 +1,5 @@
 import { ref, computed } from "vue";
+import { scenarioEnabled, readScenario } from "@/dev/scenario";
 import blsctWasmUrl from "@nav-io/navio-blsct/wasm/blsct.wasm?url";
 import blsctJsUrl from "@nav-io/navio-blsct/wasm/blsct.js?url";
 import blsctModuleUrl from "@nav-io/navio-blsct/wasm/blsct.mjs?url";
@@ -264,6 +265,8 @@ async function updateWalletInfo() {
 
   _navioClient.value.getBalanceNav()
   .then((raw) => {
+    // DEV harness: a simulated wallet balance (see src/dev/scenario.js).
+    if (scenarioEnabled()) raw = readScenario().navWallet;
     const nav = Number(raw);
     if (!Number.isFinite(nav) || nav === 0) {
       balance.value = "0";

@@ -1,5 +1,6 @@
 import { settings } from "@/stores/settings";
 import { getNavioClient } from "@/stores/navio";
+import { scenarioEnabled, readScenario } from "@/dev/scenario";
 
 function baseUrl() {
   return (settings.faucetUrl || "").trim().replace(/\/+$/, "");
@@ -11,6 +12,15 @@ function baseUrl() {
  * fırlatılır (bkz. bridge.faucet.errors.*).
  */
 export async function fetchFaucetQuote(evmAddress) {
+  if (scenarioEnabled()) {
+    const f = readScenario().faucet;
+    if (!f) throw new Error("unavailable");
+    return {
+      quoteId: 0, navAddress: "nav1simulatedfaucetaddress", memo: `hl1:${evmAddress.toLowerCase()}`,
+      amountNav: f.amountNav, amountSats: String(Math.round(Number(f.amountNav) * 1e8)),
+      expiresAt: Date.now() + 15 * 60_000, payout: { usdc: f.usdc, hype: f.hype },
+    };
+  }
   if (!baseUrl()) throw new Error("no_url");
   let res;
   let body;

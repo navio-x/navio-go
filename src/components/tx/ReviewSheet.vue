@@ -75,6 +75,25 @@
         <p>{{ notice.text }}</p>
       </div>
 
+      <!-- What will happen, when the operation has more than one step -->
+      <div v-if="steps.length" class="rounded-2xl border border-gray-200 dark:border-gh-700 p-4 space-y-3">
+        <div v-if="stepsTitle">
+          <p class="text-sm font-semibold text-gray-900 dark:text-white">{{ stepsTitle }}</p>
+          <p v-if="stepsIntro" class="mt-0.5 text-xs text-gray-500 dark:text-gray-400 leading-snug">{{ stepsIntro }}</p>
+        </div>
+        <ol class="space-y-2">
+          <li v-for="(step, i) in steps" :key="i" class="flex items-start gap-3 text-sm">
+            <span class="shrink-0 w-5 h-5 rounded-full bg-gray-100 dark:bg-gh-700 text-[11px] font-semibold text-gray-600 dark:text-gray-300 flex items-center justify-center tabular-nums">{{ i + 1 }}</span>
+            <span class="flex-1 min-w-0 text-gray-800 dark:text-gray-100">{{ step.label }}</span>
+            <span v-if="step.meta" class="shrink-0 text-xs text-gray-500 dark:text-gray-400 tabular-nums text-right">{{ step.meta }}</span>
+          </li>
+        </ol>
+        <div v-if="stepsTotal" class="pt-2 border-t border-gray-100 dark:border-gh-700 flex items-baseline justify-between gap-3 text-sm">
+          <span class="text-gray-500 dark:text-gray-400">{{ stepsTotal.label }}</span>
+          <span class="font-semibold text-gray-900 dark:text-white tabular-nums text-right">{{ stepsTotal.value }}<span v-if="stepsTotal.note" class="block text-[11px] font-normal text-gray-400">{{ stepsTotal.note }}</span></span>
+        </div>
+      </div>
+
       <!-- How it is done: secondary -->
       <div v-if="details.length">
         <button
@@ -135,6 +154,12 @@ const props = defineProps({
   // Plain lines, shown as a numbered route behind "Details".
   details: { type: Array, default: () => [] },
   detailsLabel: { type: String, default: '' },
+  // [{ label, meta }] — the steps the operation will run, when more than one
+  steps: { type: Array, default: () => [] },
+  stepsTitle: { type: String, default: '' },
+  stepsIntro: { type: String, default: '' },
+  // { label, value, note }
+  stepsTotal: { type: Object, default: null },
   confirmLabel: { type: String, required: true },
   confirmDisabled: { type: Boolean, default: false },
   busy: { type: Boolean, default: false },

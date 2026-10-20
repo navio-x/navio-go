@@ -79,8 +79,8 @@
         <CircularProgress :value="percent" :label="$t('wallet.synced')" :size="160" :stroke-width="3" />
       </div>
 
-      <!-- Anything in progress, or just finished -->
-      <OperationCard v-for="op in operations" :key="op.id" :op="op" />
+      <!-- Anything in progress, or waiting for the user -->
+      <ProcessCard v-for="op in activeOperations" :key="op.id" :op="op" />
 
       <!-- Assets | Markets | NFTs. The asset rows are the unified ones: NAV
            is a single row, wherever it is held. The wallet's private tokens
@@ -221,14 +221,14 @@
   import { percent, walletHeight, chainTip, getNavioClient, logoutWallet, tokenBalances, nftBalances, refreshAssetBalances } from "@/stores/navio";
   import { navPrice, startPricePolling, stopPricePolling } from "@/stores/navPrice";
   import { evmAddress } from "@/stores/evm";
-  import { operations } from "@/stores/operations";
+  import { activeOperations } from "@/stores/operations";
   import { deriveEvmAddress } from "@/composables/useEvmAccount";
   import { usePortfolio } from "@/composables/usePortfolio";
   import { formatAmount, formatFiatFromUsd } from "@/lib/displayFormat";
   import CircularProgress from '@/components/CircularProgress.vue'
   import HlAssetsMarkets from '@/components/HlAssetsMarkets.vue'
   import TokenIcon from '@/components/TokenIcon.vue'
-  import OperationCard from '@/components/tx/OperationCard.vue'
+  import ProcessCard from '@/components/process/ProcessCard.vue'
   import { ArrowLeftRight, ChevronRight, Coins, Image, Loader2, Plus } from 'lucide-vue-next'
 
   const network = sessionStorage.getItem('network') ?? 'mainnet'

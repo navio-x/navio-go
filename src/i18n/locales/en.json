@@ -142,10 +142,13 @@
     "unlockDurationDesc": "Remembers the password of an encrypted wallet on this device, counted from the last time you typed it. During that time anyone with access to this device can open the wallet.",
     "autoOpenLastWallet": "Auto-open last wallet",
     "autoOpenLastWalletDesc": "Skip the wallet list on startup and open the wallet you used last.",
-    "logout": "Log out"
+    "logout": "Log out",
+    "developer": "Developer",
+    "developerDesc": "Settings for people running their own services."
   },
   "nav": {
-    "more": "More"
+    "more": "More",
+    "activity": "Activity"
   },
   "pos": {
     "title": "POS",
@@ -852,7 +855,7 @@
   },
   "bridge": {
     "deposit": {
-      "title": "Deposit NAV",
+      "title": "Receive into trading",
       "activateTitle": "Activate your HyperCore account",
       "activateDesc": "Before you can deposit, your address needs to be registered with the bridge once. This costs a small amount of HYPE gas — HYPE on your HyperCore account is moved over automatically.",
       "activateButton": "Activate",
@@ -869,10 +872,19 @@
       "sendSuccess": "Sent — this deposit will be credited after the confirmations shown below.",
       "sendFailed": "Something went wrong sending this. Please try again.",
       "txId": "Transaction ID",
-      "movingHype": "Moving HYPE to HyperEVM for gas…"
+      "movingHype": "Moving HYPE to HyperEVM for gas…",
+      "intro": "Send NAV from any Navio wallet to this address and it arrives in your trading account.",
+      "notReadyTitle": "One-time setup needed first",
+      "notReadyBody": "Your trading account needs a one-time setup before the bridge can credit deposits. It costs {amount} NAV from this wallet and takes a few minutes. After that, this address works forever.",
+      "notReadyNoFunds": "The one-time setup costs {amount} NAV and this wallet has {have} NAV. Receive NAV into the wallet first, or swap from a wallet that already holds NAV.",
+      "setupButton": "Set up trading account",
+      "settingUp": "Setting up your trading account…",
+      "readyBadge": "Ready to receive",
+      "notReadyBodyFree": "Your trading account needs a one-time registration before the bridge can credit deposits. It is automatic, costs nothing from your wallet and takes about a minute. After that, this address works forever.",
+      "setupButtonFree": "Register now"
     },
     "withdraw": {
-      "title": "Withdraw NAV",
+      "title": "Bring NAV back",
       "onEvm": "On HyperEVM",
       "onCore": "On HyperCore",
       "moveToEvm": "Move to HyperEVM",
@@ -888,7 +900,11 @@
       "submit": "Withdraw",
       "encrypting": "Encrypting destination…",
       "burning": "Submitting…",
-      "done": "Withdrawal submitted — funds typically arrive on Navio within a few minutes."
+      "done": "Withdrawal submitted — funds typically arrive on Navio within a few minutes.",
+      "intro": "Take NAV out of your trading account to any Navio address.",
+      "available": "Available in trading",
+      "ownWallet": "Use my wallet address",
+      "notReady": "Your trading account isn't registered yet. Nothing to withdraw."
     },
     "errors": {
       "wallet_locked": "Wallet is locked — unlock it to continue.",
@@ -1336,7 +1352,47 @@
       "setup_unavailable": "The one-time account setup isn't available right now. Try again later.",
       "wallet_locked": "Wallet is locked — unlock it to continue."
     },
-    "walletHint": "Another {amount} NAV is in your wallet. Enter more than the available amount and Swap moves it to the exchange first (takes a few minutes)."
+    "walletHint": "Another {amount} NAV is in your wallet. Enter more than the available amount and Swap moves it to the exchange first (takes a few minutes).",
+    "available": "Available",
+    "where": "In wallet {wallet} · Ready to trade {exchange}",
+    "whereMoving": " · On the way {moving}",
+    "setupNeeded": {
+      "title": "One-time setup needed",
+      "body": "Your trading account hasn't been set up yet. Navio Go does it for you as part of this swap:",
+      "faucet": "Set up trading account",
+      "faucetCost": "{amount} NAV, once",
+      "register": "Register with the bridge",
+      "registerCost": "automatic",
+      "deposit": "Move {amount} NAV to trading",
+      "depositTime": "about {minutes} min",
+      "total": "Total from your wallet",
+      "howItWorks": "How it works",
+      "inProgress": "Your trading account is being set up right now — this swap can start as soon as that finishes."
+    },
+    "moveNeeded": {
+      "title": "NAV will be moved to trading first",
+      "body": "{amount} NAV goes from your private wallet to your trading account (about {minutes} min), then the swap runs on its own."
+    },
+    "blocked": {
+      "insufficient": "You need about {needed} NAV in your wallet for this swap. You have {have} NAV.",
+      "breakdown": "{deposit} NAV to trade + {setup} NAV one-time setup + network fee",
+      "breakdownNoSetup": "{deposit} NAV to trade + network fee",
+      "belowMinimum": "Trades must be worth at least 10 USDC — about {nav} NAV at the current price.",
+      "belowMinimumNoPrice": "Trades must be worth at least 10 USDC.",
+      "receive": "Receive NAV",
+      "otherAsset": "Not enough {symbol} in your trading account. Available: {available}.",
+      "setupBusy": "Your trading account is being set up. This swap can start once that finishes."
+    },
+    "review": {
+      "setupTitle": "One-time setup required",
+      "setupBody": "Your trading account has not been set up yet. Navio Go sets it up automatically before executing this swap.",
+      "willDo": "Navio Go will:",
+      "totalLeaving": "Total leaving your wallet",
+      "plusFees": "+ network fees",
+      "confirmPayments": "Confirm · approves {n} payments",
+      "confirmOne": "Confirm swap",
+      "setupDetails": "Setup details"
+    }
   },
   "ops": {
     "title": {
@@ -1414,8 +1470,8 @@
     "openNav": "Open NAV",
     "moveDesc": "Swap moves NAV for you when needed. Move it yourself only if you want it in a specific place.",
     "move": {
-      "toExchange": "Move to exchange",
-      "toWallet": "Bring back to wallet",
+      "toExchange": "Move NAV to trading",
+      "toWallet": "Bring NAV back to wallet",
       "from": "From",
       "to": "To",
       "walletAddress": "Your wallet address",
@@ -1424,9 +1480,9 @@
     "where": {
       "wallet": "In your wallet",
       "walletHint": "Private. Ready to send.",
-      "exchange": "On the exchange",
-      "exchangeHint": "Hyperliquid. Public. Ready to swap.",
-      "exchangeHintOrders": "Hyperliquid. Public. {amount} in open orders.",
+      "exchange": "Ready to trade",
+      "exchangeHint": "In your trading account (Hyperliquid). Public.",
+      "exchangeHintOrders": "In your trading account. {amount} in open orders.",
       "moving": "On the way",
       "movingHint": "Moving between the two.",
       "staked": "Staked",
@@ -1435,14 +1491,35 @@
     "links": {
       "trade": "Order book",
       "tradeHint": "Limit orders and the live NAV/USDC market",
-      "hlTransfer": "Hyperliquid transfer",
+      "hlTransfer": "Transfer within Hyperliquid",
       "hlTransferHint": "Send to or receive from another Hyperliquid account",
-      "depositAddress": "Bridge deposit address",
-      "depositAddressHint": "Fund the exchange from another Navio wallet",
-      "manualWithdraw": "Manual bridge withdrawal",
-      "manualWithdrawHint": "Withdraw to any Navio address, step by step"
+      "depositAddress": "Receive into trading from another wallet",
+      "depositAddressHint": "Your trading account's deposit address",
+      "manualWithdraw": "Bring NAV back to any address",
+      "manualWithdrawHint": "Withdraw from trading to any Navio address",
+      "diagnostics": "Trading account",
+      "diagnosticsHint": "Status, addresses and balances"
     },
-    "explain": "NAV on the exchange is NAV held for you by the Navio–Hyperliquid bridge, one to one, as a token called Wrapped Navio. The bridge is custodial, and unlike NAV in your wallet, balances and trades on Hyperliquid are public."
+    "explain": "NAV on the exchange is NAV held for you by the Navio–Hyperliquid bridge, one to one, as a token called Wrapped Navio. The bridge is custodial, and unlike NAV in your wallet, balances and trades on Hyperliquid are public.",
+    "diag": {
+      "title": "Trading account",
+      "account": "Hyperliquid account",
+      "registered": "Registered with the bridge",
+      "gas": "Network fee balance (HYPE)",
+      "evmAddress": "Account address",
+      "depositAddress": "Bridge deposit address",
+      "depositAddressNone": "Available once the account is registered",
+      "navCore": "NAV in trading",
+      "navEvm": "NAV on HyperEVM (withdrawal stage)",
+      "usdc": "USDC",
+      "yes": "Yes",
+      "no": "Not yet",
+      "ready": "Ready",
+      "notReady": "Needs one-time setup",
+      "setup": "Set up now",
+      "setupCost": "One-time setup costs {amount} NAV",
+      "refresh": "Refresh"
+    }
   },
   "staking": {
     "title": "Staking",
@@ -1719,11 +1796,115 @@
     "txHash": "Transaction",
     "copyHash": "Copy ID",
     "emptyFilter": "Nothing on this network yet.",
-    "bscNote": "BNB Chain shows swaps made in this app on this device. Other activity is on the explorer."
+    "bscNote": "BNB Chain shows swaps made in this app on this device. Other activity is on the explorer.",
+    "operation": "Operation",
+    "technicalSteps": "Technical steps",
+    "stopped": "Stopped",
+    "inProgress": "In progress"
   },
   "toast": {
     "received": "NAV received",
     "sent": "NAV sent",
     "reward": "Staking reward"
+  },
+  "process": {
+    "activityTitle": "Activity",
+    "title": {
+      "swap": "Swap {from} → {to}",
+      "swapDone": "Swapped {from} → {to}",
+      "toExchange": "Moving NAV to trading",
+      "toWallet": "Bringing NAV back to your wallet",
+      "receiveViaBridge": "Setting up your trading account"
+    },
+    "subtitle": {
+      "setupOnly": "One-time setup"
+    },
+    "status": {
+      "done": "Done",
+      "cancelled": "Stopped",
+      "awaiting": "Needs your approval",
+      "attention": "Needs attention",
+      "starting": "Starting…",
+      "running": "In progress"
+    },
+    "progress": "{done} of {total}",
+    "step": {
+      "faucet": "Set up trading account",
+      "register": "Register with the bridge",
+      "deposit": "Move {amount} NAV to trading",
+      "sell": "Sell {base} for USDC",
+      "buy": "Buy {base} with USDC",
+      "toEvm": "Prepare NAV for withdrawal",
+      "burn": "Send NAV to your wallet"
+    },
+    "stepDetail": {
+      "faucet": "{amount} NAV buys a small USDC + HYPE package that creates your account and pays its network fees. Once only.",
+      "faucetWaiting": "{amount} NAV sent. Waiting for 3 confirmations (about 6 min).",
+      "faucetDone": "{amount} NAV sent. Trading account created.",
+      "register": "Automatic. No NAV moves; the tiny fee is paid from the HYPE you received.",
+      "movingGas": "Moving a little HYPE over to pay the registration fee…",
+      "deposit": "Sent from your private wallet to your trading account.",
+      "depositWaiting": "Sent from your wallet. Waiting for confirmations · about {minutes} min left.",
+      "depositDone": "{amount} NAV arrived in your trading account.",
+      "order": "At {price} or better, or not at all.",
+      "orderDone": "Filled {size} {base} at {price}.",
+      "toEvmWaiting": "Waiting for the exchange…",
+      "burn": "The NAV leaves the exchange; the bridge pays it into your wallet a few minutes later.",
+      "burnDone": "Submitted. The NAV arrives in your wallet in a few minutes."
+    },
+    "leave": "You can leave this screen. Navio Go keeps tracking it while it is open, and picks up where it left off after a restart.",
+    "view": "View progress",
+    "viewAll": "All activity",
+    "open": "Open",
+    "tray": {
+      "one": "{n} operation in progress",
+      "many": "{n} operations in progress",
+      "needsYou": "{n} need your attention"
+    },
+    "approval": {
+      "title": "Approve to continue",
+      "setup_price_changed": "The setup price changed since you reviewed it: {amount} NAV instead of {approved} NAV. Nothing has been sent yet.",
+      "approve": "Approve {amount} NAV",
+      "unknown": "This step needs a fresh approval before it continues."
+    },
+    "failed": {
+      "title": "This step didn't go through",
+      "keep": "Finished steps are kept. Retry starts from this step."
+    },
+    "interrupted": {
+      "title": "Unclear whether this step went out",
+      "body": "The app closed while it was being sent, and the balances didn't settle the question. Check History before choosing.",
+      "checked": "Checked after restart: wallet balance, trading balance."
+    },
+    "actions": {
+      "retry": "Retry",
+      "stop": "Stop",
+      "wentThrough": "It went through",
+      "sendAgain": "Send again",
+      "details": "Technical details",
+      "dismiss": "OK",
+      "requote": "Swap at current price",
+      "keepWaiting": "Try the same price again",
+      "back": "Back",
+      "accept": "Swap"
+    },
+    "empty": {
+      "title": "Nothing in progress",
+      "body": "Swaps and NAV moves you start show up here with their progress — even after you close the app."
+    },
+    "sections": {
+      "attention": "Needs you",
+      "active": "In progress",
+      "recent": "Recent"
+    },
+    "tech": {
+      "id": "Operation",
+      "assumedDone": "assumed sent (your choice)",
+      "verified": "verified on chain after a restart",
+      "received": "Received",
+      "lastError": "Last error"
+    },
+    "stopConfirm": "Stop this operation? Finished steps are kept: any NAV already moved stays where it is and is shown on the NAV page.",
+    "setupOnlyDone": "Your trading account is ready."
   }
 }

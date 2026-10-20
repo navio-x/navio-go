@@ -22,7 +22,7 @@ function getExchangeClient(account) {
  * lib/hyperliquid/market.js — the SDK/API's own asset id is `10000 + pairIndex`
  * for spot (see resolveOrderAsset below), never the base token's own index.
  */
-export async function placeSpotOrder(account, { pairIndex, isBuy, price, size, tif, reduceOnly = false }) {
+export async function placeSpotOrder(account, { pairIndex, isBuy, price, size, tif, reduceOnly = false, cloid = undefined }) {
   const client = getExchangeClient(account);
   return client.order({
     orders: [
@@ -33,6 +33,9 @@ export async function placeSpotOrder(account, { pairIndex, isBuy, price, size, t
         s: size,
         r: reduceOnly,
         t: { limit: { tif } },
+        // A client order id lets an interrupted order be looked up by the
+        // id the app chose before sending (see intent/executors.js verify).
+        ...(cloid ? { c: cloid } : {}),
       },
     ],
     grouping: "na",

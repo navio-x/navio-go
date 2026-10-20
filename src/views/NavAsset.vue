@@ -67,7 +67,7 @@
         </button>
       </div>
 
-      <OperationCard v-for="op in operations" :key="op.id" :op="op" />
+      <ProcessCard v-for="op in activeOperations" :key="op.id" :op="op" />
 
       <StakingCard />
 
@@ -91,6 +91,7 @@
                 v-for="direction in ['toExchange', 'toWallet']"
                 :key="direction"
                 @click="openMove(direction)"
+                :disabled="busyOperation"
                 class="px-2 py-2.5 rounded-xl text-xs font-semibold leading-tight border border-gray-200 dark:border-gh-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gh-700 flex items-center justify-center gap-1.5"
               >
                 <component :is="direction === 'toExchange' ? ArrowUpFromLine : ArrowDownToLine" class="w-3.5 h-3.5 shrink-0" />
@@ -103,7 +104,7 @@
             <button
               v-for="link in advancedLinks"
               :key="link.to"
-              @click="router.push(link.to)"
+              @click="openLink(link)"
               class="w-full py-2.5 flex items-center justify-between gap-3 text-left"
             >
               <span class="min-w-0">
@@ -118,6 +119,27 @@
         </div>
       </div>
     </div>
+
+    <!-- Trading account: the facts behind the setup, read-only -->
+    <BottomSheet :open="showDiag" :title="$t('asset.diag.title')" @close="showDiag = false">
+      <div v-if="diagLoading && !diag" class="py-8 flex justify-center"><Loader2 class="w-6 h-6 animate-spin text-gray-400" /></div>
+      <div v-else-if="diag" class="space-y-4">
+        <div class="rounded-xl px-3 py-2.5 text-sm font-medium" :class="diag.registered ? 'bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300' : 'bg-amber-50 dark:bg-amber-900/20 text-amber-800 dark:text-amber-300'">
+          {{ diag.registered ? $t('asset.diag.ready') : $t('asset.diag.notReady') }}
+          <span v-if="!diag.registered && diag.faucet" class="block text-xs font-normal mt-0.5">{{ $t('asset.diag.setupCost', { amount: formatAmount(diag.faucet.amountNav) }) }}</span>
+        </div>
+        <dl class="space-y-2.5 text-sm">
+          <div v-for="row in diagRows" :key="row.label" class="flex items-start justify-between gap-3">
+            <dt class="text-gray-500 dark:text-gray-400 shrink-0">{{ row.label }}</dt>
+            <dd class="text-right text-gray-800 dark:text-gray-100 min-w-0 break-all" :class="{ 'font-mono text-xs': row.mono }">{{ row.value }}</dd>
+          </div>
+        </dl>
+        <div class="flex gap-2">
+          <button @click="loadDiag" :disabled="diagLoading" class="flex-1 py-2.5 rounded-xl text-sm font-medium bg-gray-100 dark:bg-gh-800 text-gray-700 dark:text-gray-300 disabled:opacity-50">{{ $t('asset.diag.refresh') }}</button>
+          <button v-if="!diag.registered" @click="startSetup" :disabled="busyOperation || !canSetup" class="flex-1 py-2.5 rounded-xl text-sm font-semibold bg-blue-600 hover:bg-blue-700 text-white disabled:opacity-50">{{ $t('asset.diag.setup') }}</button>
+        </div>
+      </div>
+    </BottomSheet>
 
     <!-- Move: amount -->
     <BottomSheet :open="!!moveDirection && !showReview" :title="moveDirection ? $t(`asset.move.${moveDirection}`) : ''" @close="moveDirection = null">
@@ -173,18 +195,18 @@ import { settings } from '@/stores/settings'
 import { hlEnabled } from '@/stores/network'
 import { evmAddress } from '@/stores/evm'
 import { receiveAddress } from '@/stores/navio'
-import { operations, activeOperations, startOperation } from '@/stores/operations'
+import { activeOperations, startOperation, reservedByOperations, setupInProgress } from '@/stores/operations'
 import { usePortfolio } from '@/composables/usePortfolio'
 import { HL_LOGOS, HL_NAMES } from '@/lib/hyperliquid/config'
 import { readAccountState } from '@/lib/intent/executors'
-import { planMove, NAV_FEE_RESERVE } from '@/lib/intent/router'
+import { planMove, planReceiveViaBridge, NAV_FEE_RESERVE } from '@/lib/intent/router'
 import { toDecimalString } from '@/lib/intent/quote'
 import { formatAmount, formatFiatFromUsd } from '@/lib/displayFormat'
 import TokenIcon from '@/components/TokenIcon.vue'
 import BottomSheet from '@/components/tx/BottomSheet.vue'
 import AmountField from '@/components/tx/AmountField.vue'
 import ReviewSheet from '@/components/tx/ReviewSheet.vue'
-import OperationCard from '@/components/tx/OperationCard.vue'
+import ProcessCard from '@/components/process/ProcessCard.vue'
 import StakingCard from '@/components/staking/StakingCard.vue'
 
 const router = useRouter()
@@ -239,7 +261,46 @@ const advancedLinks = computed(() => [
   { to: '/hl/asset/NAV', label: t('asset.links.hlTransfer'), hint: t('asset.links.hlTransferHint') },
   { to: '/bridge/deposit', label: t('asset.links.depositAddress'), hint: t('asset.links.depositAddressHint') },
   { to: '/bridge/withdraw', label: t('asset.links.manualWithdraw'), hint: t('asset.links.manualWithdrawHint') },
+  { to: 'diag', label: t('asset.links.diagnostics'), hint: t('asset.links.diagnosticsHint') },
 ])
+
+// --- Trading account diagnostics ---
+const showDiag = ref(false)
+const diag = ref(null)
+const diagLoading = ref(false)
+async function loadDiag() {
+  if (!evmAddress.value) return
+  diagLoading.value = true
+  try { diag.value = await readAccountState(evmAddress.value) } catch (e) { console.error('[asset] diagnostics failed:', e?.message) } finally { diagLoading.value = false }
+}
+function openLink(link) {
+  if (link.to === 'diag') { showDiag.value = true; loadDiag(); return }
+  router.push(link.to)
+}
+const diagRows = computed(() => {
+  const d = diag.value
+  if (!d) return []
+  const yes = t('asset.diag.yes'), no = t('asset.diag.no')
+  return [
+    { label: t('asset.diag.account'), value: d.coreExists ? yes : no },
+    { label: t('asset.diag.registered'), value: d.registered ? yes : no },
+    { label: t('asset.diag.gas'), value: `${formatAmount(d.hypeEvm ?? 0, 6)} + ${formatAmount(d.hypeCore ?? 0, 6)} HYPE` },
+    { label: t('asset.diag.navCore'), value: `${formatAmount(d.navExchange, 8)} NAV` },
+    { label: t('asset.diag.navEvm'), value: `${formatAmount(d.navEvm, 8)} NAV` },
+    { label: t('asset.diag.usdc'), value: `${formatAmount(d.balances?.USDC ?? 0)} USDC` },
+    { label: t('asset.diag.evmAddress'), value: evmAddress.value, mono: true },
+    { label: t('asset.diag.depositAddress'), value: d.depositAddress ?? t('asset.diag.depositAddressNone'), mono: !!d.depositAddress },
+  ]
+})
+const setupPlan = computed(() => (diag.value ? planReceiveViaBridge({ state: { ...diag.value, navWallet: nav.value.wallet, reserved: reservedByOperations.value } }) : null))
+const canSetup = computed(() => !!setupPlan.value && !setupPlan.value.blocker && !setupInProgress.value)
+function startSetup() {
+  const p = setupPlan.value
+  if (!p || p.blocker) return
+  const op = startOperation(p, { minutes: p.minutes })
+  showDiag.value = false
+  router.push(`/activity/${op.id}`)
+}
 
 // --- Explicit move between wallet and exchange ---
 const moveDirection = ref(null) // null | 'toExchange' | 'toWallet'
@@ -249,7 +310,10 @@ const state = ref(null)
 const loadingState = ref(false)
 const stateError = ref('')
 
-const busyOperation = computed(() => activeOperations.value.length > 0)
+// A second explicit move while one is still moving the same NAV would plan
+// against balances that are about to change; the reserved amounts handle the
+// arithmetic, the one-time setup must simply not be started twice.
+const busyOperation = computed(() => setupInProgress.value)
 
 async function openMove(direction) {
   moveDirection.value = direction
@@ -271,7 +335,7 @@ async function openMove(direction) {
   }
 }
 
-const liveState = computed(() => state.value && { ...state.value, navWallet: nav.value.wallet })
+const liveState = computed(() => state.value && { ...state.value, navWallet: nav.value.wallet, reserved: reservedByOperations.value })
 
 const moveAmount = computed(() => {
   const n = Number(moveInput.value)
@@ -326,8 +390,9 @@ const moveNotices = computed(() => {
 function confirmMove() {
   const p = movePlan.value
   if (!p || p.blocker || busyOperation.value) return
-  startOperation(p, { minutes: p.minutes })
+  const op = startOperation(p, { minutes: p.minutes })
   showReview.value = false
   moveDirection.value = null
+  router.push(`/activity/${op.id}`)
 }
 </script>

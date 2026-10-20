@@ -186,6 +186,19 @@ const router = createRouter({
       },
     },
     {
+      // Everything in progress or recently finished (swaps, NAV moves), and
+      // one operation in full. Not gated: a process started while
+      // Hyperliquid was on stays visible so the user can see where it stopped.
+      path: "/activity",
+      component: () => import("../views/ActivityCenter.vue"),
+      meta: { showNavbar: true },
+    },
+    {
+      path: "/activity/:id",
+      component: () => import("../views/ProcessDetail.vue"),
+      meta: { showNavbar: true },
+    },
+    {
       // NAV as one asset (wallet + exchange), with the explicit move
       // between the two under Advanced. Works with dexMode off too — it
       // then simply shows the wallet.

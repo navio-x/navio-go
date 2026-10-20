@@ -1,23 +1,26 @@
 import { ref, computed, watch } from "vue";
-import { settings } from "@/stores/settings";
 import { hlEnabled } from "@/stores/network";
 import { evmAddress } from "@/stores/evm";
 import { balance } from "@/stores/navio";
 import { createEngine } from "@/lib/intent/engine";
 import { STEP_TYPES } from "@/lib/intent/steps";
+import { reservedNav } from "@/lib/intent/requirements";
+import { isActive as isActiveOp, needsUser as needsUserOp } from "@/lib/intent/present";
+import { scenarioEnabled } from "@/dev/scenario";
 
 /**
- * The user's in-flight and recent multi-step operations (swaps that move
- * NAV between the wallet and the exchange, explicit moves). Kept per EVM
- * account in localStorage and driven by lib/intent/engine.js; this module
- * only wires that engine to the real executors and to Vue.
+ * The user's in-flight and recent multi-step operations (swaps that set up
+ * the trading account and move NAV between the wallet and the exchange,
+ * explicit moves, …). Kept per EVM account in localStorage and driven by
+ * lib/intent/engine.js; this module only wires that engine to the real
+ * executors and to Vue.
  */
 export const operations = ref([]);
 
 // A payout that hasn't visibly landed is dropped from "on the way" after
 // this long, so a missed detection can't inflate the balance forever.
 const PAYOUT_MAX_AGE_MS = 3 * 60 * 60 * 1000;
-const KEEP_FINISHED = 10;
+const KEEP_FINISHED = 30;
 
 let storageKey = null;
 
@@ -32,8 +35,8 @@ const storage = {
   save(ops) {
     if (!storageKey) return;
     // Everything in flight is kept; only the finished tail is trimmed.
-    const active = ops.filter((o) => o.status === "running" || o.status === "attention");
-    const finished = ops.filter((o) => o.status !== "running" && o.status !== "attention").slice(0, KEEP_FINISHED);
+    const active = ops.filter(isActiveOp);
+    const finished = ops.filter((o) => !isActiveOp(o)).slice(0, KEEP_FINISHED);
     try {
       localStorage.setItem(storageKey, JSON.stringify([...active, ...finished]));
     } catch (e) {
@@ -44,13 +47,23 @@ const storage = {
 
 // The chain code behind the steps (exchange SDK, bridge contract, note
 // encryption) is only fetched once a step actually runs, so a wallet that
-// never swaps doesn't load it with the home screen.
+// never swaps doesn't load it with the home screen. Under the dev scenario
+// harness the simulated executors take their place.
+async function loadExecutors() {
+  return scenarioEnabled()
+    ? (await import("@/dev/scenarioExecutors")).executors
+    : (await import("@/lib/intent/executors")).executors;
+}
 const executors = Object.fromEntries(
-  Object.entries(STEP_TYPES).map(([type, { broadcast }]) => [
+  Object.entries(STEP_TYPES).map(([type, def]) => [
     type,
     {
-      broadcast,
-      run: async (...args) => (await import("@/lib/intent/executors")).executors[type].run(...args),
+      ...def,
+      run: async (...args) => (await loadExecutors())[type].run(...args),
+      verify: async (...args) => {
+        const impl = (await loadExecutors())[type];
+        return impl.verify ? impl.verify(...args) : "unknown";
+      },
     },
   ])
 );
@@ -79,9 +92,20 @@ watch(
   { immediate: true },
 );
 
-export const isActive = (op) => op.status === "running" || op.status === "attention";
+export const isActive = isActiveOp;
+export const needsUser = needsUserOp;
 
-export const activeOperations = computed(() => operations.value.filter(isActive));
+export const activeOperations = computed(() => operations.value.filter(isActiveOp));
+export const attentionOperations = computed(() => operations.value.filter(needsUserOp));
+export const finishedOperations = computed(() => operations.value.filter((o) => !isActiveOp(o)));
+
+/** NAV that other operations are about to spend — subtracted from what a new plan may use. */
+export const reservedByOperations = computed(() => reservedNav(activeOperations.value));
+
+/** True when an active operation is still doing the one-time setup (a second one must not start it too). */
+export const setupInProgress = computed(() =>
+  activeOperations.value.some((op) => op.steps.some((s) => ["faucet", "waitAccount", "register"].includes(s.type) && s.status !== "done"))
+);
 
 const stepOf = (op, type) => op.steps.find((s) => s.type === type);
 const awaitsPayout = (op) => !!op.ctx?.payout && !op.ctx.payoutSettled;
@@ -123,6 +147,10 @@ export function resolveOperation(id, action, patch) {
   engine.resolve(id, action, patch);
 }
 
+export function approveOperation(id, patch) {
+  engine.approve(id, patch);
+}
+
 export function cancelOperation(id) {
   engine.cancel(id);
 }
@@ -130,3 +158,5 @@ export function cancelOperation(id) {
 export function dismissOperation(id) {
   engine.dismiss(id);
 }
+
+export const findOperation = (id) => operations.value.find((o) => o.id === id) ?? null;

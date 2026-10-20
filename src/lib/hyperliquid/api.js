@@ -54,6 +54,11 @@ export function fetchOpenOrders(user) {
   return postInfo({ type: "openOrders", user });
 }
 
+/** { status: "order", order: { order: {…}, status: "filled" | "open" | "canceled" | …, statusTimestamp } } or { status: "unknownOid" }. `oid` may be a numeric order id or a 16-byte client order id (0x…). */
+export function fetchOrderStatus(user, oid) {
+  return postInfo({ type: "orderStatus", user, oid });
+}
+
 /** [{ coin, side: "B"|"A", px, sz, time, oid, hash, closedPnl, fee }] — most recent fills first, across every market for this user. */
 export function fetchUserFills(user) {
   return postInfo({ type: "userFills", user });

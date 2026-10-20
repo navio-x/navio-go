@@ -50,6 +50,7 @@
     </div>
 
     <p v-if="fiat" class="mt-1 text-xs text-gray-400 dark:text-gray-500">≈ {{ fiat }}</p>
+    <p v-if="hint" class="mt-1 text-xs text-gray-500 dark:text-gray-400 tabular-nums leading-snug">{{ hint }}</p>
   </div>
 </template>
 
@@ -65,6 +66,8 @@ defineProps({
   logo: { type: String, default: null },
   balance: { type: Number, default: null },
   fiat: { type: String, default: null },
+  // Where the balance sits, when that is worth a line (e.g. wallet vs trading).
+  hint: { type: String, default: '' },
   readonly: { type: Boolean, default: false },
   selectable: { type: Boolean, default: false },
 })

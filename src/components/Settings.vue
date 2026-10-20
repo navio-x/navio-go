@@ -411,6 +411,18 @@
       </div>
 
       <div class="border-t border-gray-200 dark:border-gh-700 px-4 py-3">
+        <button type="button" @click="showDeveloper = !showDeveloper" :aria-expanded="showDeveloper" class="w-full flex items-center justify-between gap-3 text-left">
+          <span class="min-w-0">
+            <span class="block text-sm text-gray-700 dark:text-gray-300">{{ $t('settings.developer') }}</span>
+            <span class="block text-xs text-gray-400 dark:text-gray-500 mt-0.5 leading-snug">{{ $t('settings.developerDesc') }}</span>
+          </span>
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 opacity-40 shrink-0 transition-transform" :class="{ 'rotate-90': showDeveloper }" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+          </svg>
+        </button>
+      </div>
+
+      <div v-if="showDeveloper" class="border-t border-gray-200 dark:border-gh-700 px-4 py-3">
         <label class="block mb-1.5 text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">
           {{ $t('settings.faucetUrl') }}
         </label>
@@ -754,6 +766,7 @@ const logout = async () => {
 
 const showConfirm = ref(false)
 const showMerchantDisableConfirm = ref(false)
+const showDeveloper = ref(false)
 
 const slippagePresets = [50, 100, 300] // %0.5 / %1 / %3
 const customSlippageInput = ref(null)
