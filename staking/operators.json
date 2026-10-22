@@ -9,7 +9,7 @@
       "enabled": true,
       "default": true,
       "delegationKey": "b0349444798ef33ba225bfcd30ef8bcc39ca30449721b2554681ac9fc6297ae151038601eb0324132f06818aebdc5cab",
-      "feeBps": 500,
+      "feeBps": 1000,
       "networks": [
         "mainnet",
         "testnet"
