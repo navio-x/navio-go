@@ -24,7 +24,7 @@ describe("requirements", () => {
     const reqs = evaluateFunding({ amount: 1, target: 1, state: { ...fresh, navWallet: 1 } });
     const blocked = reqs.find((r) => r.resolution === "blocked");
     expect(blocked.id).toBe("walletFunds");
-    expect(blocked.needed).toBe(1 + 28.88 + NAV_FEE_RESERVE);
+    expect(blocked.needed).toBe(Math.round((1 + 28.88 + 2 * NAV_FEE_RESERVE) * 1e8) / 1e8);
     expect(blocked.have).toBe(1);
     expect(blocked.setupCost).toBe(28.88);
   });
@@ -65,7 +65,7 @@ describe("planIntent", () => {
 
   it("routes every intent kind through the same evaluator", () => {
     expect(planIntent({ kind: "toExchange", amount: 50 }, ready).steps.map((s) => s.type)).toEqual(["deposit", "waitCredit"]);
-    expect(planIntent({ kind: "toWallet", amount: 5, destination: "nav1x" }, { ...ready, navExchange: 10 }).steps.map((s) => s.type)).toEqual(["toEvm", "waitEvm", "burn"]);
+    expect(planIntent({ kind: "toWallet", amount: 5, destination: "nav1x" }, { ...ready, navExchange: 10 }).steps.map((s) => s.type)).toEqual(["toEvm", "waitEvm", "burn", "waitPayout"]);
     expect(planIntent({ kind: "swap", from: "NAV", to: "USDC", quote: sellQuote(300) }, fresh).steps.map((s) => s.type)).toEqual(["faucet", "waitAccount", "register", "deposit", "waitCredit", "order"]);
     expect(() => planIntent({ kind: "nope" }, ready)).toThrow();
   });

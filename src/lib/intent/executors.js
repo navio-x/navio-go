@@ -1,6 +1,7 @@
 import { parseUnits, formatUnits } from "viem";
-import { getNavioClient, balance } from "@/stores/navio";
-import { getReservedAmount, getSendableUtxos, loadReservations } from "@/stores/trade";
+import { getNavioClient, balance, spendableNavUtxoAmounts, txConfirmations } from "@/stores/navio";
+import { navSendFee } from "@/lib/navioFee";
+import { outputsToSpend } from "@/stores/trade";
 import { getEvmAccount } from "@/composables/useEvmAccount";
 import { fetchSpotClearinghouseState, fetchL2Book, fetchUserFees, fetchOrderStatus } from "@/lib/hyperliquid/api";
 import { getSpotMeta, resolveTokens } from "@/lib/hyperliquid/meta";
@@ -30,6 +31,9 @@ import { isMainnet } from "@/stores/network";
 import { scenarioEnabled, scenarioAccountState, scenarioExchangeBalances } from "@/dev/scenario";
 
 const POLL_MS = 15_000;
+// The bridge normally pays a burn out within minutes; after this long the
+// wait ends on its own (the NAV page keeps showing the amount as in transit).
+const PAYOUT_MAX_AGE_MS = 3 * 60 * 60 * 1000;
 // A credited deposit is accepted as "arrived" within this margin of the
 // expected amount, so an operation never waits forever on a rounding
 // difference between what was sent and what the bridge credits.
@@ -116,6 +120,7 @@ export async function readAccountState(address) {
 
   return {
     navWallet: walletNav(),
+    utxos: spendableNavUtxoAmounts.value,
     navExchange: exchange.available.NAV ?? 0,
     navEvm: Number(formatUnits(navEvmRaw, NAV_DECIMALS)),
     balances: exchange.available,
@@ -178,6 +183,17 @@ function newCloid() {
  * sends right away (the recipient output is not ours), so it is compared
  * with what was there before the step started.
  */
+// Keeps a waiting step's `confirmed` (Navio confirmations of the send it
+// follows) current, so the UI can show "2/3 confirmations" instead of a
+// countdown. Saved only when the count changes.
+function trackConfirmations(step, txId, api) {
+  if (scenarioEnabled()) return;
+  const n = txConfirmations(txId);
+  if (n == null || n === step.confirmed) return;
+  step.confirmed = n;
+  api.save();
+}
+
 function walletSendOutcome(step, amount) {
   if (step.walletBefore == null) return "unknown";
   const now = walletNav();
@@ -210,7 +226,7 @@ export const executors = {
       if (Number(quote.amountNav) > approved * (1 + SETUP_PRICE_TOLERANCE)) {
         throw askApproval("setup_price_changed", { amountNav: Number(quote.amountNav), approvedNav: approved, usdc: quote.payout?.usdc, hype: quote.payout?.hype });
       }
-      if (Number(quote.amountNav) + 0.01 > walletNav()) throw fail("insufficient_wallet");
+      if (Number(quote.amountNav) + navSendFee(Number(quote.amountNav), spendableNavUtxoAmounts.value) > walletNav()) throw fail("insufficient_wallet");
 
       step.amountNav = quote.amountNav;
       step.walletBefore = walletNav();
@@ -238,7 +254,7 @@ export const executors = {
   },
 
   waitAccount: {
-    async run(_step, _op, api) {
+    async run(step, op, api) {
       const { address } = requireAccount();
       for (;;) {
         try {
@@ -247,6 +263,7 @@ export const executors = {
         } catch (e) {
           console.error("[intent] waitAccount poll failed:", e.message);
         }
+        trackConfirmations(step, op.ctx.setupTxId, api);
         await api.sleep(POLL_MS);
       }
     },
@@ -288,12 +305,9 @@ export const executors = {
       if (step.amount < MIN_BRIDGE_NAV) throw fail("below_minimum");
       if (step.amount > walletNav()) throw fail("insufficient_wallet");
 
-      // Same coin-locking rule as the Send screen: never spend outputs
-      // committed to an open trade.
-      await loadReservations();
-      const selectedUtxos = getReservedAmount(null) > 0n
-        ? (await getSendableUtxos(null)).map((u) => u.outputHash)
-        : undefined;
+      // Same coin-locking rule as the Send screen (never spend outputs
+      // committed to an open trade), and every output when this is a Max.
+      const selectedUtxos = await outputsToSpend(step.amount);
 
       step.address = deriveDepositAddress(account.address).bech32mAddress;
       step.walletBefore = walletNav();
@@ -340,6 +354,22 @@ export const executors = {
         } catch (e) {
           console.error("[intent] waitCredit poll failed:", e.message);
         }
+        trackConfirmations(step, op.ctx.depositTxId, api);
+        await api.sleep(POLL_MS);
+      }
+    },
+  },
+
+  // The bridge pays the burnt NAV into the wallet a few minutes later. The
+  // wallet balance growing by about that amount is the arrival (same rule as
+  // the NAV page's "on the way" row, stores/operations.js settlePayouts).
+  waitPayout: {
+    async run(step, op, api) {
+      for (;;) {
+        const p = op.ctx.payout;
+        if (!p) return null;
+        if (walletNav() >= p.baseline + p.amount * 0.9) return null;
+        if (api.now() - p.at > PAYOUT_MAX_AGE_MS) { step.timedOut = true; return null; }
         await api.sleep(POLL_MS);
       }
     },

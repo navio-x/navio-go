@@ -777,6 +777,9 @@
   },
   "market": {
     "headerFormat": "{base}/{quote}",
+    "range": {
+      "all": "Tümü"
+    },
     "notFound": "Bu piyasa şu anda kullanılamıyor.",
     "resolving": "Piyasa çözümleniyor…",
     "live": "Canlı",
@@ -826,6 +829,7 @@
     "sizePercent": "Kullanılabilir bakiyenin oranı",
     "chart": "Fiyat grafiği",
     "noChartData": "Bu aralık için henüz fiyat verisi yok.",
+    "noTradesInRange": "Bu dönemde işlem olmadı.",
     "chartError": "Grafik yüklenemedi.",
     "chartRetry": "Tekrar dene",
     "ohlc": {
@@ -1434,6 +1438,7 @@
       "swap": "{amount} {symbol} aldınız.",
       "partial": "Tutarın yalnızca bir kısmı belirlediğiniz fiyattan takas edilebildi; kalanı hâlâ sizde.",
       "toWallet": "NAV birkaç dakika içinde cüzdanınıza ulaşır.",
+      "toWalletArrived": "NAV cüzdanınıza geri döndü.",
       "toExchange": "NAV'ınız artık borsada.",
       "keptOnExchange": "NAV borsada — dilediğiniz zaman NAV sayfasından cüzdanınıza getirebilirsiniz.",
       "cancelled": "Durduruldu. Hiçbir şey kaybolmadı: taşınmış olan NAV borsada, NAV sayfasında görünür."
@@ -1476,6 +1481,13 @@
       "to": "Nereye",
       "walletAddress": "Cüzdan adresiniz",
       "privateAgain": "Cüzdanınıza dönen NAV yeniden gizlidir."
+    },
+    "transfer": {
+      "title": "Hesaplar arası transfer",
+      "navio": "Navio cüzdanı",
+      "hl": "Hyperliquid",
+      "feeOnTop": "Ağ ücreti {fee} NAV, tutarın üstüne eklenir",
+      "feeHype": "Ağ ücreti alım satım hesabınızdaki HYPE'tan ödenir"
     },
     "where": {
       "wallet": "Cüzdanınızda",
@@ -1840,17 +1852,22 @@
     "stepDetail": {
       "faucet": "{amount} NAV ile hesabınızı oluşturan ve ağ ücretlerini karşılayan küçük bir USDC + HYPE paketi alınır. Yalnızca bir kez.",
       "faucetWaiting": "{amount} NAV gönderildi. 3 onay bekleniyor (yaklaşık 6 dk).",
+      "faucetConfirming": "{amount} NAV gönderildi. {confirmations}/{required} onay.",
+      "faucetCrediting": "{amount} NAV onaylandı. Alım satım hesabınızın oluşturulması bekleniyor.",
       "faucetDone": "{amount} NAV gönderildi. Alım satım hesabı oluşturuldu.",
       "register": "Otomatik. NAV hareket etmez; küçük ücret aldığınız HYPE'tan ödenir.",
       "movingGas": "Kayıt ücretini ödemek için biraz HYPE aktarılıyor…",
       "deposit": "Özel cüzdanınızdan alım satım hesabınıza gönderildi.",
       "depositWaiting": "Cüzdanınızdan gönderildi. Onaylar bekleniyor · yaklaşık {minutes} dk kaldı.",
+      "depositConfirming": "Cüzdanınızdan gönderildi. {confirmations}/{required} onay.",
+      "depositCrediting": "Navio'da onaylandı. Köprünün alım satım hesabınıza aktarması bekleniyor.",
       "depositDone": "{amount} NAV alım satım hesabınıza ulaştı.",
       "order": "{price} ya da daha iyi fiyattan; aksi halde hiç.",
       "orderDone": "{size} {base}, {price} fiyattan gerçekleşti.",
       "toEvmWaiting": "Borsa bekleniyor…",
       "burn": "NAV borsadan çıkar; köprü birkaç dakika sonra cüzdanınıza öder.",
-      "burnDone": "Gönderildi. NAV birkaç dakika içinde cüzdanınıza ulaşır."
+      "burnDone": "Gönderildi. NAV birkaç dakika içinde cüzdanınıza ulaşır.",
+      "payoutDone": "{amount} NAV cüzdanınıza ulaştı."
     },
     "leave": "Bu ekrandan ayrılabilirsiniz. Navio Go açıkken izlemeye devam eder, yeniden başlatıldığında kaldığı yerden sürdürür.",
     "view": "İlerlemeyi gör",

@@ -1,3 +1,4 @@
+import { spendableNavAmounts } from "@/lib/navioFee";
 import { ref, computed } from "vue";
 import { scenarioEnabled, readScenario } from "@/dev/scenario";
 import blsctWasmUrl from "@nav-io/navio-blsct/wasm/blsct.wasm?url";
@@ -101,6 +102,29 @@ export function getBalance() {
 export function getUtxos() {
   return utxos.value;
 }
+
+/**
+ * Confirmations of one of this wallet's transactions: 0 while it waits in
+ * the mempool, null if the wallet has not seen it. Found through the
+ * outputs it created or spent (a Max send creates none, but spends some).
+ */
+export function txConfirmations(txId) {
+  if (!txId) return null;
+  let height = null;
+  let seen = false;
+  for (const o of utxos.value) {
+    if (o.txHash === txId) { seen = true; if (o.blockHeight > 0) height = o.blockHeight; }
+    else if (o.spentTxHash === txId) { seen = true; if (o.spentBlockHeight > 0) height = Number(o.spentBlockHeight); }
+    if (height) break;
+  }
+  if (!seen) return null;
+  if (!height) return 0;
+  const tip = Math.max(chainTip.value, walletHeight.value);
+  return tip >= height ? tip - height + 1 : 0;
+}
+
+/** NAV per spendable output, for the fee estimate (see lib/navioFee.js). */
+export const spendableNavUtxoAmounts = computed(() => spendableNavAmounts(utxos.value));
 
 export function getReceiveAddress() {
   return receiveAddress.value;
@@ -382,6 +406,7 @@ async function startSync() {
       
       onNewBlock: (height, hash) => {
         console.log(`New block ${height}: ${hash.slice(0, 16)}...`);
+        if (height > chainTip.value) chainTip.value = height;
         updateWalletInfo();
       },
 

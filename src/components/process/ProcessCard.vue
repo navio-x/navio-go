@@ -55,8 +55,7 @@ import { useI18n } from 'vue-i18n'
 import { ChevronRight } from 'lucide-vue-next'
 import { dismissOperation } from '@/stores/operations'
 import { useProcessActions } from '@/composables/useProcessActions'
-import { titleOf, statusLine, progressOf } from '@/lib/intent/present'
-import { formatAmount } from '@/lib/displayFormat'
+import { titleOf, statusLine, progressOf, outcomeOf } from '@/lib/intent/present'
 
 const props = defineProps({ op: { type: Object, required: true } })
 const router = useRouter()
@@ -85,16 +84,5 @@ const borderClass = computed(() => ({
 const barClass = computed(() => (props.op.status === 'attention' ? 'bg-red-500' : 'bg-blue-500'))
 const lineClass = computed(() => (props.op.status === 'attention' ? 'text-red-600 dark:text-red-400' : props.op.status === 'awaiting' ? 'text-blue-700 dark:text-blue-300' : 'text-gray-600 dark:text-gray-300'))
 
-const outcome = computed(() => {
-  const op = props.op
-  if (op.status === 'cancelled') return t('ops.outcome.cancelled')
-  if (op.kind === 'toExchange') return t('ops.outcome.toExchange')
-  if (op.kind === 'toWallet') return t('ops.outcome.toWallet')
-  if (op.kind === 'receiveViaBridge') return t('process.setupOnlyDone')
-  const parts = [t('ops.outcome.swap', { amount: formatAmount(op.ctx.received), symbol: op.ctx.receivedSymbol ?? op.to })]
-  if (op.ctx.partial) parts.push(t('ops.outcome.partial'))
-  if (op.deliversToWallet) parts.push(t('ops.outcome.toWallet'))
-  else if (op.to === 'NAV') parts.push(t('ops.outcome.keptOnExchange'))
-  return parts.join(' ')
-})
+const outcome = computed(() => outcomeOf(props.op, t))
 </script>

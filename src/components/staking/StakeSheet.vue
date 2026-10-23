@@ -177,11 +177,12 @@ import { Capacitor } from '@capacitor/core'
 import { useRouter } from 'vue-router'
 import { ClipboardPaste, QrCode, Loader2, BadgeCheck, HelpCircle, Users } from 'lucide-vue-next'
 import { balance, receiveAddress, stakeDelegations, delegateStake, getMinStakeNav } from '@/stores/navio'
-import { getReservedAmount, getSendableUtxos } from '@/stores/trade'
+import { getReservedAmount, outputsToSpend } from '@/stores/trade'
 import { navPrice } from '@/stores/navPrice'
 import { settings } from '@/stores/settings'
 import { HL_LOGOS } from '@/lib/hyperliquid/config'
-import { NAV_FEE_RESERVE } from '@/lib/intent/router'
+import { navSendAllFee } from '@/lib/navioFee'
+import { spendableNavUtxoAmounts } from '@/stores/navio'
 import { toDecimalString } from '@/lib/intent/quote'
 import { formatAmount, formatFiatFromUsd } from '@/lib/displayFormat'
 import { isValidStakerKey, extractStakerKey, shortKey } from '@/lib/staking'
@@ -233,7 +234,7 @@ watch(() => props.open, (open) => {
 const minStake = computed(() => getMinStakeNav())
 const reservedNav = computed(() => Number(getReservedAmount(null)) / 1e8)
 // The fee is paid on top of the stake, so Max leaves room for it.
-const maxStake = computed(() => Math.max(0, (Number(balance.value) || 0) - reservedNav.value - NAV_FEE_RESERVE))
+const maxStake = computed(() => Math.max(0, (Number(balance.value) || 0) - reservedNav.value - navSendAllFee(spendableNavUtxoAmounts.value)))
 
 const amount = computed(() => {
   const n = Number(amountInput.value)
@@ -344,10 +345,9 @@ async function confirm() {
   busy.value = true
   const staked = amount.value
   try {
-    // Coins an open trade quote depends on are never staked.
-    const selectedUtxos = reservedNav.value > 0
-      ? (await getSendableUtxos(null)).map((u) => u.outputHash)
-      : undefined
+    // Coins an open trade quote depends on are never staked; a Max stake
+    // spends every output so no dust is left behind.
+    const selectedUtxos = await outputsToSpend(staked)
     await delegateStake({
       amountNav: staked,
       delegateKey: normalizedKey.value,

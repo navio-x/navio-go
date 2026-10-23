@@ -67,7 +67,7 @@ export function describeStep({ step, wait, state }, op, t) {
   switch (step.type) {
     case "faucet":
       label = t("process.step.faucet");
-      detail = state === "done" ? t("process.stepDetail.faucetDone", p) : state === "waiting" ? t("process.stepDetail.faucetWaiting", p) : t("process.stepDetail.faucet", p);
+      detail = state === "done" ? t("process.stepDetail.faucetDone", p) : state === "waiting" ? waitingDetail("faucet", wait, op, p, t) : t("process.stepDetail.faucet", p);
       break;
     case "register":
       label = t("process.step.register");
@@ -76,7 +76,7 @@ export function describeStep({ step, wait, state }, op, t) {
     case "deposit":
       label = t("process.step.deposit", p);
       detail = state === "waiting"
-        ? t("process.stepDetail.depositWaiting", { ...p, minutes: minutesLeft(wait, op) })
+        ? waitingDetail("deposit", wait, op, p, t)
         : state === "done" ? t("process.stepDetail.depositDone", p) : t("process.stepDetail.deposit", p);
       break;
     case "order": {
@@ -91,10 +91,14 @@ export function describeStep({ step, wait, state }, op, t) {
       label = t("process.step.toEvm");
       detail = state === "waiting" ? t("process.stepDetail.toEvmWaiting") : "";
       break;
-    case "burn":
+    case "burn": {
       label = t("process.step.burn");
-      detail = state === "done" ? t("process.stepDetail.burnDone") : t("process.stepDetail.burn");
+      const arrived = state === "done" && wait?.status === "done" && !wait.timedOut;
+      detail = arrived
+        ? t("process.stepDetail.payoutDone", { amount: SHORT(step.burnAmount ?? step.amount ?? op.ctx.payout?.amount ?? op.send) })
+        : state === "done" || state === "waiting" ? t("process.stepDetail.burnDone") : t("process.stepDetail.burn");
       break;
+    }
     default:
       label = step.type;
   }
@@ -105,12 +109,44 @@ function labelOf(step, op, t) {
   return describeStep({ step, wait: null, state: "upcoming" }, op, t).label;
 }
 
+/**
+ * The line under a send that is waiting for the network. Confirmations
+ * counted by the wallet are the solid fact, so they come first: "2/3", then
+ * "confirmed, waiting for the other side". Before the wallet has seen the
+ * transaction (or for operations planned before counts were kept) the
+ * plan's minute estimate stands in.
+ */
+function waitingDetail(kind, wait, op, p, t) {
+  const required = wait?.confirmations;
+  if (required > 0 && wait?.confirmed != null) {
+    if (wait.confirmed >= required) return t(`process.stepDetail.${kind}Crediting`, p);
+    return t(`process.stepDetail.${kind}Confirming`, { ...p, confirmations: wait.confirmed, required });
+  }
+  return kind === "deposit"
+    ? t("process.stepDetail.depositWaiting", { ...p, minutes: minutesLeft(wait, op) })
+    : t("process.stepDetail.faucetWaiting", p);
+}
+
 /** Minutes a waiting step probably still needs, from the plan's estimate and the time already spent. */
 export function minutesLeft(wait, op) {
   const estimate = wait?.minutes || op.meta?.minutes || 6;
   const started = wait?.startedAt ?? wait?.sentAt ?? op.updatedAt;
   const spent = started ? (Date.now() - started) / 60_000 : 0;
   return Math.max(1, Math.round(estimate - spent));
+}
+
+// Where a step's transaction can be followed on the web: Navio sends by
+// their tx id on the Navio explorer, HyperEVM calls (the burn, gas moves)
+// by their hash on the HyperEVM explorer.
+const NAVIO_EXPLORER_TX = "https://blocks.nav.io/tx/";
+const HYPEREVM_EXPLORER_TX = "https://hyperevmscan.io/tx/";
+
+/** Explorer links for a step (and the wait that follows it): [{ url, hash }]. */
+export function explorerLinks(step) {
+  const links = [];
+  if (step?.txId) links.push({ url: NAVIO_EXPLORER_TX + step.txId, hash: step.txId });
+  if (step?.hash) links.push({ url: HYPEREVM_EXPLORER_TX + step.hash, hash: step.hash });
+  return links;
 }
 
 /** Title + subtitle of an operation. */
@@ -125,6 +161,23 @@ export function titleOf(op, t) {
   }
   if (op.kind === "receiveViaBridge") return { title: t("process.title.receiveViaBridge"), subtitle: t("process.subtitle.setupOnly") };
   return { title: t(`process.title.${op.kind}`), subtitle: `${SHORT(op.send)} NAV` };
+}
+
+/** True once the bridge's payout after a burn has shown up in the wallet. */
+export const payoutArrived = (op) => op.steps.some((s) => s.type === "waitPayout" && s.status === "done" && !s.timedOut);
+
+/** The one line under a finished operation (card, page). */
+export function outcomeOf(op, t) {
+  if (op.status === "cancelled") return t("ops.outcome.cancelled");
+  const toWallet = t(payoutArrived(op) ? "ops.outcome.toWalletArrived" : "ops.outcome.toWallet");
+  if (op.kind === "toExchange") return t("ops.outcome.toExchange");
+  if (op.kind === "toWallet") return toWallet;
+  if (op.kind === "receiveViaBridge") return t("process.setupOnlyDone");
+  const parts = [t("ops.outcome.swap", { amount: formatAmount(op.ctx.received), symbol: op.ctx.receivedSymbol ?? op.to })];
+  if (op.ctx.partial) parts.push(t("ops.outcome.partial"));
+  if (op.deliversToWallet) parts.push(toWallet);
+  else if (op.to === "NAV") parts.push(t("ops.outcome.keptOnExchange"));
+  return parts.join(" ");
 }
 
 /** One line about what is happening right now (tray, cards). */

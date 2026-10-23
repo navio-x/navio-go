@@ -13,12 +13,16 @@
  */
 import { confirmationsForAmount } from "@/lib/hyperliquid/bridge/config";
 import { MIN_ORDER_USDC } from "./quote";
+import { navSendFee, navSendAllFee, NAV_FEE_FALLBACK } from "@/lib/navioFee";
 
 // The bridge credits/pays out whole deposits and burns of at least 1 NAV.
 export const MIN_BRIDGE_NAV = 1;
-// Kept back in the wallet for the Navio network fee, which is added on top
-// of the amount sent (the SDK doesn't expose a fee estimate up front).
-export const NAV_FEE_RESERVE = 0.01;
+// The Navio network fee is paid on top of the amount sent and depends on how
+// many outputs the wallet spends (see lib/navioFee.js); `state.utxos` carries
+// their amounts. Without them this flat reserve stands in.
+export const NAV_FEE_RESERVE = NAV_FEE_FALLBACK;
+/** Fee for one wallet send of `amountNav`. */
+export const walletSendFee = (state, amountNav) => navSendFee(amountNav, state.utxos);
 export const NAVIO_BLOCK_MINUTES = 2;
 // Confirmations the faucet waits for before crediting the account.
 const FAUCET_CONFIRMATIONS = 3;
@@ -41,9 +45,9 @@ export function reservedNav(activeOps = []) {
   return { wallet: r8(wallet), exchange: r8(exchange) };
 }
 
-/** The wallet NAV the planner may spend (after the fee reserve and other operations). */
+/** The wallet NAV the planner may spend (after the fee for spending it all and other operations). */
 export function walletSpendable(state) {
-  return r8(Math.max(0, (state.navWallet || 0) - NAV_FEE_RESERVE - (state.reserved?.wallet || 0)));
+  return r8(Math.max(0, (state.navWallet || 0) - navSendAllFee(state.utxos) - (state.reserved?.wallet || 0)));
 }
 
 /** Exchange NAV the planner may spend (after other operations). */
@@ -88,7 +92,7 @@ export function evaluateSetup(state) {
         resolution: "send",
         steps: [
           { type: "faucet", amountNav: state.faucet.amountNav },
-          { type: "waitAccount", minutes: FAUCET_CONFIRMATIONS * NAVIO_BLOCK_MINUTES },
+          { type: "waitAccount", confirmations: FAUCET_CONFIRMATIONS, minutes: FAUCET_CONFIRMATIONS * NAVIO_BLOCK_MINUTES },
         ],
         costNav: Number(state.faucet.amountNav),
         minutes: FAUCET_CONFIRMATIONS * NAVIO_BLOCK_MINUTES,
@@ -120,7 +124,9 @@ export function evaluateFunding({ amount, target, state }) {
 
   const deposit = r8(Math.max(amount, MIN_BRIDGE_NAV));
   const setupCost = reqs.reduce((sum, r) => sum + (r.costNav || 0), 0);
-  const walletNeeded = r8(deposit + setupCost + NAV_FEE_RESERVE + (state.reserved?.wallet || 0));
+  // The setup payment and the deposit are two transactions, each with its fee.
+  const fees = walletSendFee(state, deposit) + (setupCost > 0 ? walletSendFee(state, setupCost) : 0);
+  const walletNeeded = r8(deposit + setupCost + fees + (state.reserved?.wallet || 0));
   if (walletNeeded > (state.navWallet || 0) + 1e-9) {
     reqs.push(
       blocked("walletFunds", "insufficient_balance", {
@@ -139,7 +145,7 @@ export function evaluateFunding({ amount, target, state }) {
       resolution: "send",
       steps: [
         { type: "deposit", amount: deposit },
-        { type: "waitCredit", need: target == null ? null : r8(target), added: target == null ? deposit : undefined, minutes: confirmationsForAmount(deposit) * NAVIO_BLOCK_MINUTES },
+        { type: "waitCredit", need: target == null ? null : r8(target), added: target == null ? deposit : undefined, confirmations: confirmationsForAmount(deposit), minutes: confirmationsForAmount(deposit) * NAVIO_BLOCK_MINUTES },
       ],
       costNav: deposit,
       deposit,
@@ -162,7 +168,7 @@ export function evaluateDelivery({ amount, minAmount, state, destination }) {
   if (!state.gasReady) return blocked("deliverable", "no_gas");
   const steps = [];
   if (!state.registered) steps.push({ type: "register" });
-  steps.push({ type: "toEvm", amount }, { type: "waitEvm" }, { type: "burn", destination });
+  steps.push({ type: "toEvm", amount }, { type: "waitEvm" }, { type: "burn", destination }, { type: "waitPayout" });
   return req("deliverable", false, { resolution: "send", steps, costNav: 0 });
 }
 

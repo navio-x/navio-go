@@ -777,6 +777,9 @@
   },
   "market": {
     "headerFormat": "{base}/{quote}",
+    "range": {
+      "all": "Tudo"
+    },
     "notFound": "Este mercado não está disponível.",
     "resolving": "Resolvendo mercado…",
     "live": "Ao vivo",
@@ -826,6 +829,7 @@
     "sizePercent": "Parcela do saldo disponível",
     "chart": "Gráfico de preços",
     "noChartData": "Ainda não há dados de preço para este intervalo.",
+    "noTradesInRange": "Sem negociações neste período.",
     "chartError": "Não foi possível carregar o gráfico.",
     "chartRetry": "Tentar novamente",
     "ohlc": {
@@ -1434,6 +1438,7 @@
       "swap": "Você recebeu {amount} {symbol}.",
       "partial": "Só parte do valor pôde ser trocada pelo seu preço; o restante continua sendo seu.",
       "toWallet": "O NAV chega à sua carteira em alguns minutos.",
+      "toWalletArrived": "Os NAV voltaram para a sua carteira.",
       "toExchange": "Seu NAV agora está na exchange.",
       "keptOnExchange": "Está na exchange: traga para sua carteira quando quiser pela página do NAV.",
       "cancelled": "Parado. Nada foi perdido: o NAV que já foi movido está na exchange e aparece na página do NAV."
@@ -1476,6 +1481,13 @@
       "to": "Para",
       "walletAddress": "O endereço da sua carteira",
       "privateAgain": "De volta à sua carteira, este NAV é privado novamente."
+    },
+    "transfer": {
+      "title": "Transferir entre contas",
+      "navio": "Carteira Navio",
+      "hl": "Hyperliquid",
+      "feeOnTop": "Taxa de rede {fee} NAV, cobrada à parte",
+      "feeHype": "Taxa de rede paga em HYPE da sua conta de trading"
     },
     "where": {
       "wallet": "Na sua carteira",
@@ -1840,17 +1852,22 @@
     "stepDetail": {
       "faucet": "{amount} NAV compram um pequeno pacote de USDC + HYPE que cria sua conta e paga suas taxas de rede. Só uma vez.",
       "faucetWaiting": "{amount} NAV enviados. Aguardando 3 confirmações (cerca de 6 min).",
+      "faucetConfirming": "{amount} NAV enviados. {confirmations}/{required} confirmações.",
+      "faucetCrediting": "{amount} NAV confirmados. Aguardando a criação da sua conta de trading.",
       "faucetDone": "{amount} NAV enviados. Conta de trading criada.",
       "register": "Automático. Nenhum NAV se move; a taxa mínima é paga com o HYPE que você recebeu.",
       "movingGas": "Movendo um pouco de HYPE para pagar a taxa de registro…",
       "deposit": "Enviado da sua carteira privada para a sua conta de trading.",
       "depositWaiting": "Enviado da sua carteira. Aguardando confirmações · faltam cerca de {minutes} min.",
+      "depositConfirming": "Enviado da sua carteira. {confirmations}/{required} confirmações.",
+      "depositCrediting": "Confirmado na Navio. Aguardando a ponte creditar sua conta de trading.",
       "depositDone": "{amount} NAV chegaram à sua conta de trading.",
       "order": "A {price} ou melhor, ou nada.",
       "orderDone": "Executado: {size} {base} a {price}.",
       "toEvmWaiting": "Aguardando a exchange…",
       "burn": "O NAV sai da exchange; a ponte o paga na sua carteira alguns minutos depois.",
-      "burnDone": "Enviado. O NAV chega à sua carteira em alguns minutos."
+      "burnDone": "Enviado. O NAV chega à sua carteira em alguns minutos.",
+      "payoutDone": "{amount} NAV chegaram à sua carteira."
     },
     "leave": "Você pode sair desta tela. O Navio Go continua acompanhando enquanto estiver aberto e retoma de onde parou após reiniciar.",
     "view": "Ver progresso",

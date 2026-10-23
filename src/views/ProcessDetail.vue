@@ -85,7 +85,7 @@ import { useI18n } from 'vue-i18n'
 import { ChevronLeft, ChevronDown, Loader2 } from 'lucide-vue-next'
 import { findOperation, operations } from '@/stores/operations'
 import { useProcessActions } from '@/composables/useProcessActions'
-import { titleOf, progressOf, technicalDetails } from '@/lib/intent/present'
+import { titleOf, progressOf, technicalDetails, outcomeOf } from '@/lib/intent/present'
 import { formatAmount } from '@/lib/displayFormat'
 import ProcessTimeline from '@/components/process/ProcessTimeline.vue'
 import BottomSheet from '@/components/tx/BottomSheet.vue'
@@ -110,18 +110,7 @@ const chip = computed(() => {
 const showTech = ref(false)
 const tech = computed(() => technicalDetails(op.value, t))
 
-const outcome = computed(() => {
-  const o = op.value
-  if (o.status === 'cancelled') return t('ops.outcome.cancelled')
-  if (o.kind === 'toExchange') return t('ops.outcome.toExchange')
-  if (o.kind === 'toWallet') return t('ops.outcome.toWallet')
-  if (o.kind === 'receiveViaBridge') return t('process.setupOnlyDone')
-  const parts = [t('ops.outcome.swap', { amount: formatAmount(o.ctx.received), symbol: o.ctx.receivedSymbol ?? o.to })]
-  if (o.ctx.partial) parts.push(t('ops.outcome.partial'))
-  if (o.deliversToWallet) parts.push(t('ops.outcome.toWallet'))
-  else if (o.to === 'NAV') parts.push(t('ops.outcome.keptOnExchange'))
-  return parts.join(' ')
-})
+const outcome = computed(() => outcomeOf(op.value, t))
 
 function goBack() {
   if (window.history.length > 1) router.back()

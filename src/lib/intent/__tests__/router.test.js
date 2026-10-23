@@ -85,14 +85,14 @@ describe("planSwap: NAV -> USDC", () => {
 describe("planSwap: USDC -> NAV", () => {
   it("delivers the bought NAV to the wallet", () => {
     const plan = planSwap({ from: "USDC", to: "NAV", quote: buyQuote(230), state: ready, destination: "nav1dest" });
-    expect(types(plan)).toEqual(["order", "toEvm", "waitEvm", "burn"]);
+    expect(types(plan)).toEqual(["order", "toEvm", "waitEvm", "burn", "waitPayout"]);
     expect(plan.steps[3].destination).toBe("nav1dest");
     expect(plan.deliversToWallet).toBe(true);
   });
 
   it("registers first when the account never used the bridge", () => {
     const plan = planSwap({ from: "USDC", to: "NAV", quote: buyQuote(230), state: { ...ready, registered: false }, destination: "nav1dest" });
-    expect(types(plan)).toEqual(["order", "register", "toEvm", "waitEvm", "burn"]);
+    expect(types(plan)).toEqual(["order", "register", "toEvm", "waitEvm", "burn", "waitPayout"]);
   });
 
   it("keeps the NAV on the exchange, with a reason, when it can't be delivered", () => {
@@ -143,12 +143,12 @@ describe("planMove", () => {
   it("brings NAV back, moving only what isn't already on the EVM side", () => {
     const state = { ...ready, navExchange: 80, navEvm: 20 };
     const plan = planMove({ direction: "toWallet", amount: 60, state, destination: "nav1dest" });
-    expect(types(plan)).toEqual(["toEvm", "waitEvm", "burn"]);
+    expect(types(plan)).toEqual(["toEvm", "waitEvm", "burn", "waitPayout"]);
     expect(plan.steps[0].amount).toBe(40);
     expect(plan.steps[2]).toMatchObject({ amount: 60, destination: "nav1dest" });
 
     const fromEvmOnly = planMove({ direction: "toWallet", amount: 15, state, destination: "nav1dest" });
-    expect(types(fromEvmOnly)).toEqual(["waitEvm", "burn"]);
+    expect(types(fromEvmOnly)).toEqual(["waitEvm", "burn", "waitPayout"]);
   });
 
   it("blocks on amounts and states that can't work", () => {

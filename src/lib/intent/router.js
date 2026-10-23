@@ -8,6 +8,7 @@ import { STAGE_OF } from "./steps";
 import {
   MIN_BRIDGE_NAV,
   NAV_FEE_RESERVE,
+  walletSendFee,
   r8,
   evaluateFunding,
   evaluateDelivery,
@@ -174,8 +175,9 @@ export function planReceiveViaBridge({ state }) {
   if (!firstBlocked(reqs)) reqs.push(...evaluateSetup(state));
   if (!firstBlocked(reqs)) {
     const cost = costOf(reqs);
-    if (cost + NAV_FEE_RESERVE > (state.navWallet || 0) + 1e-9) {
-      reqs.push({ id: "walletFunds", satisfied: false, resolution: "blocked", reason: "insufficient_balance", steps: [], needed: r8(cost + NAV_FEE_RESERVE), have: r8(state.navWallet || 0), shortfall: r8(cost + NAV_FEE_RESERVE - (state.navWallet || 0)), setupCost: cost, deposit: 0 });
+    const needed = r8(cost + walletSendFee(state, cost));
+    if (needed > (state.navWallet || 0) + 1e-9) {
+      reqs.push({ id: "walletFunds", satisfied: false, resolution: "blocked", reason: "insufficient_balance", steps: [], needed, have: r8(state.navWallet || 0), shortfall: r8(needed - (state.navWallet || 0)), setupCost: cost, deposit: 0 });
     }
   }
   finish(plan, reqs);

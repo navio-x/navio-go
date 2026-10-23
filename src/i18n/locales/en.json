@@ -777,6 +777,9 @@
   },
   "market": {
     "headerFormat": "{base}/{quote}",
+    "range": {
+      "all": "All"
+    },
     "notFound": "This market isn't available.",
     "resolving": "Resolving market…",
     "live": "Live",
@@ -826,6 +829,7 @@
     "sizePercent": "Share of available balance",
     "chart": "Price chart",
     "noChartData": "No price data for this interval yet.",
+    "noTradesInRange": "No trades in this period.",
     "chartError": "Couldn't load the chart.",
     "chartRetry": "Retry",
     "ohlc": {
@@ -1434,6 +1438,7 @@
       "swap": "You received {amount} {symbol}.",
       "partial": "Only part of the amount could be swapped at your price; the rest is still yours.",
       "toWallet": "NAV arrives in your wallet in a few minutes.",
+      "toWalletArrived": "The NAV is back in your wallet.",
       "toExchange": "Your NAV is now on the exchange.",
       "keptOnExchange": "It is on the exchange — bring it to your wallet any time from the NAV page.",
       "cancelled": "Stopped. Nothing is lost: any NAV already moved is on the exchange, shown on the NAV page."
@@ -1476,6 +1481,13 @@
       "to": "To",
       "walletAddress": "Your wallet address",
       "privateAgain": "Back in your wallet, this NAV is private again."
+    },
+    "transfer": {
+      "title": "Transfer between accounts",
+      "navio": "Navio wallet",
+      "hl": "Hyperliquid",
+      "feeOnTop": "Network fee {fee} NAV, added on top",
+      "feeHype": "Network fee paid in HYPE from your trading account"
     },
     "where": {
       "wallet": "In your wallet",
@@ -1840,17 +1852,22 @@
     "stepDetail": {
       "faucet": "{amount} NAV buys a small USDC + HYPE package that creates your account and pays its network fees. Once only.",
       "faucetWaiting": "{amount} NAV sent. Waiting for 3 confirmations (about 6 min).",
+      "faucetConfirming": "{amount} NAV sent. {confirmations}/{required} confirmations.",
+      "faucetCrediting": "{amount} NAV confirmed. Waiting for your trading account to be created.",
       "faucetDone": "{amount} NAV sent. Trading account created.",
       "register": "Automatic. No NAV moves; the tiny fee is paid from the HYPE you received.",
       "movingGas": "Moving a little HYPE over to pay the registration fee…",
       "deposit": "Sent from your private wallet to your trading account.",
       "depositWaiting": "Sent from your wallet. Waiting for confirmations · about {minutes} min left.",
+      "depositConfirming": "Sent from your wallet. {confirmations}/{required} confirmations.",
+      "depositCrediting": "Confirmed on Navio. Waiting for the bridge to credit your trading account.",
       "depositDone": "{amount} NAV arrived in your trading account.",
       "order": "At {price} or better, or not at all.",
       "orderDone": "Filled {size} {base} at {price}.",
       "toEvmWaiting": "Waiting for the exchange…",
       "burn": "The NAV leaves the exchange; the bridge pays it into your wallet a few minutes later.",
-      "burnDone": "Submitted. The NAV arrives in your wallet in a few minutes."
+      "burnDone": "Submitted. The NAV arrives in your wallet in a few minutes.",
+      "payoutDone": "{amount} NAV arrived in your wallet."
     },
     "leave": "You can leave this screen. Navio Go keeps tracking it while it is open, and picks up where it left off after a restart.",
     "view": "View progress",

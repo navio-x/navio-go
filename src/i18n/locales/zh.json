@@ -777,6 +777,9 @@
   },
   "market": {
     "headerFormat": "{base}/{quote}",
+    "range": {
+      "all": "全部"
+    },
     "notFound": "此市场不可用。",
     "resolving": "正在解析市场…",
     "live": "实时",
@@ -826,6 +829,7 @@
     "sizePercent": "占可用余额的比例",
     "chart": "价格图表",
     "noChartData": "此时间区间暂无价格数据。",
+    "noTradesInRange": "此时段内无交易。",
     "chartError": "无法加载图表。",
     "chartRetry": "重试",
     "ohlc": {
@@ -1434,6 +1438,7 @@
       "swap": "您已收到 {amount} {symbol}。",
       "partial": "只有部分金额能按您的价格兑换；其余部分仍归您所有。",
       "toWallet": "NAV 将在几分钟内到达您的钱包。",
+      "toWalletArrived": "NAV 已回到您的钱包。",
       "toExchange": "您的 NAV 现已在交易所。",
       "keptOnExchange": "它在交易所——可随时从 NAV 页面转回您的钱包。",
       "cancelled": "已停止。没有任何损失：已转移的 NAV 在交易所，并显示在 NAV 页面上。"
@@ -1476,6 +1481,13 @@
       "to": "至",
       "walletAddress": "您的钱包地址",
       "privateAgain": "回到钱包后，这些 NAV 重新变为隐私状态。"
+    },
+    "transfer": {
+      "title": "账户间转账",
+      "navio": "Navio 钱包",
+      "hl": "Hyperliquid",
+      "feeOnTop": "网络手续费 {fee} NAV，另行加收",
+      "feeHype": "网络手续费以交易账户中的 HYPE 支付"
     },
     "where": {
       "wallet": "在您的钱包中",
@@ -1840,17 +1852,22 @@
     "stepDetail": {
       "faucet": "用 {amount} NAV 购买一小份 USDC + HYPE 套餐，用于创建你的账户并支付其网络手续费。仅一次。",
       "faucetWaiting": "已发送 {amount} NAV。等待 3 次确认（约 6 分钟）。",
+      "faucetConfirming": "已发送 {amount} NAV。确认数 {confirmations}/{required}。",
+      "faucetCrediting": "{amount} NAV 已确认。等待创建您的交易账户。",
       "faucetDone": "已发送 {amount} NAV。交易账户已创建。",
       "register": "自动完成。NAV 不会移动；极小的手续费由你收到的 HYPE 支付。",
       "movingGas": "正在转移少量 HYPE 以支付注册费用…",
       "deposit": "已从你的私密钱包发送到交易账户。",
       "depositWaiting": "已从钱包发送。等待确认 · 还需约 {minutes} 分钟。",
+      "depositConfirming": "已从钱包发出。确认数 {confirmations}/{required}。",
+      "depositCrediting": "已在 Navio 确认。等待跨链桥记入您的交易账户。",
       "depositDone": "{amount} NAV 已到达你的交易账户。",
       "order": "以 {price} 或更优价格成交，否则不成交。",
       "orderDone": "已成交：{size} {base}，价格 {price}。",
       "toEvmWaiting": "等待交易所…",
       "burn": "NAV 离开交易所；几分钟后跨链桥会把它支付到你的钱包。",
-      "burnDone": "已提交。NAV 将在几分钟内到达你的钱包。"
+      "burnDone": "已提交。NAV 将在几分钟内到达你的钱包。",
+      "payoutDone": "{amount} NAV 已到达您的钱包。"
     },
     "leave": "你可以离开此屏幕。Navio Go 在打开期间会持续跟踪，重启后也会从中断处继续。",
     "view": "查看进度",

@@ -23,6 +23,18 @@
       <div class="min-w-0 flex-1">
         <p class="text-sm leading-6" :class="labelClass(item.state)">{{ item.label }}</p>
         <p v-if="item.detail && item.state !== 'upcoming'" class="text-xs leading-snug" :class="detailClass(item.state)">{{ item.detail }}</p>
+        <!-- The transaction behind the step, one tap away on the web -->
+        <a
+          v-for="link in item.links"
+          :key="link.url"
+          :href="link.url"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="mt-1.5 inline-flex items-center gap-1 text-xs font-medium text-blue-600 dark:text-blue-400"
+        >
+          <ExternalLink class="w-3.5 h-3.5" />
+          {{ $t('dex.viewExplorer') }}
+        </a>
         <slot name="after" :item="item" :index="i" />
       </div>
       <span v-if="item.state === 'waiting'" class="shrink-0 text-[11px] font-semibold uppercase tracking-wide text-amber-600 dark:text-amber-400">{{ $t('process.status.running') }}</span>
@@ -33,14 +45,14 @@
 <script setup>
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { Check, Loader2, Clock, AlertTriangle, Hand, Pause } from 'lucide-vue-next'
-import { visibleSteps, describeStep } from '@/lib/intent/present'
+import { Check, Loader2, Clock, AlertTriangle, Hand, Pause, ExternalLink } from 'lucide-vue-next'
+import { visibleSteps, describeStep, explorerLinks } from '@/lib/intent/present'
 
 const props = defineProps({ op: { type: Object, required: true } })
 const { t } = useI18n()
 
 const items = computed(() =>
-  visibleSteps(props.op).map((v) => ({ ...v, ...describeStep(v, props.op, t) }))
+  visibleSteps(props.op).map((v) => ({ ...v, ...describeStep(v, props.op, t), links: explorerLinks(v.step) }))
 )
 
 function markerClass(state) {

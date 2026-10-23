@@ -16,6 +16,7 @@ import { ref, watch } from "vue";
 import { getNavioClient, walletName, syncHealth } from "@/stores/navio";
 import { settings } from "@/stores/settings";
 import { planMakerReservation } from "@/lib/trade/reservation";
+import { navSendAllFee } from "@/lib/navioFee";
 import { getTradeStore, getTradeKey } from "@/lib/trade/session";
 import { encryptRecord, decryptRecord } from "@/lib/trade/crypto";
 
@@ -633,6 +634,24 @@ export async function makerBroadcastOrder(options) {
  * it can't touch a coin an outstanding quote/order depends on. */
 export async function getSendableUtxos(tokenId) {
   return fetchAvailableUtxos(tokenId);
+}
+
+/**
+ * The outputs a NAV send of `amountNav` must spend, or undefined to let the
+ * SDK pick. Explicit in two cases: when coins are locked for an open trade
+ * (only the free ones may go), and when the send empties the wallet. The
+ * SDK's own picker takes outputs largest first and stops as soon as the
+ * amount plus fee is covered, so it skips an output worth no more than the
+ * 0.002 NAV it costs to add — and that dust would stay behind after "Max".
+ */
+export async function outputsToSpend(amountNav) {
+  await loadReservations();
+  const sendable = await fetchAvailableUtxos(null);
+  const amounts = sendable.map((u) => Number(u.amount) / 1e8);
+  const total = amounts.reduce((sum, a) => sum + a, 0);
+  const sendsAll = amountNav + navSendAllFee(amounts) >= total - 1e-8;
+  if (!sendsAll && !(getReservedAmount(null) > 0n)) return undefined;
+  return sendable.map((u) => u.outputHash);
 }
 
 // ── Intents (maker "advertise liquidity") ───────────────────────────────

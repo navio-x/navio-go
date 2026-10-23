@@ -777,6 +777,9 @@
   },
   "market": {
     "headerFormat": "{base}/{quote}",
+    "range": {
+      "all": "全期間"
+    },
     "notFound": "この市場は利用できません。",
     "resolving": "市場を解決中…",
     "live": "ライブ",
@@ -826,6 +829,7 @@
     "sizePercent": "利用可能残高に対する割合",
     "chart": "価格チャート",
     "noChartData": "この期間の価格データはまだありません。",
+    "noTradesInRange": "この期間に取引はありません。",
     "chartError": "チャートを読み込めませんでした。",
     "chartRetry": "再試行",
     "ohlc": {
@@ -1434,6 +1438,7 @@
       "swap": "{amount} {symbol} を受け取りました。",
       "partial": "指定した価格でスワップできたのは金額の一部だけです。残りは引き続きあなたのものです。",
       "toWallet": "NAV は数分でウォレットに届きます。",
+      "toWalletArrived": "NAVはウォレットに戻りました。",
       "toExchange": "NAV は取引所に移動しました。",
       "keptOnExchange": "取引所にあります — NAV ページからいつでもウォレットに戻せます。",
       "cancelled": "停止しました。失われたものはありません。すでに移動した NAV は取引所にあり、NAV ページに表示されます。"
@@ -1476,6 +1481,13 @@
       "to": "移動先",
       "walletAddress": "あなたのウォレットアドレス",
       "privateAgain": "ウォレットに戻ると、この NAV は再びプライベートになります。"
+    },
+    "transfer": {
+      "title": "口座間で移動",
+      "navio": "Navioウォレット",
+      "hl": "Hyperliquid",
+      "feeOnTop": "ネットワーク手数料 {fee} NAV（別途加算）",
+      "feeHype": "ネットワーク手数料は取引口座のHYPEから支払われます"
     },
     "where": {
       "wallet": "ウォレット内",
@@ -1840,17 +1852,22 @@
     "stepDetail": {
       "faucet": "{amount} NAVで少量のUSDC + HYPEパッケージを購入します。これでアカウントが作成され、ネットワーク手数料がまかなわれます。1回のみ。",
       "faucetWaiting": "{amount} NAVを送信しました。3承認を待っています（約6分）。",
+      "faucetConfirming": "{amount} NAV送信済み。承認 {confirmations}/{required}。",
+      "faucetCrediting": "{amount} NAVが承認されました。取引口座の作成を待っています。",
       "faucetDone": "{amount} NAVを送信しました。取引口座が作成されました。",
       "register": "自動。NAVは動きません。わずかな手数料は受け取ったHYPEから支払われます。",
       "movingGas": "登録手数料のために少量のHYPEを移動中…",
       "deposit": "プライベートウォレットから取引口座へ送信しました。",
       "depositWaiting": "ウォレットから送信済み。承認待ち · 残り約{minutes}分。",
+      "depositConfirming": "ウォレットから送信済み。承認 {confirmations}/{required}。",
+      "depositCrediting": "Navioで承認されました。ブリッジが取引口座に反映するのを待っています。",
       "depositDone": "{amount} NAVが取引口座に届きました。",
       "order": "{price}以上の価格で約定、または不成立。",
       "orderDone": "{size} {base}を{price}で約定。",
       "toEvmWaiting": "取引所を待っています…",
       "burn": "NAVが取引所を離れ、数分後にブリッジがウォレットへ支払います。",
-      "burnDone": "送信済み。NAVは数分でウォレットに届きます。"
+      "burnDone": "送信済み。NAVは数分でウォレットに届きます。",
+      "payoutDone": "{amount} NAVがウォレットに届きました。"
     },
     "leave": "この画面を離れても大丈夫です。Navio Goは開いている間追跡を続け、再起動後も中断した所から再開します。",
     "view": "進捗を見る",

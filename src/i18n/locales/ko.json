@@ -777,6 +777,9 @@
   },
   "market": {
     "headerFormat": "{base}/{quote}",
+    "range": {
+      "all": "전체"
+    },
     "notFound": "이 마켓은 이용할 수 없습니다.",
     "resolving": "마켓 확인 중…",
     "live": "실시간",
@@ -826,6 +829,7 @@
     "sizePercent": "사용 가능 잔액 대비 비율",
     "chart": "가격 차트",
     "noChartData": "이 구간의 가격 데이터가 아직 없습니다.",
+    "noTradesInRange": "이 기간에 거래가 없습니다.",
     "chartError": "차트를 불러오지 못했습니다.",
     "chartRetry": "다시 시도",
     "ohlc": {
@@ -1434,6 +1438,7 @@
       "swap": "{amount} {symbol}을(를) 받았습니다.",
       "partial": "지정한 가격으로는 금액의 일부만 스왑되었습니다. 나머지는 그대로 내 것입니다.",
       "toWallet": "NAV가 몇 분 안에 지갑에 도착합니다.",
+      "toWalletArrived": "NAV가 지갑으로 돌아왔습니다.",
       "toExchange": "이제 NAV가 거래소에 있습니다.",
       "keptOnExchange": "거래소에 있습니다 — NAV 페이지에서 언제든 지갑으로 가져올 수 있습니다.",
       "cancelled": "중지했습니다. 잃은 것은 없습니다. 이미 옮긴 NAV는 거래소에 있으며 NAV 페이지에 표시됩니다."
@@ -1476,6 +1481,13 @@
       "to": "받는 곳",
       "walletAddress": "내 지갑 주소",
       "privateAgain": "지갑으로 돌아오면 이 NAV는 다시 프라이빗 상태가 됩니다."
+    },
+    "transfer": {
+      "title": "계정 간 이체",
+      "navio": "Navio 지갑",
+      "hl": "Hyperliquid",
+      "feeOnTop": "네트워크 수수료 {fee} NAV, 별도 추가",
+      "feeHype": "네트워크 수수료는 거래 계정의 HYPE로 지불됩니다"
     },
     "where": {
       "wallet": "내 지갑",
@@ -1840,17 +1852,22 @@
     "stepDetail": {
       "faucet": "{amount} NAV로 소량의 USDC + HYPE 패키지를 구매합니다. 이로써 계정이 생성되고 네트워크 수수료가 충당됩니다. 1회만.",
       "faucetWaiting": "{amount} NAV 전송됨. 3회 확인 대기 중(약 6분).",
+      "faucetConfirming": "{amount} NAV 전송됨. 확인 {confirmations}/{required}.",
+      "faucetCrediting": "{amount} NAV 확인됨. 거래 계정 생성을 기다리는 중.",
       "faucetDone": "{amount} NAV 전송됨. 거래 계정이 생성되었습니다.",
       "register": "자동. NAV는 이동하지 않으며, 소액 수수료는 받은 HYPE로 지불됩니다.",
       "movingGas": "등록 수수료 지불을 위해 소량의 HYPE를 이동하는 중…",
       "deposit": "개인 지갑에서 거래 계정으로 전송되었습니다.",
       "depositWaiting": "지갑에서 전송됨. 확인 대기 중 · 약 {minutes}분 남음.",
+      "depositConfirming": "지갑에서 전송됨. 확인 {confirmations}/{required}.",
+      "depositCrediting": "Navio에서 확인됨. 브리지가 거래 계정에 입금하기를 기다리는 중.",
       "depositDone": "{amount} NAV가 거래 계정에 도착했습니다.",
       "order": "{price} 이상의 가격으로 체결되거나 전혀 체결되지 않음.",
       "orderDone": "{size} {base}이(가) {price}에 체결됨.",
       "toEvmWaiting": "거래소를 기다리는 중…",
       "burn": "NAV가 거래소를 떠나고, 몇 분 뒤 브리지가 지갑으로 지급합니다.",
-      "burnDone": "제출됨. NAV가 몇 분 안에 지갑에 도착합니다."
+      "burnDone": "제출됨. NAV가 몇 분 안에 지갑에 도착합니다.",
+      "payoutDone": "{amount} NAV가 지갑에 도착했습니다."
     },
     "leave": "이 화면을 떠나도 됩니다. Navio Go는 열려 있는 동안 계속 추적하고, 다시 시작한 뒤에도 중단한 곳부터 이어갑니다.",
     "view": "진행 상황 보기",

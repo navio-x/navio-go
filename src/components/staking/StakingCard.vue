@@ -255,7 +255,8 @@ import {
 import { getReservedAmount } from '@/stores/trade'
 import { navPrice } from '@/stores/navPrice'
 import { settings } from '@/stores/settings'
-import { NAV_FEE_RESERVE } from '@/lib/intent/router'
+import { navSendAllFee } from '@/lib/navioFee'
+import { spendableNavUtxoAmounts } from '@/stores/navio'
 import { formatAmount, formatFiatFromUsd } from '@/lib/displayFormat'
 import { toPositions, toRewards, shortKey, rewardSeries, REWARD_RANGES } from '@/lib/staking'
 import { operatorForKey, loadOperators } from '@/stores/stakingOperators'
@@ -324,7 +325,7 @@ const stakedFiat = computed(() =>
 
 const minStake = computed(() => getMinStakeNav())
 const maxStake = computed(() =>
-  Math.max(0, (Number(balance.value) || 0) - Number(getReservedAmount(null)) / 1e8 - NAV_FEE_RESERVE)
+  Math.max(0, (Number(balance.value) || 0) - Number(getReservedAmount(null)) / 1e8 - navSendAllFee(spendableNavUtxoAmounts.value))
 )
 const canStake = computed(() => maxStake.value >= minStake.value)
 

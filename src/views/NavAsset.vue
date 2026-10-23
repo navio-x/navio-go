@@ -1,7 +1,7 @@
-<!-- NAV, as one asset: the total first, where it is held one tap away,
-     cold staking under the actions, and the explicit wallet <-> exchange
-     move (what used to be the bridge's deposit/withdraw screens) under
-     Advanced for those who want it. -->
+<!-- NAV, as one asset: the total first with where it is held and the
+     explicit wallet <-> exchange transfer (what used to be the bridge's
+     deposit/withdraw screens) inside that card, then the actions, Advanced
+     (order book, bridge addresses, diagnostics) and cold staking. -->
 <template>
   <div class="bg-gray-50 dark:bg-gh-900 min-h-full flex flex-col">
     <div class="flex items-center gap-3 px-5 pt-5 pb-4">
@@ -46,6 +46,28 @@
             </div>
           </dl>
         </template>
+
+        <!-- The explicit wallet <-> exchange transfer, right under the two accounts it moves between -->
+        <button
+          v-if="hlEnabled"
+          @click="openMove()"
+          :disabled="busyOperation"
+          class="mt-3 w-full px-3 py-2.5 rounded-xl flex items-center gap-3 text-left transition-colors
+                 bg-gray-50 dark:bg-gh-700/60 hover:bg-gray-100 dark:hover:bg-gh-700 active:scale-[0.99] disabled:opacity-50"
+        >
+          <span class="w-8 h-8 shrink-0 rounded-full flex items-center justify-center bg-blue-50 dark:bg-blue-500/15 text-blue-600 dark:text-blue-400">
+            <ArrowLeftRight class="w-4 h-4" />
+          </span>
+          <span class="min-w-0 flex-1">
+            <span class="block text-sm font-semibold text-gray-800 dark:text-gray-100">{{ $t('asset.transfer.title') }}</span>
+            <span class="mt-0.5 flex items-center gap-1.5 text-xs text-gray-500 dark:text-gray-400 leading-snug">
+              <span class="truncate">{{ $t('asset.transfer.navio') }}</span>
+              <ArrowRightLeft class="w-4 h-4 shrink-0 text-blue-600 dark:text-blue-400" stroke-width="2.5" />
+              <span class="truncate">{{ $t('asset.transfer.hl') }}</span>
+            </span>
+          </span>
+          <ChevronRight class="w-4 h-4 shrink-0 text-gray-300 dark:text-gray-600" />
+        </button>
       </div>
 
       <!-- Actions -->
@@ -67,11 +89,7 @@
         </button>
       </div>
 
-      <ProcessCard v-for="op in activeOperations" :key="op.id" :op="op" />
-
-      <StakingCard />
-
-      <!-- Advanced: the explicit versions of what Swap does on its own -->
+      <!-- Advanced: order book, bridge addresses and the trading account's facts -->
       <div v-if="hlEnabled" class="rounded-2xl border border-gray-200 dark:border-gh-700 bg-white dark:bg-gh-800 overflow-hidden">
         <button
           type="button"
@@ -84,22 +102,6 @@
         </button>
 
         <div v-if="showAdvanced" class="border-t border-gray-100 dark:border-gh-700 px-4 py-4 space-y-4">
-          <div class="space-y-2">
-            <p class="text-xs text-gray-500 dark:text-gray-400 leading-snug">{{ $t('asset.moveDesc') }}</p>
-            <div class="grid grid-cols-2 gap-2">
-              <button
-                v-for="direction in ['toExchange', 'toWallet']"
-                :key="direction"
-                @click="openMove(direction)"
-                :disabled="busyOperation"
-                class="px-2 py-2.5 rounded-xl text-xs font-semibold leading-tight border border-gray-200 dark:border-gh-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gh-700 flex items-center justify-center gap-1.5"
-              >
-                <component :is="direction === 'toExchange' ? ArrowUpFromLine : ArrowDownToLine" class="w-3.5 h-3.5 shrink-0" />
-                {{ $t(`asset.move.${direction}`) }}
-              </button>
-            </div>
-          </div>
-
           <div class="space-y-1">
             <button
               v-for="link in advancedLinks"
@@ -118,6 +120,10 @@
           <p class="text-xs leading-relaxed text-gray-400 dark:text-gray-500">{{ $t('asset.explain') }}</p>
         </div>
       </div>
+
+      <ProcessCard v-for="op in activeOperations" :key="op.id" :op="op" />
+
+      <StakingCard />
     </div>
 
     <!-- Trading account: the facts behind the setup, read-only -->
@@ -141,15 +147,36 @@
       </div>
     </BottomSheet>
 
-    <!-- Move: amount -->
-    <BottomSheet :open="!!moveDirection && !showReview" :title="moveDirection ? $t(`asset.move.${moveDirection}`) : ''" @close="moveDirection = null">
+    <!-- Transfer: direction, then amount -->
+    <BottomSheet :open="!!moveDirection && !showReview" :title="$t('asset.transfer.title')" @close="moveDirection = null">
       <div class="space-y-4">
+        <div class="rounded-2xl border border-gray-200 dark:border-gh-700 bg-white dark:bg-gh-800 flex items-stretch overflow-hidden">
+          <div class="flex-1 min-w-0 divide-y divide-gray-100 dark:divide-gh-700">
+            <div v-for="end in moveEnds" :key="end.id" class="px-4 py-3 flex items-center justify-between gap-3">
+              <span class="min-w-0">
+                <span class="block text-xs text-gray-400 dark:text-gray-500">{{ end.role }}</span>
+                <span class="block text-sm font-semibold text-gray-900 dark:text-white truncate">{{ end.label }}</span>
+              </span>
+              <span class="shrink-0 text-xs font-mono tabular-nums text-gray-500 dark:text-gray-400">{{ formatAmount(end.amount, 8) }} NAV</span>
+            </div>
+          </div>
+          <button
+            type="button"
+            @click="flipMove"
+            :aria-label="$t('swap.flip')"
+            class="px-3.5 shrink-0 flex items-center justify-center border-l border-gray-100 dark:border-gh-700 text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gh-700"
+          >
+            <ArrowDownUp class="w-4 h-4" />
+          </button>
+        </div>
+
         <AmountField
           v-model="moveInput"
           :label="$t('tx.amount')"
           symbol="NAV"
           :logo="HL_LOGOS.NAV"
           :balance="state ? moveMax : null"
+          :hint="moveFeeLine"
           @max="moveInput = toDecimalString(moveMax, 8)"
         />
         <p v-if="moveProblem" class="rounded-xl bg-amber-50 dark:bg-amber-900/20 px-3 py-2.5 text-xs text-amber-800 dark:text-amber-300 leading-snug">
@@ -189,7 +216,7 @@ import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import {
   ChevronLeft, ChevronDown, ChevronRight, SendHorizontal, Download, Repeat,
-  ArrowUpFromLine, ArrowDownToLine, Loader2,
+  ArrowLeftRight, ArrowRightLeft, ArrowDownUp, Loader2,
 } from 'lucide-vue-next'
 import { settings } from '@/stores/settings'
 import { hlEnabled } from '@/stores/network'
@@ -199,7 +226,8 @@ import { activeOperations, startOperation, reservedByOperations, setupInProgress
 import { usePortfolio } from '@/composables/usePortfolio'
 import { HL_LOGOS, HL_NAMES } from '@/lib/hyperliquid/config'
 import { readAccountState } from '@/lib/intent/executors'
-import { planMove, planReceiveViaBridge, NAV_FEE_RESERVE } from '@/lib/intent/router'
+import { planMove, planReceiveViaBridge } from '@/lib/intent/router'
+import { walletSpendable, walletSendFee } from '@/lib/intent/requirements'
 import { toDecimalString } from '@/lib/intent/quote'
 import { formatAmount, formatFiatFromUsd } from '@/lib/displayFormat'
 import TokenIcon from '@/components/TokenIcon.vue'
@@ -218,12 +246,8 @@ const totalFiat = computed(() =>
   portfolio.navUsd.value != null ? formatFiatFromUsd(nav.value.total * portfolio.navUsd.value) : null
 )
 
-// Open by default as soon as anything is held outside the wallet.
-const breakdownToggled = ref(null)
-const showBreakdown = computed({
-  get: () => breakdownToggled.value ?? (nav.value.exchange > 0 || nav.value.moving > 0 || nav.value.staked > 0),
-  set: (v) => { breakdownToggled.value = v },
-})
+// Where the NAV is held is shown up front; the toggle only lets it be tucked away.
+const showBreakdown = ref(true)
 
 const breakdown = computed(() => {
   const rows = [
@@ -315,7 +339,33 @@ const stateError = ref('')
 // arithmetic, the one-time setup must simply not be started twice.
 const busyOperation = computed(() => setupInProgress.value)
 
-async function openMove(direction) {
+// Wallet -> exchange unless the wallet is empty and the exchange is not.
+function defaultDirection() {
+  return nav.value.wallet <= 0 && nav.value.exchange > 0 ? 'toWallet' : 'toExchange'
+}
+
+function flipMove() {
+  moveDirection.value = moveDirection.value === 'toExchange' ? 'toWallet' : 'toExchange'
+  moveInput.value = ''
+}
+
+const moveAccounts = computed(() => ({
+  wallet: { label: t('asset.transfer.navio'), amount: nav.value.wallet },
+  exchange: { label: t('asset.transfer.hl'), amount: nav.value.exchange },
+}))
+
+// The two rows of the direction card: from on top, to below.
+const moveEnds = computed(() => {
+  const toExchange = moveDirection.value !== 'toWallet'
+  const from = toExchange ? 'wallet' : 'exchange'
+  const to = toExchange ? 'exchange' : 'wallet'
+  return [
+    { id: 'from', role: t('asset.move.from'), ...moveAccounts.value[from] },
+    { id: 'to', role: t('asset.move.to'), ...moveAccounts.value[to] },
+  ]
+})
+
+async function openMove(direction = defaultDirection()) {
   moveDirection.value = direction
   moveInput.value = ''
   showReview.value = false
@@ -345,8 +395,24 @@ const moveAmount = computed(() => {
 const moveMax = computed(() => {
   if (!liveState.value) return 0
   if (moveDirection.value === 'toWallet') return liveState.value.navExchange + liveState.value.navEvm
+  // Everything the wallet can send, less the setup payment (its own transaction, with its own fee).
   const setupCost = !liveState.value.registered && liveState.value.faucet ? Number(liveState.value.faucet.amountNav) : 0
-  return Math.max(0, liveState.value.navWallet - NAV_FEE_RESERVE - setupCost)
+  const setup = setupCost > 0 ? setupCost + walletSendFee(liveState.value, setupCost) : 0
+  return Math.max(0, walletSpendable(liveState.value) - setup)
+})
+
+// What the wallet pays on top for this direction: the send itself and, on a
+// first move, the setup payment (two transactions). Going the other way the
+// network fee is HYPE from the trading account, so no NAV comes off.
+const moveSetupCost = computed(() => (liveState.value && !liveState.value.registered && liveState.value.faucet ? Number(liveState.value.faucet.amountNav) : 0))
+const moveFee = computed(() => {
+  if (!liveState.value || moveDirection.value !== 'toExchange' || !(moveAmount.value > 0)) return 0
+  const s = liveState.value
+  return walletSendFee(s, moveAmount.value) + (moveSetupCost.value > 0 ? walletSendFee(s, moveSetupCost.value) : 0)
+})
+const moveFeeLine = computed(() => {
+  if (moveDirection.value === 'toWallet') return t('asset.transfer.feeHype')
+  return moveFee.value > 0 ? t('asset.transfer.feeOnTop', { fee: formatAmount(moveFee.value, 8) }) : ''
 })
 
 const movePlan = computed(() => {
@@ -375,6 +441,7 @@ const moveRows = computed(() => {
     { label: t('swap.arrives'), value: toExchange ? t('swap.arrivesMinutes', { minutes: p.minutes }) : t('swap.arrivesWallet') },
   ]
   if (p.setup) rows.push({ label: t('swap.setup'), value: `${formatAmount(p.setup.amountNav)} NAV` })
+  if (toExchange) rows.push({ label: t('wallet.networkFee'), value: `${formatAmount(moveFee.value, 8)} NAV` })
   return rows
 })
 

@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { visibleSteps, progressOf, statusLine, describeStep, historyRowOf, technicalDetails } from "../present";
+import { visibleSteps, progressOf, statusLine, describeStep, historyRowOf, technicalDetails, explorerLinks, outcomeOf } from "../present";
 
 const t = (key, p = {}) => `${key}${Object.keys(p).length ? ":" + Object.values(p).join("/") : ""}`;
 const op = (status, steps, extra = {}) => ({
@@ -22,6 +22,34 @@ describe("present", () => {
     expect(vis.map((v) => v.state)).toEqual(["done", "done", "waiting", "upcoming"]);
     expect(progressOf(o)).toEqual({ done: 2, total: 4 });
     expect(statusLine(o, t)).toContain("process.stepDetail.depositWaiting");
+  });
+
+  it("counts confirmations once the wallet has seen the send, then says it is waiting on the bridge", () => {
+    const steps = (confirmed) => [
+      { type: "deposit", kind: "send", status: "done", amount: 300 },
+      { type: "waitCredit", kind: "wait", status: "active", confirmations: 3, confirmed, minutes: 6 },
+    ];
+    expect(statusLine(op("running", steps(0)), t)).toMatch(/depositConfirming:.*\/0\/3$/);
+    expect(statusLine(op("running", steps(2)), t)).toContain("process.stepDetail.depositConfirming");
+    expect(statusLine(op("running", steps(3)), t)).toContain("process.stepDetail.depositCrediting");
+    expect(statusLine(op("running", steps(undefined)), t)).toContain("process.stepDetail.depositWaiting");
+  });
+
+  it("links a step's transaction to the explorer of the chain it is on", () => {
+    expect(explorerLinks({ type: "deposit", txId: "ab12" })).toEqual([{ url: "https://blocks.nav.io/tx/ab12", hash: "ab12" }]);
+    expect(explorerLinks({ type: "burn", hash: "0xcd" })).toEqual([{ url: "https://hyperevmscan.io/tx/0xcd", hash: "0xcd" }]);
+    expect(explorerLinks({ type: "order", cloid: "x" })).toEqual([]);
+  });
+
+  it("keeps a withdrawal running until the bridge has paid the wallet, then says it arrived", () => {
+    const steps = (payout) => [{ type: "burn", kind: "send", status: "done", amount: 5, hash: "0x1" }, { type: "waitPayout", kind: "wait", ...payout }];
+    const waiting = op("running", steps({ status: "active" }), { kind: "toWallet", send: 5 });
+    expect(visibleSteps(waiting).map((v) => v.state)).toEqual(["waiting"]);
+    expect(statusLine(waiting, t)).toBe("process.stepDetail.burnDone");
+    const arrived = op("done", steps({ status: "done" }), { kind: "toWallet", send: 5 });
+    expect(describeStep(visibleSteps(arrived)[0], arrived, t).detail).toBe("process.stepDetail.payoutDone:5");
+    expect(outcomeOf(arrived, t)).toBe("ops.outcome.toWalletArrived");
+    expect(outcomeOf(op("done", steps({ status: "done", timedOut: true }), { kind: "toWallet", send: 5 }), t)).toBe("ops.outcome.toWallet");
   });
 
   it("shows approval, failure and paused states", () => {

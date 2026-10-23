@@ -22,6 +22,7 @@ export const STEP_TYPES = {
   toEvm: { kind: "auto", broadcast: true },
   waitEvm: { kind: "wait", broadcast: false },
   burn: { kind: "send", broadcast: true },
+  waitPayout: { kind: "wait", broadcast: false },
 };
 
 /** The user-facing stage each step belongs to (see router.stagesOf). */
@@ -35,6 +36,7 @@ export const STAGE_OF = {
   toEvm: "deliver",
   waitEvm: "deliver",
   burn: "deliver",
+  waitPayout: "deliver",
 };
 
 export const stepKind = (type) => STEP_TYPES[type]?.kind ?? "auto";
