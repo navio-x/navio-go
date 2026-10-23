@@ -152,6 +152,10 @@
       "off": "끄기"
     },
     "autoLockDesc": "입력이 없거나 백그라운드에 머문 시간이 이만큼 지나면 열린 지갑을 잠급니다. 계속하려면 비밀번호가 필요합니다. '지갑 잠금 해제 유지'로 비밀번호를 기억하는 동안에는 적용되지 않습니다.",
+    "biometricUnlock": "지문 / 얼굴로 잠금 해제",
+    "biometricUnlockDesc": "이 지갑의 비밀번호를 기기의 생체 인증 뒤에 있는 Android Keystore에 보관하여 입력 없이 잠금을 해제할 수 있습니다. 비밀번호는 항상 사용할 수 있습니다. 비밀번호를 입력해 연 지갑도 추가됩니다.",
+    "biometricUnavailable": "이 기기에서는 사용할 수 없습니다.",
+    "biometricNotEnrolled": "이 기기에 등록된 지문이나 얼굴이 없습니다.",
     "logout": "로그아웃",
     "developer": "개발자",
     "developerDesc": "직접 서비스를 운영하는 사용자를 위한 설정."
@@ -372,6 +376,17 @@
     "title": "지갑이 잠겼습니다",
     "desc": "계속하려면 '{name}' 지갑의 비밀번호를 입력하세요.",
     "logout": "로그아웃하고 지갑 전환"
+  },
+  "biometric": {
+    "useButton": "지문 / 얼굴 사용",
+    "promptTitle": "지갑 잠금 해제",
+    "promptSubtitle": "'{name}' 잠금 해제",
+    "enrollPromptTitle": "지갑 비밀번호 보호",
+    "enableTitle": "생체 인증 잠금 해제 켜기",
+    "enableDesc": "'{name}' 지갑의 비밀번호를 한 번 입력하세요. 이 기기에서 생체 인증 뒤에 보관됩니다.",
+    "enableBtn": "켜기",
+    "staleStored": "보관된 비밀번호로는 더 이상 이 지갑을 열 수 없습니다. 계속하려면 비밀번호를 입력하세요.",
+    "notEncrypted": "이 지갑에는 비밀번호가 없어 보호할 것이 없습니다."
   },
   "agreement": {
     "title": "Navio Go 지갑 – 이용 약관",

@@ -39,6 +39,20 @@
       <p v-if="error" class="text-sm text-red-500 dark:text-red-400">{{ error }}</p>
 
       <button
+        v-if="biometricReady"
+        @click="unlockWithBiometric"
+        :disabled="busy"
+        class="w-full py-2.5 rounded-xl text-sm font-medium transition
+        bg-gray-100 hover:bg-gray-200 text-gray-700
+        dark:bg-gh-800 dark:hover:bg-gh-700 dark:text-gray-300
+        disabled:opacity-60 disabled:cursor-not-allowed
+        inline-flex items-center justify-center gap-2"
+      >
+        <Fingerprint class="w-4 h-4" />
+        {{ $t('biometric.useButton') }}
+      </button>
+
+      <button
         @click="unlock"
         :disabled="!password || busy"
         class="w-full py-2.5 rounded-xl text-sm font-medium transition
@@ -68,10 +82,11 @@
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
-import { Lock, Eye, EyeOff } from 'lucide-vue-next'
+import { Lock, Eye, EyeOff, Fingerprint } from 'lucide-vue-next'
 import { walletName, unlockWallet, logoutWallet } from '../stores/navio'
-import { unlockMaxAgeMs } from '../stores/settings'
+import { settings, unlockMaxAgeMs } from '../stores/settings'
 import { rememberPassword } from '../lib/unlockCache'
+import { hasBiometricPassword, readBiometricPassword, forgetBiometricPassword } from '../lib/biometric'
 
 const router = useRouter()
 const { t } = useI18n()
@@ -81,7 +96,43 @@ const showPassword = ref(false)
 const error = ref('')
 const busy = ref(false)
 const passwordInputEl = ref(null)
-onMounted(() => passwordInputEl.value?.focus())
+// Biometric unlock is on and this wallet's password is in the Keystore.
+const biometricReady = ref(false)
+
+onMounted(async () => {
+  passwordInputEl.value?.focus()
+  biometricReady.value = settings.biometricUnlock && (await hasBiometricPassword(walletName.value))
+  // Open straight into the prompt; a cancel just leaves the password field.
+  if (biometricReady.value) unlockWithBiometric()
+})
+
+async function unlockWithBiometric() {
+  if (busy.value) return
+  busy.value = true
+  error.value = ''
+  try {
+    const r = await readBiometricPassword(walletName.value, {
+      title: t('biometric.promptTitle'),
+      subtitle: t('biometric.promptSubtitle', { name: walletName.value }),
+      negativeButtonText: t('walletList.cancel'),
+    })
+    if (r.status === 'ok') {
+      if (await unlockWallet(r.password)) return
+      // The stored password no longer opens this wallet: drop it so the
+      // button stops offering something that cannot work.
+      await forgetBiometricPassword(walletName.value)
+      biometricReady.value = false
+      error.value = t('biometric.staleStored')
+    } else if (r.status === 'none') {
+      biometricReady.value = false
+    } else if (r.status === 'error') {
+      error.value = r.message
+    }
+  } finally {
+    busy.value = false
+    passwordInputEl.value?.focus()
+  }
+}
 
 async function unlock() {
   if (!password.value || busy.value) return

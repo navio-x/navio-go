@@ -3,6 +3,7 @@
 ## Unreleased
 
 ### Added
+- **Biometric unlock on Android** (Settings → security, off by default): the wallet password is kept in the Android Keystore behind the device's fingerprint / face check, so the lock screen and the wallet list can open the wallet without typing it. The password keeps working as the fallback; nothing changes for wallets where this is left off. Uses `@capgo/capacitor-native-biometric`
 - **Auto-lock** (Settings → security): the open wallet locks after 1, 5, 15 or 30 minutes without input or in the background, or as soon as the app goes to the background; a lock screen asks for the password to continue, or lets you log out. Default 5 minutes. Sync keeps running while locked. Not applied while the password is remembered by *Keep wallet unlocked*
 - Android: screenshots, screen recording and the app-switcher preview are blocked on the screens that show or take the seed phrase (create, verify, import, backup)
 

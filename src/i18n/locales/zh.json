@@ -152,6 +152,10 @@
       "off": "关闭"
     },
     "autoLockDesc": "在无操作或处于后台达到此时长后锁定已打开的钱包，需输入密码才能继续。当密码已通过“保持钱包解锁”记住时不生效。",
+    "biometricUnlock": "使用指纹 / 面容解锁",
+    "biometricUnlockDesc": "将此钱包的密码保存在 Android Keystore 中，并由设备的生物识别验证保护，无需输入即可解锁。密码始终可用。通过输入密码打开的钱包也会被加入。",
+    "biometricUnavailable": "此设备不可用。",
+    "biometricNotEnrolled": "此设备未录入指纹或面容。",
     "logout": "退出登录",
     "developer": "开发者",
     "developerDesc": "面向自行运行服务的用户的设置。"
@@ -372,6 +376,17 @@
     "title": "钱包已锁定",
     "desc": "请输入“{name}”的密码以继续。",
     "logout": "退出并切换钱包"
+  },
+  "biometric": {
+    "useButton": "使用指纹 / 面容",
+    "promptTitle": "解锁钱包",
+    "promptSubtitle": "解锁“{name}”",
+    "enrollPromptTitle": "保护钱包密码",
+    "enableTitle": "启用生物识别解锁",
+    "enableDesc": "请输入一次“{name}”的密码。它将保存在此设备上，并受生物识别验证保护。",
+    "enableBtn": "启用",
+    "staleStored": "已保存的密码无法再打开此钱包。请输入密码以继续。",
+    "notEncrypted": "此钱包没有密码，无需保护。"
   },
   "agreement": {
     "title": "Navio Go 钱包 – 协议",

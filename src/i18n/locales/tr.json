@@ -152,6 +152,10 @@
       "off": "Kapalı"
     },
     "autoLockDesc": "Açık cüzdanı bu süre boyunca hiç dokunulmayınca ya da arka planda kalınca kilitler; devam etmek için şifre gerekir. \"Cüzdanı açık tut\" ile şifre hatırlanıyorken uygulanmaz.",
+    "biometricUnlock": "Parmak izi / yüz ile aç",
+    "biometricUnlockDesc": "Bu cüzdanın şifresini Android Keystore'da cihazın biyometrik doğrulaması arkasında saklar; yazmadan açabilirsiniz. Şifre her zaman çalışmaya devam eder. Şifre yazarak açtığınız cüzdanlar da eklenir.",
+    "biometricUnavailable": "Bu cihazda kullanılamıyor.",
+    "biometricNotEnrolled": "Bu cihazda kayıtlı parmak izi veya yüz yok.",
     "logout": "Çıkış yap",
     "developer": "Geliştirici",
     "developerDesc": "Kendi servislerini çalıştıranlar için ayarlar."
@@ -372,6 +376,17 @@
     "title": "Cüzdan kilitli",
     "desc": "Devam etmek için \"{name}\" cüzdanının şifresini girin.",
     "logout": "Çıkış yap ve cüzdan değiştir"
+  },
+  "biometric": {
+    "useButton": "Parmak izi / yüz kullan",
+    "promptTitle": "Cüzdanı aç",
+    "promptSubtitle": "\"{name}\" cüzdanını aç",
+    "enrollPromptTitle": "Cüzdan şifresini koru",
+    "enableTitle": "Biyometrik açmayı etkinleştir",
+    "enableDesc": "\"{name}\" cüzdanının şifresini bir kez girin. Bu cihazda biyometrik doğrulama arkasında saklanacak.",
+    "enableBtn": "Etkinleştir",
+    "staleStored": "Saklanan şifre artık bu cüzdanı açmıyor. Devam etmek için şifreyi yazın.",
+    "notEncrypted": "Bu cüzdanın şifresi yok, korunacak bir şey yok."
   },
   "agreement": {
     "title": "Navio Go Cüzdan – Sözleşme",

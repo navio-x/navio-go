@@ -152,6 +152,10 @@
       "off": "Aus"
     },
     "autoLockDesc": "Sperrt die geöffnete Wallet nach dieser Zeit ohne Eingabe oder im Hintergrund; zum Fortfahren ist das Passwort nötig. Gilt nicht, solange das Passwort über „Wallet entsperrt halten“ gespeichert ist.",
+    "biometricUnlock": "Mit Fingerabdruck / Gesicht entsperren",
+    "biometricUnlockDesc": "Bewahrt das Passwort dieser Wallet im Android Keystore hinter der biometrischen Prüfung des Geräts auf, damit du ohne Tippen entsperren kannst. Das Passwort funktioniert weiterhin. Wallets, die du mit dem Passwort öffnest, werden ebenfalls hinzugefügt.",
+    "biometricUnavailable": "Auf diesem Gerät nicht verfügbar.",
+    "biometricNotEnrolled": "Auf diesem Gerät ist kein Fingerabdruck oder Gesicht registriert.",
     "logout": "Abmelden",
     "developer": "Entwickler",
     "developerDesc": "Einstellungen für alle, die eigene Dienste betreiben."
@@ -372,6 +376,17 @@
     "title": "Wallet gesperrt",
     "desc": "Gib das Passwort für „{name}“ ein, um fortzufahren.",
     "logout": "Abmelden und Wallet wechseln"
+  },
+  "biometric": {
+    "useButton": "Fingerabdruck / Gesicht verwenden",
+    "promptTitle": "Wallet entsperren",
+    "promptSubtitle": "„{name}“ entsperren",
+    "enrollPromptTitle": "Wallet-Passwort schützen",
+    "enableTitle": "Biometrisches Entsperren aktivieren",
+    "enableDesc": "Gib das Passwort von „{name}“ einmal ein. Es wird auf diesem Gerät hinter der biometrischen Prüfung gespeichert.",
+    "enableBtn": "Aktivieren",
+    "staleStored": "Das gespeicherte Passwort öffnet diese Wallet nicht mehr. Gib das Passwort ein, um fortzufahren.",
+    "notEncrypted": "Diese Wallet hat kein Passwort, es gibt nichts zu schützen."
   },
   "agreement": {
     "title": "Navio Go Wallet – Vereinbarung",

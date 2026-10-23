@@ -152,6 +152,10 @@
       "off": "Désactivé"
     },
     "autoLockDesc": "Verrouille le portefeuille ouvert après ce délai sans interaction ou en arrière-plan ; le mot de passe est requis pour continuer. Sans effet tant que le mot de passe est mémorisé par « Garder le portefeuille déverrouillé ».",
+    "biometricUnlock": "Déverrouiller par empreinte / visage",
+    "biometricUnlockDesc": "Conserve le mot de passe de ce portefeuille dans le Keystore Android, derrière la vérification biométrique de l'appareil, pour déverrouiller sans le saisir. Le mot de passe reste toujours utilisable. Les portefeuilles ouverts en saisissant le mot de passe sont ajoutés aussi.",
+    "biometricUnavailable": "Indisponible sur cet appareil.",
+    "biometricNotEnrolled": "Aucune empreinte ni aucun visage n'est enregistré sur cet appareil.",
     "logout": "Se déconnecter",
     "developer": "Développeur",
     "developerDesc": "Réglages pour ceux qui font tourner leurs propres services."
@@ -372,6 +376,17 @@
     "title": "Portefeuille verrouillé",
     "desc": "Saisissez le mot de passe de « {name} » pour continuer.",
     "logout": "Se déconnecter et changer de portefeuille"
+  },
+  "biometric": {
+    "useButton": "Utiliser l'empreinte / le visage",
+    "promptTitle": "Déverrouiller le portefeuille",
+    "promptSubtitle": "Déverrouiller « {name} »",
+    "enrollPromptTitle": "Protéger le mot de passe du portefeuille",
+    "enableTitle": "Activer le déverrouillage biométrique",
+    "enableDesc": "Saisissez une fois le mot de passe de « {name} ». Il sera conservé sur cet appareil derrière la vérification biométrique.",
+    "enableBtn": "Activer",
+    "staleStored": "Le mot de passe enregistré n'ouvre plus ce portefeuille. Saisissez le mot de passe pour continuer.",
+    "notEncrypted": "Ce portefeuille n'a pas de mot de passe, il n'y a rien à protéger."
   },
   "agreement": {
     "title": "Navio Go Wallet – Accord",

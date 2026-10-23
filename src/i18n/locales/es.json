@@ -152,6 +152,10 @@
       "off": "Desactivado"
     },
     "autoLockDesc": "Bloquea la billetera abierta tras este tiempo sin actividad o en segundo plano; hace falta la contraseña para continuar. No se aplica mientras la contraseña esté recordada por «Mantener la billetera desbloqueada».",
+    "biometricUnlock": "Desbloquear con huella / rostro",
+    "biometricUnlockDesc": "Guarda la contraseña de esta billetera en el Keystore de Android, detrás de la verificación biométrica del dispositivo, para desbloquear sin escribirla. La contraseña sigue funcionando siempre. Las billeteras que abras escribiendo la contraseña también se añaden.",
+    "biometricUnavailable": "No disponible en este dispositivo.",
+    "biometricNotEnrolled": "No hay ninguna huella ni rostro registrado en este dispositivo.",
     "logout": "Cerrar sesión",
     "developer": "Desarrollador",
     "developerDesc": "Ajustes para quienes ejecutan sus propios servicios."
@@ -372,6 +376,17 @@
     "title": "Billetera bloqueada",
     "desc": "Introduce la contraseña de «{name}» para continuar.",
     "logout": "Cerrar sesión y cambiar de billetera"
+  },
+  "biometric": {
+    "useButton": "Usar huella / rostro",
+    "promptTitle": "Desbloquear billetera",
+    "promptSubtitle": "Desbloquear «{name}»",
+    "enrollPromptTitle": "Proteger la contraseña de la billetera",
+    "enableTitle": "Activar desbloqueo biométrico",
+    "enableDesc": "Introduce una vez la contraseña de «{name}». Se guardará en este dispositivo detrás de la verificación biométrica.",
+    "enableBtn": "Activar",
+    "staleStored": "La contraseña guardada ya no abre esta billetera. Escribe la contraseña para continuar.",
+    "notEncrypted": "Esta billetera no tiene contraseña, no hay nada que proteger."
   },
   "agreement": {
     "title": "Navio Go Wallet – Acuerdo",

@@ -152,6 +152,10 @@
       "off": "Off"
     },
     "autoLockDesc": "Locks the open wallet after this long without any input, or in the background; the password is needed to continue. Not applied while the password is remembered by \"Keep wallet unlocked\".",
+    "biometricUnlock": "Unlock with fingerprint / face",
+    "biometricUnlockDesc": "Keeps this wallet's password in the Android Keystore behind the device's biometric check, so you can unlock without typing it. The password always works as well. Wallets you open by typing the password are added too.",
+    "biometricUnavailable": "Not available on this device.",
+    "biometricNotEnrolled": "No fingerprint or face is enrolled on this device.",
     "logout": "Log out",
     "developer": "Developer",
     "developerDesc": "Settings for people running their own services."
@@ -372,6 +376,17 @@
     "title": "Wallet locked",
     "desc": "Enter the password for \"{name}\" to continue.",
     "logout": "Log out and switch wallet"
+  },
+  "biometric": {
+    "useButton": "Use fingerprint / face",
+    "promptTitle": "Unlock wallet",
+    "promptSubtitle": "Unlock \"{name}\"",
+    "enrollPromptTitle": "Protect wallet password",
+    "enableTitle": "Enable biometric unlock",
+    "enableDesc": "Enter the password of \"{name}\" once. It will be stored behind the biometric check on this device.",
+    "enableBtn": "Enable",
+    "staleStored": "The stored password no longer opens this wallet. Type the password to continue.",
+    "notEncrypted": "This wallet has no password, so there is nothing to protect."
   },
   "agreement": {
     "title": "Navio Go Wallet – Agreement",

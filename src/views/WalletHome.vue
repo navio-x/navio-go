@@ -190,6 +190,19 @@
         <p v-if="passwordError" class="text-sm text-red-500 dark:text-red-400">
           {{ passwordError }}
         </p>
+        <button
+          v-if="biometricReady"
+          @click="unlockWithBiometric(walletToUnlock)"
+          :disabled="loadingId === walletToUnlock.id"
+          class="w-full py-2 rounded-xl text-sm font-medium transition
+          bg-gray-100 hover:bg-gray-200 text-gray-700
+          dark:bg-gh-800 dark:hover:bg-gh-700 dark:text-gray-300
+          disabled:opacity-60 disabled:cursor-not-allowed
+          inline-flex items-center justify-center gap-2"
+        >
+          <Fingerprint class="w-4 h-4" />
+          {{ $t('biometric.useButton') }}
+        </button>
         <div>
           <label class="block mb-1.5 text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">
             {{ $t('settings.unlockDuration') }}
@@ -345,12 +358,13 @@
 import { ref, onMounted, watch, nextTick } from "vue";
 import { useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
-import { Eye, EyeOff } from "lucide-vue-next";
+import { Eye, EyeOff, Fingerprint } from "lucide-vue-next";
 import { getAllWallets, deleteWalletFull } from "@/stores/wallet_management";
 import { loadWallet, getNavioClient, LAST_WALLET_KEY } from "@/stores/navio";
 import { settings, unlockMaxAgeMs } from "@/stores/settings";
 import { readWalletSession, isExtensionContext } from "@/lib/extensionSession";
 import { UNLOCK_DURATIONS, rememberPassword, recallPassword, forgetPassword } from "@/lib/unlockCache";
+import { biometricSupported, hasBiometricPassword, readBiometricPassword, storeBiometricPassword, forgetBiometricPassword } from "@/lib/biometric";
 
 const UNLOCK_DURATION_OPTIONS = ["off", ...Object.keys(UNLOCK_DURATIONS)];
 
@@ -363,6 +377,8 @@ const passwordInput    = ref("");
 const passwordError    = ref("");
 const passwordInputEl  = ref(null);
 const showPassword     = ref(false);
+// The wallet in the unlock dialog has a biometric-protected password.
+const biometricReady   = ref(false);
 
 watch(walletToUnlock, async (val) => {
   if (!val) showPassword.value = false
@@ -446,12 +462,42 @@ async function load(wallet) {
       const status = await _doLoad(wallet, cached, { cached: true });
       if (status !== "wrong_password") return status;
     }
+    // Biometric unlock (Android, opt-in): the password sits in the Keystore
+    // behind a fingerprint / face prompt. A cancel falls through to typing it.
+    biometricReady.value = settings.biometricUnlock && (await hasBiometricPassword(wallet.name));
+    let biometricStatus = null;
+    if (biometricReady.value) {
+      biometricStatus = await unlockWithBiometric(wallet);
+      if (biometricStatus === "ok") return biometricStatus;
+    }
     walletToUnlock.value = wallet;
     passwordInput.value  = "";
-    passwordError.value  = "";
+    // Keep the "stored password is stale" hint from the biometric attempt.
+    if (biometricStatus !== "wrong_password") passwordError.value = "";
     return "password_required";
   }
   return _doLoad(wallet, undefined);
+}
+
+async function unlockWithBiometric(wallet) {
+  const r = await readBiometricPassword(wallet.name, {
+    title: $t("biometric.promptTitle"),
+    subtitle: $t("biometric.promptSubtitle", { name: wallet.name }),
+    negativeButtonText: $t("walletList.cancel"),
+  });
+  if (r.status === "ok") {
+    const status = await _doLoad(wallet, r.password, { cached: true });
+    if (status === "wrong_password") {
+      // Stored password is stale — forget it so the button disappears.
+      await forgetBiometricPassword(wallet.name);
+      biometricReady.value = false;
+      passwordError.value = $t("biometric.staleStored");
+    }
+    return status;
+  }
+  if (r.status === "none") biometricReady.value = false;
+  else if (r.status === "error") passwordError.value = r.message;
+  return "cancelled";
 }
 
 async function doUnlock() {
@@ -484,6 +530,16 @@ async function _doLoad(wallet, password, { silent = false, cached = false } = {}
     walletToUnlock.value = null;
     if (password && !silent && !cached && unlockMaxAgeMs()) {
       await rememberPassword(wallet.name, password);
+    }
+    // Biometric unlock is on but this wallet was not enrolled yet (it was
+    // turned on while another wallet was open): the password just typed is
+    // the right one, so offer the prompt now and keep it for next time.
+    if (password && !silent && !cached && settings.biometricUnlock && biometricSupported()
+        && !(await hasBiometricPassword(wallet.name))) {
+      await storeBiometricPassword(wallet.name, password, {
+        title: $t("biometric.enrollPromptTitle"),
+        negativeButtonText: $t("walletList.cancel"),
+      });
     }
     router.push("/wallet/balance");
     return "ok";
@@ -518,6 +574,7 @@ async function doDelete() {
   if (!walletToDelete.value) return;
   await deleteWalletFull(walletToDelete.value.id);
   await forgetPassword(walletToDelete.value.name);
+  await forgetBiometricPassword(walletToDelete.value.name);
   if (localStorage.getItem(LAST_WALLET_KEY) === walletToDelete.value.name) {
     localStorage.removeItem(LAST_WALLET_KEY);
   }

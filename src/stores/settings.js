@@ -119,6 +119,10 @@ export const settings = reactive({
   // Şifre bu cihazda hatırlanıyorsa (unlockDuration) uygulanmaz.
   autoLock:        localStorage.getItem('autoLock') in AUTO_LOCK_OPTIONS || localStorage.getItem('autoLock') === 'off'
     ? localStorage.getItem('autoLock') : '5m',
+  // Off by default, Android only: şifreli cüzdanın şifresini Android Keystore'da
+  // biyometri arkasında saklar ve kilit ekranında / açılışta parmak izi ya da yüz
+  // ile açar (bkz. lib/biometric.js). Parola her zaman yedek yol olarak kalır.
+  biometricUnlock: localStorage.getItem('biometricUnlock') === 'true',
 })
 
 /** Otomatik kilit eşiği (ms); kapalıysa null. */
@@ -231,6 +235,10 @@ watch(() => settings.autoOpenLastWallet, (val) => {
 
 watch(() => settings.autoLock, (val) => {
   localStorage.setItem('autoLock', val)
+})
+
+watch(() => settings.biometricUnlock, (val) => {
+  localStorage.setItem('biometricUnlock', val)
 })
 
 watch(() => settings.evmNetwork, (val) => {

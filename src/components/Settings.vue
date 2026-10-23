@@ -603,6 +603,31 @@
         </button>
       </div>
 
+      <!-- Biometric unlock: Android only, opt-in (see lib/biometric.js) -->
+      <div v-if="biometricSupported()" class="border-t border-gray-200 dark:border-gh-700 px-4 py-3 flex items-center justify-between gap-3">
+        <div>
+          <label class="text-sm text-gray-700 dark:text-gray-300">{{ $t('settings.biometricUnlock') }}</label>
+          <p class="mt-0.5 text-xs text-gray-400 dark:text-gray-500">
+            {{ biometricAvail.available || settings.biometricUnlock
+              ? $t('settings.biometricUnlockDesc')
+              : $t(biometricAvail.reason === 'not_enrolled' ? 'settings.biometricNotEnrolled' : 'settings.biometricUnavailable') }}
+          </p>
+        </div>
+        <button
+          type="button"
+          role="switch"
+          :aria-checked="settings.biometricUnlock"
+          :disabled="!biometricAvail.available && !settings.biometricUnlock"
+          @click="toggleBiometric"
+          class="relative inline-flex h-6 w-11 items-center rounded-full transition-colors shrink-0 disabled:opacity-50"
+          :class="settings.biometricUnlock ? 'bg-blue-500' : 'bg-gray-300 dark:bg-gh-600'"
+        >
+          <span
+            class="inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform"
+            :class="settings.biometricUnlock ? 'translate-x-6' : 'translate-x-1'"
+          />
+        </button>
+      </div>
     </div>
 
     <!-- Log out: closes the wallet, back to the create/select screen -->
@@ -636,6 +661,50 @@
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
         </svg>
       </button>
+    </div>
+
+    <!-- Biometric enable: the password is needed once to put it in the Keystore -->
+    <div
+      v-if="showBiometricModal"
+      class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-6"
+    >
+      <div class="bg-white dark:bg-gh-900 border border-gray-100 dark:border-gh-800 rounded-2xl p-6 w-full max-w-sm space-y-4 shadow-2xl">
+        <h3 class="text-base font-bold">{{ $t('biometric.enableTitle') }}</h3>
+        <p class="text-sm text-gray-500 dark:text-gray-400">
+          {{ $t('biometric.enableDesc', { name: walletName }) }}
+        </p>
+        <input
+          v-model="biometricPassword"
+          type="password"
+          autocomplete="current-password"
+          :placeholder="$t('walletList.unlockPlaceholder')"
+          @keyup.enter="confirmBiometric"
+          class="w-full border border-gray-200 dark:border-gh-700 rounded-xl p-2.5 text-sm
+          bg-white dark:bg-gh-800 text-gray-900 dark:text-white
+          focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+        <p v-if="biometricError" class="text-sm text-red-500 dark:text-red-400">{{ biometricError }}</p>
+        <div class="flex gap-2 pt-1">
+          <button
+            @click="closeBiometricModal"
+            :disabled="biometricBusy"
+            class="flex-1 py-2 rounded-xl text-sm font-medium transition-colors
+                   bg-gray-100 hover:bg-gray-200 text-gray-700
+                   dark:bg-gh-800 dark:hover:bg-gh-700 dark:text-gray-300"
+          >
+            {{ $t('common.cancel') }}
+          </button>
+          <button
+            @click="confirmBiometric"
+            :disabled="!biometricPassword || biometricBusy"
+            class="flex-1 py-2 rounded-xl text-sm font-medium transition-colors
+                   bg-blue-600 hover:bg-blue-700 text-white
+                   disabled:opacity-60 disabled:cursor-not-allowed"
+          >
+            {{ $t('biometric.enableBtn') }}
+          </button>
+        </div>
+      </div>
     </div>
 
     <!-- Confirmation modal -->
@@ -718,9 +787,11 @@ import { useRouter } from 'vue-router'
 import { Store, LogOut } from 'lucide-vue-next'
 import { settings } from '../stores/settings'
 import { walletNetwork, isMainnet } from '../stores/network'
-import { disconnectWallet, logoutWallet, walletName } from '../stores/navio'
+import { disconnectWallet, logoutWallet, walletName, getNavioClient } from '../stores/navio'
+import { getAllWallets } from '../stores/wallet_management'
 import { UNLOCK_DURATIONS } from '../lib/unlockCache'
 import { AUTO_LOCK_OPTIONS } from '../lib/autoLock'
+import { biometricSupported, biometricAvailability, storeBiometricPassword, forgetAllBiometricPasswords } from '../lib/biometric'
 import { FIAT_CURRENCIES } from '../stores/navPrice'
 
 const { locale, t } = useI18n()
@@ -771,9 +842,59 @@ const changeLanguage = async () => {
   await setLanguage(currentLanguage.value)
 }
 
-onMounted(() => {
+onMounted(async () => {
   currentLanguage.value = locale.value
+  if (biometricSupported()) biometricAvail.value = await biometricAvailability()
 })
+
+// --- Biometric unlock (Android) ---
+const biometricAvail     = ref({ available: false, reason: 'unsupported' })
+const showBiometricModal = ref(false)
+const biometricPassword  = ref('')
+const biometricError     = ref('')
+const biometricBusy      = ref(false)
+
+const toggleBiometric = async () => {
+  if (settings.biometricUnlock) {
+    // Off: drop every wallet's Keystore entry, not only the open one.
+    settings.biometricUnlock = false
+    await forgetAllBiometricPasswords(getAllWallets().map((w) => w.name))
+    return
+  }
+  biometricPassword.value = ''
+  biometricError.value = ''
+  showBiometricModal.value = true
+}
+
+const closeBiometricModal = () => {
+  showBiometricModal.value = false
+  biometricPassword.value = ''
+}
+
+// Verifies the typed password against the open wallet, then stores it
+// behind the biometric prompt. The setting turns on only once that worked.
+const confirmBiometric = async () => {
+  if (!biometricPassword.value || biometricBusy.value) return
+  biometricBusy.value = true
+  biometricError.value = ''
+  try {
+    const km = getNavioClient()?.getKeyManager()
+    if (!km?.isEncrypted()) { biometricError.value = t('biometric.notEncrypted'); return }
+    if (!(await km.unlock(biometricPassword.value))) { biometricError.value = t('walletList.wrongPassword'); return }
+    const r = await storeBiometricPassword(walletName.value, biometricPassword.value, {
+      title: t('biometric.enrollPromptTitle'),
+      negativeButtonText: t('common.cancel'),
+    })
+    if (r.status === 'ok') {
+      settings.biometricUnlock = true
+      closeBiometricModal()
+    } else if (r.status === 'error') {
+      biometricError.value = r.message
+    }
+  } finally {
+    biometricBusy.value = false
+  }
+}
 
 const goToBackup = () => {
   router.push('/wallet/backup')
