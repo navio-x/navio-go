@@ -79,6 +79,7 @@
 </template>
 
 <script setup>
+import { passwordWaitMs, recordPasswordFailure, recordPasswordSuccess, waitSeconds } from '../lib/passwordThrottle'
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
@@ -136,14 +137,18 @@ async function unlockWithBiometric() {
 
 async function unlock() {
   if (!password.value || busy.value) return
+  const wait = passwordWaitMs(walletName.value)
+  if (wait) { error.value = t('password.wait', { seconds: waitSeconds(wait) }); return }
   busy.value = true
   error.value = ''
   try {
     const ok = await unlockWallet(password.value)
     if (!ok) {
-      error.value = t('walletList.wrongPassword')
+      const w = recordPasswordFailure(walletName.value)
+      error.value = w ? t('password.wait', { seconds: waitSeconds(w) }) : t('walletList.wrongPassword')
       return
     }
+    recordPasswordSuccess(walletName.value)
     // Same rule as the wallet list: a password typed by the user (re)starts
     // the optional "keep unlocked" window.
     if (unlockMaxAgeMs()) await rememberPassword(walletName.value, password.value)

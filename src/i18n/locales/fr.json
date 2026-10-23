@@ -330,6 +330,8 @@
     "password": "Mot de passe",
     "passwordHint": "Minimum 6 caractères, au moins 1 caractère spécial.",
     "passwordsDontMatch": "Les mots de passe ne correspondent pas.",
+    "passwordCommon": "Ce mot de passe est trop courant. Choisissez quelque chose de moins prévisible.",
+    "passwordIsName": "Le mot de passe ne doit pas être le nom du portefeuille.",
     "writeDownSeedPhrase": "Notez votre phrase de récupération dans un endroit sûr. Si vous perdez ces mots, vous perdrez l'accès à votre portefeuille.",
     "iHaveWrittenDown": "Je l'ai noté",
     "verifyYourSeedPhrase": "Vérifier votre phrase de récupération",
@@ -412,6 +414,9 @@
       "dexSwap": "Échanger sur le DEX",
       "hlTransfer": "Envoyer {amount} {token} depuis le compte de trading"
     }
+  },
+  "password": {
+    "wait": "Trop de tentatives incorrectes. Réessayez dans {seconds} s."
   },
   "agreement": {
     "title": "Navio Go Wallet – Accord",

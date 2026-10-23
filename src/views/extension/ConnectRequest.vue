@@ -1,4 +1,5 @@
 <script setup>
+import { passwordWaitMs, recordPasswordFailure, recordPasswordSuccess, waitSeconds } from "@/lib/passwordThrottle";
 import { ref, nextTick, watch, onMounted } from "vue";
 import { useRoute } from "vue-router";
 import { useI18n } from "vue-i18n";
@@ -77,6 +78,8 @@ function cancelUnlock() {
 
 async function doUnlock() {
   if (!walletToUnlock.value || !passwordInput.value) return;
+  const wait = passwordWaitMs(walletToUnlock.value.name);
+  if (wait) { passwordError.value = t("password.wait", { seconds: waitSeconds(wait) }); return; }
   await unlock(walletToUnlock.value, passwordInput.value);
 }
 
@@ -90,11 +93,13 @@ async function unlock(wallet, password) {
       password,
     });
     walletToUnlock.value = null;
+    if (password) recordPasswordSuccess(wallet.name);
     address.value = getReceiveAddress();
     phase.value = "ready";
   } catch (err) {
     if (err?.message === "wrong_password") {
-      passwordError.value = t("walletList.wrongPassword");
+      const wait = recordPasswordFailure(wallet.name);
+      passwordError.value = wait ? t("password.wait", { seconds: waitSeconds(wait) }) : t("walletList.wrongPassword");
     } else {
       console.error("Wallet load failed:", err);
       passwordError.value = err?.message ?? String(err);

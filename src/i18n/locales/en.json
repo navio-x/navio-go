@@ -330,6 +330,8 @@
     "password": "Password",
     "passwordHint": "Minimum 6 characters, at least 1 special character.",
     "passwordsDontMatch": "The passwords don't match.",
+    "passwordCommon": "This password is too common. Choose something less predictable.",
+    "passwordIsName": "The password must not be the wallet name.",
     "writeDownSeedPhrase": "Write down your seed phrase in a safe place. If you lose these words, you will lose access to your wallet.",
     "iHaveWrittenDown": "I have written it down",
     "verifyYourSeedPhrase": "Verify Your Seed Phrase",
@@ -412,6 +414,9 @@
       "dexSwap": "Swap on the DEX",
       "hlTransfer": "Send {amount} {token} from the trading account"
     }
+  },
+  "password": {
+    "wait": "Too many wrong attempts. Try again in {seconds} s."
   },
   "agreement": {
     "title": "Navio Go Wallet – Agreement",

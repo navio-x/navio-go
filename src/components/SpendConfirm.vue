@@ -80,6 +80,7 @@
 </template>
 
 <script setup>
+import { passwordWaitMs, recordPasswordFailure, recordPasswordSuccess, waitSeconds } from '../lib/passwordThrottle'
 import { ref, computed, watch, nextTick } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { ShieldCheck, Eye, EyeOff, Fingerprint } from 'lucide-vue-next'
@@ -110,14 +111,18 @@ watch(req, async (r) => {
 
 async function confirmWithPassword() {
   if (!password.value || busy.value) return
+  const wait = passwordWaitMs(walletName.value)
+  if (wait) { error.value = t('password.wait', { seconds: waitSeconds(wait) }); return }
   busy.value = true
   error.value = ''
   try {
     if (await verifyWalletPassword(password.value)) {
+      recordPasswordSuccess(walletName.value)
       password.value = ''
       settleSpendConfirm(true)
     } else {
-      error.value = t('walletList.wrongPassword')
+      const w = recordPasswordFailure(walletName.value)
+      error.value = w ? t('password.wait', { seconds: waitSeconds(w) }) : t('walletList.wrongPassword')
     }
   } catch (e) {
     error.value = e?.message ?? String(e)

@@ -355,6 +355,7 @@
 </template>
 
 <script setup>
+import { passwordWaitMs, recordPasswordFailure, recordPasswordSuccess, waitSeconds } from "@/lib/passwordThrottle";
 import { ref, onMounted, watch, nextTick } from "vue";
 import { useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
@@ -502,6 +503,8 @@ async function unlockWithBiometric(wallet) {
 
 async function doUnlock() {
   if (!walletToUnlock.value || !passwordInput.value) return;
+  const wait = passwordWaitMs(walletToUnlock.value.name);
+  if (wait) { passwordError.value = $t('password.wait', { seconds: waitSeconds(wait) }); return; }
   await _doLoad(walletToUnlock.value, passwordInput.value);
 }
 
@@ -528,6 +531,7 @@ async function _doLoad(wallet, password, { silent = false, cached = false } = {}
     sessionStorage.setItem("walletName", wallet.name);
     sessionStorage.setItem("network",    walletNetwork);
     walletToUnlock.value = null;
+    if (password && !silent && !cached) recordPasswordSuccess(wallet.name);
     if (password && !silent && !cached && unlockMaxAgeMs()) {
       await rememberPassword(wallet.name, password);
     }
@@ -549,7 +553,12 @@ async function _doLoad(wallet, password, { silent = false, cached = false } = {}
       // the wallet list showing so the user can unlock manually instead of
       // surfacing an error they didn't cause.
       if (cached) await forgetPassword(wallet.name);
-      else if (!silent) passwordError.value = $t('walletList.wrongPassword');
+      else if (!silent) {
+        const wait = recordPasswordFailure(wallet.name);
+        passwordError.value = wait
+          ? $t('password.wait', { seconds: waitSeconds(wait) })
+          : $t('walletList.wrongPassword');
+      }
       return "wrong_password";
     }
     console.error("Wallet Load failed:", err);

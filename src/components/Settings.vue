@@ -828,6 +828,7 @@ import { UNLOCK_DURATIONS } from '../lib/unlockCache'
 import { AUTO_LOCK_OPTIONS } from '../lib/autoLock'
 import { biometricSupported, biometricAvailability, storeBiometricPassword, forgetAllBiometricPasswords } from '../lib/biometric'
 import { SPEND_CONFIRM_MODES } from '../lib/spendConfirm'
+import { passwordWaitMs, recordPasswordFailure, recordPasswordSuccess, waitSeconds } from '../lib/passwordThrottle'
 import { FIAT_CURRENCIES } from '../stores/navPrice'
 
 const { locale, t } = useI18n()
@@ -916,7 +917,14 @@ const confirmBiometric = async () => {
   try {
     const km = getNavioClient()?.getKeyManager()
     if (!km?.isEncrypted()) { biometricError.value = t('biometric.notEncrypted'); return }
-    if (!(await km.unlock(biometricPassword.value))) { biometricError.value = t('walletList.wrongPassword'); return }
+    const wait = passwordWaitMs(walletName.value)
+    if (wait) { biometricError.value = t('password.wait', { seconds: waitSeconds(wait) }); return }
+    if (!(await km.unlock(biometricPassword.value))) {
+      const w = recordPasswordFailure(walletName.value)
+      biometricError.value = w ? t('password.wait', { seconds: waitSeconds(w) }) : t('walletList.wrongPassword')
+      return
+    }
+    recordPasswordSuccess(walletName.value)
     const r = await storeBiometricPassword(walletName.value, biometricPassword.value, {
       title: t('biometric.enrollPromptTitle'),
       negativeButtonText: t('common.cancel'),

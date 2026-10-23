@@ -330,6 +330,8 @@
     "password": "パスワード",
     "passwordHint": "6文字以上、特殊文字を1つ以上含めてください。",
     "passwordsDontMatch": "パスワードが一致しません。",
+    "passwordCommon": "このパスワードはよく使われています。推測されにくいものを選んでください。",
+    "passwordIsName": "パスワードをウォレット名と同じにすることはできません。",
     "writeDownSeedPhrase": "シードフレーズを安全な場所に書き留めてください。これらの単語を失うと、ウォレットへのアクセスを失います。",
     "iHaveWrittenDown": "書き留めました",
     "verifyYourSeedPhrase": "シードフレーズを確認",
@@ -412,6 +414,9 @@
       "dexSwap": "DEX でスワップ",
       "hlTransfer": "取引口座から {amount} {token} を送信"
     }
+  },
+  "password": {
+    "wait": "誤った試行が多すぎます。{seconds} 秒後にもう一度お試しください。"
   },
   "agreement": {
     "title": "Navio Go ウォレット – 利用規約",

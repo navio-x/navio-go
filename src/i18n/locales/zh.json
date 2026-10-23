@@ -330,6 +330,8 @@
     "password": "密码",
     "passwordHint": "至少6个字符，至少1个特殊字符。",
     "passwordsDontMatch": "密码不匹配。",
+    "passwordCommon": "此密码过于常见。请选择不易猜测的密码。",
+    "passwordIsName": "密码不能与钱包名称相同。",
     "writeDownSeedPhrase": "将助记词写在安全的地方。如果丢失这些词，您将失去访问钱包的权限。",
     "iHaveWrittenDown": "我已记录",
     "verifyYourSeedPhrase": "验证您的助记词",
@@ -412,6 +414,9 @@
       "dexSwap": "在 DEX 上兑换",
       "hlTransfer": "从交易账户发送 {amount} {token}"
     }
+  },
+  "password": {
+    "wait": "错误次数过多。请在 {seconds} 秒后重试。"
   },
   "agreement": {
     "title": "Navio Go 钱包 – 协议",

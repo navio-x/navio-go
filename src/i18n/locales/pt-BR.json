@@ -330,6 +330,8 @@
     "password": "Senha",
     "passwordHint": "Mínimo 6 caracteres, pelo menos 1 caractere especial.",
     "passwordsDontMatch": "As senhas não coincidem.",
+    "passwordCommon": "Esta senha é muito comum. Escolha algo menos previsível.",
+    "passwordIsName": "A senha não pode ser o nome da carteira.",
     "writeDownSeedPhrase": "Anote sua frase semente em um lugar seguro. Se perder essas palavras, perderá o acesso à sua carteira.",
     "iHaveWrittenDown": "Já anotei",
     "verifyYourSeedPhrase": "Verifique sua frase semente",
@@ -412,6 +414,9 @@
       "dexSwap": "Trocar na DEX",
       "hlTransfer": "Enviar {amount} {token} da conta de trading"
     }
+  },
+  "password": {
+    "wait": "Muitas tentativas erradas. Tente novamente em {seconds} s."
   },
   "agreement": {
     "title": "Navio Go Wallet – Acordo",

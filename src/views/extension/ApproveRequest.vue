@@ -1,4 +1,5 @@
 <script setup>
+import { passwordWaitMs, recordPasswordFailure, recordPasswordSuccess, waitSeconds } from "@/lib/passwordThrottle";
 import { confirmSpend } from "@/lib/spendConfirm";
 import { ref, computed, nextTick, watch, onMounted } from "vue";
 import { useRoute } from "vue-router";
@@ -104,6 +105,8 @@ function cancelUnlock() {
 
 async function doUnlock() {
   if (!walletToUnlock.value || !passwordInput.value) return;
+  const wait = passwordWaitMs(walletToUnlock.value.name);
+  if (wait) { passwordError.value = t("password.wait", { seconds: waitSeconds(wait) }); return; }
   await unlock(walletToUnlock.value, passwordInput.value);
 }
 
@@ -117,6 +120,7 @@ async function unlock(wallet, password, { silent = false } = {}) {
       password,
     });
     walletToUnlock.value = null;
+    if (password && !silent) recordPasswordSuccess(wallet.name);
 
     if (executor.value.mutating) {
       phase.value = "confirm";
@@ -130,7 +134,8 @@ async function unlock(wallet, password, { silent = false } = {}) {
       return;
     }
     if (err?.message === "wrong_password") {
-      passwordError.value = t("walletList.wrongPassword");
+      const wait = recordPasswordFailure(wallet.name);
+      passwordError.value = wait ? t("password.wait", { seconds: waitSeconds(wait) }) : t("walletList.wrongPassword");
     } else {
       console.error("Wallet load failed:", err);
       passwordError.value = err?.message ?? String(err);

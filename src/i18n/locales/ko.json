@@ -330,6 +330,8 @@
     "password": "비밀번호",
     "passwordHint": "최소 6자, 특수문자 최소 1개.",
     "passwordsDontMatch": "비밀번호가 일치하지 않습니다.",
+    "passwordCommon": "이 비밀번호는 너무 흔합니다. 예측하기 어려운 비밀번호를 선택하세요.",
+    "passwordIsName": "비밀번호는 지갑 이름과 같을 수 없습니다.",
     "writeDownSeedPhrase": "시드 구문을 안전한 곳에 적어두세요. 이 단어들을 잃어버리면 지갑에 접근할 수 없게 됩니다.",
     "iHaveWrittenDown": "기록했습니다",
     "verifyYourSeedPhrase": "시드 구문 확인",
@@ -412,6 +414,9 @@
       "dexSwap": "DEX에서 스왑",
       "hlTransfer": "거래 계정에서 {amount} {token} 보내기"
     }
+  },
+  "password": {
+    "wait": "잘못된 시도가 너무 많습니다. {seconds}초 후에 다시 시도하세요."
   },
   "agreement": {
     "title": "Navio Go 지갑 – 이용 약관",

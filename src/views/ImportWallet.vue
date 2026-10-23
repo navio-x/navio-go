@@ -88,6 +88,9 @@
       <p class="text-xs mt-1 text-gray-500">
         {{ $t('wizard.passwordHint') }}
       </p>
+      <p v-if="passwordProblem" class="text-sm text-red-500 mt-1">
+        {{ $t(passwordProblem === 'name' ? 'wizard.passwordIsName' : 'wizard.passwordCommon') }}
+      </p>
     </div>
 
     <!-- VERIFY PASSWORD -->
@@ -173,6 +176,7 @@
 </template>
 
 <script setup>
+import { passwordProblem as checkPassword } from "@/lib/passwordPolicy";
 import { ref, computed } from "vue";
 import { useRouter } from "vue-router";
 import WizardNav from "@/components/WizardNav.vue";
@@ -193,6 +197,7 @@ const hasValidName   = computed(() => walletName.value.trim().length > 0);
 const hasMinLength   = computed(() => password.value.length >= 6);
 const hasSpecialChar = computed(() => /[!@#$%^&*(),.?":{}|<>]/.test(password.value));
 const passwordsMatch = computed(() => password.value === passwordVerify.value);
+const passwordProblem = computed(() => checkPassword(password.value, walletName.value));
 
 const strengthScore = computed(() => {
   let score = 0;
@@ -217,6 +222,7 @@ const canImport = computed(() =>
   mnemonic.value.trim() &&
   hasMinLength.value &&
   hasSpecialChar.value &&
+  !passwordProblem.value &&
   passwordsMatch.value
 );
 

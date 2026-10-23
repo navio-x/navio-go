@@ -330,6 +330,8 @@
     "password": "Şifre",
     "passwordHint": "En az 6 karakter, en az 1 özel karakter.",
     "passwordsDontMatch": "Şifreler eşleşmiyor.",
+    "passwordCommon": "Bu şifre çok yaygın. Daha az tahmin edilebilir bir şifre seçin.",
+    "passwordIsName": "Şifre cüzdan adıyla aynı olamaz.",
     "writeDownSeedPhrase": "Seed Phrase'inizi güvenli bir yere yazın. Bu kelimeleri kaybederseniz, cüzdanınıza erişimi kaybedersiniz.",
     "iHaveWrittenDown": "Yazdım, devam et",
     "verifyYourSeedPhrase": "Seed Phrase'inizi Doğrulayın",
@@ -412,6 +414,9 @@
       "dexSwap": "DEX'te takas yap",
       "hlTransfer": "İşlem hesabından {amount} {token} gönder"
     }
+  },
+  "password": {
+    "wait": "Çok fazla yanlış deneme. {seconds} sn sonra tekrar deneyin."
   },
   "agreement": {
     "title": "Navio Go Cüzdan – Sözleşme",
