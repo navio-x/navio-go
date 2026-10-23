@@ -453,6 +453,9 @@
     "copy": "클립보드에 복사",
     "copied": "복사됨!",
     "hide": "구문 숨기기",
+    "verify": "백업 확인",
+    "verified": "백업 확인됨",
+    "notVerified": "아직 확인되지 않았습니다. 적어 둔 문구가 맞는지 다시 입력해 확인하세요.",
     "seedDescription": "고급: 16진수 형식의 마스터 시드 키.",
     "revealSeed": "마스터 시드 표시",
     "copySeed": "시드 복사",
@@ -1280,7 +1283,9 @@
     "addAssetTitle": "자산",
     "hasBalance": "잔액 있음",
     "switchWallet": "지갑 전환",
-    "totalBalance": "총 잔액"
+    "totalBalance": "총 잔액",
+    "backupBannerTitle": "지갑을 백업하세요",
+    "backupBannerDesc": "복구 문구를 적어 두고 확인하세요. 문구가 없으면 기기를 잃는 순간 자금도 잃습니다."
   },
   "hlAsset": {
     "balanceOnHyperliquid": "Hyperliquid 잔액",

@@ -453,6 +453,9 @@
     "copy": "Copier dans le presse-papiers",
     "copied": "Copié !",
     "hide": "Masquer la phrase",
+    "verify": "Vérifier ma sauvegarde",
+    "verified": "Sauvegarde vérifiée",
+    "notVerified": "Pas encore vérifiée. Ressaisissez la phrase pour vous assurer que votre copie est correcte.",
     "seedDescription": "Avancé : votre clé de graine maîtresse au format hexadécimal.",
     "revealSeed": "Afficher la graine maîtresse",
     "copySeed": "Copier la graine",
@@ -1280,7 +1283,9 @@
     "addAssetTitle": "Actifs",
     "hasBalance": "Solde positif",
     "switchWallet": "Changer de portefeuille",
-    "totalBalance": "Solde total"
+    "totalBalance": "Solde total",
+    "backupBannerTitle": "Sauvegardez votre portefeuille",
+    "backupBannerDesc": "Notez la phrase de récupération et vérifiez-la. Sans elle, un appareil perdu signifie des fonds perdus."
   },
   "hlAsset": {
     "balanceOnHyperliquid": "Solde sur Hyperliquid",

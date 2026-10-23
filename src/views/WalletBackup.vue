@@ -92,6 +92,10 @@
       <p class="text-sm text-gray-500 dark:text-gray-400 px-1 mb-1">
         {{ $t('backup.description') }}
       </p>
+      <p v-if="walletBackedUp" class="px-1 text-xs text-green-600 dark:text-green-400 flex items-center gap-1.5">
+        <ShieldCheck class="w-4 h-4 shrink-0" />{{ $t('backup.verified') }}
+      </p>
+      <p v-else class="px-1 text-xs text-yellow-700 dark:text-yellow-300">{{ $t('backup.notVerified') }}</p>
 
       <div class="rounded-2xl border border-gray-200 dark:border-gh-700 bg-white dark:bg-gh-800 overflow-hidden">
         <button
@@ -176,6 +180,21 @@
             {{ copiedMnemonic ? $t('common.copiedClears', { seconds: SECRET_CLIPBOARD_TTL_MS / 1000 }) : $t('backup.copy') }}
           </span>
         </button>
+
+        <!-- Verified = typed back once (wizard or here). Until then, offer the check. -->
+        <p v-if="walletBackedUp" class="mt-3 px-1 text-xs text-green-600 dark:text-green-400 flex items-center gap-1.5">
+          <ShieldCheck class="w-4 h-4 shrink-0" />{{ $t('backup.verified') }}
+        </p>
+        <template v-else>
+          <p class="mt-3 px-1 text-xs text-yellow-700 dark:text-yellow-300">{{ $t('backup.notVerified') }}</p>
+          <button
+            @click="verifyBackup"
+            class="mt-2 w-full py-3 rounded-2xl text-sm font-semibold transition-colors
+                   bg-blue-600 hover:bg-blue-700 text-white"
+          >
+            {{ $t('backup.verify') }}
+          </button>
+        </template>
       </div>
 
       <!-- Master Seed -->
@@ -216,7 +235,8 @@
 <script setup>
 import { ref, computed, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { getNavioClient } from '@/stores/navio'
+import { getNavioClient, walletBackedUp, loadMnemonicWordsForVerify } from '@/stores/navio'
+import { ShieldCheck } from 'lucide-vue-next'
 import { copySecret, clearSecretCopy, SECRET_CLIPBOARD_TTL_MS } from '@/lib/clipboard'
 
 const router = useRouter()
@@ -251,6 +271,13 @@ const confirmModal = () => {
   if (pendingAction.value === 'mnemonic') revealMnemonic()
   else if (pendingAction.value === 'seed') revealSeed()
   pendingAction.value = null
+}
+
+// Hands the phrase to the verify screen (in memory only) and opens it in
+// its "from Backup" mode: no skip, and success comes back here.
+const verifyBackup = () => {
+  if (!loadMnemonicWordsForVerify()) return
+  router.push({ path: '/wallet/verify', query: { from: 'backup' } })
 }
 
 const revealMnemonic = () => {

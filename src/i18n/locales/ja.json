@@ -453,6 +453,9 @@
     "copy": "クリップボードにコピー",
     "copied": "コピーしました！",
     "hide": "フレーズを非表示",
+    "verify": "バックアップを確認",
+    "verified": "バックアップ確認済み",
+    "notVerified": "まだ確認されていません。控えが正しいか、フレーズを入力して確認してください。",
     "seedDescription": "上級者向け：16進数形式のマスターシードキー。",
     "revealSeed": "マスターシードを表示",
     "copySeed": "シードをコピー",
@@ -1280,7 +1283,9 @@
     "addAssetTitle": "アセット",
     "hasBalance": "残高あり",
     "switchWallet": "ウォレットを切り替え",
-    "totalBalance": "合計残高"
+    "totalBalance": "合計残高",
+    "backupBannerTitle": "ウォレットをバックアップ",
+    "backupBannerDesc": "リカバリーフレーズを書き留めて確認してください。これがないと、端末を失えば資金も失います。"
   },
   "hlAsset": {
     "balanceOnHyperliquid": "Hyperliquid 上の残高",

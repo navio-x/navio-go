@@ -14,6 +14,7 @@
     {{ $t('common.confirm') }}
   </button>
   <button
+  v-if="!fromBackup"
   class="w-full text-sm text-gray-500 dark:text-gray-400 underline mt-1"
   @click="skipAnyway"
   >
@@ -64,13 +65,17 @@ class="px-4 py-2 text-sm rounded-lg bg-blue-600 hover:bg-blue-700 text-white"
 
 <script setup>
 import { ref } from "vue";
-import { useRouter } from "vue-router";
+import { useRouter, useRoute } from "vue-router";
 import { useI18n } from "vue-i18n";
 import WizardNav from "@/components/WizardNav.vue";
-import { getMnemonicWords, clearMnemonicWords } from "@/stores/navio";
+import { getMnemonicWords, clearMnemonicWords, markWalletBackedUp } from "@/stores/navio";
 
 const router = useRouter();
+const route = useRoute();
 const { t } = useI18n();
+// Reached from Settings → Backup rather than the create wizard: no
+// skipping, and success returns to Backup.
+const fromBackup = route.query.from === "backup";
 const input = ref("");
 const showSkipModal = ref(false);
 
@@ -90,6 +95,7 @@ function verify() {
     return;
   }
 
+  markWalletBackedUp();
   next();
 }
 
@@ -101,6 +107,6 @@ function next() {
   // Verified or skipped: the seed phrase has no further use in memory.
   // Settings → Backup reads it from the (unlocked) key manager instead.
   clearMnemonicWords();
-  router.push("/wallet/balance");
+  router.push(fromBackup ? "/wallet/backup" : "/wallet/balance");
 }
 </script>

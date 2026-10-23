@@ -7,6 +7,8 @@ import blsctModuleUrl from "@nav-io/navio-blsct/wasm/blsct.mjs?url";
 import { IDB_PREFIX } from "@/stores/wallet_management";
 import {
   addWalletToRegistry,
+  updateWalletInRegistry,
+  isWalletBackedUp,
   removeWalletFromRegistry,
   getAllWallets,
   generateUniqueId,
@@ -38,6 +40,9 @@ const _mnemonicWords = ref([]);
 // True while an open, encrypted wallet has had its keys dropped from memory
 // (auto-lock, see lib/autoLock.js). App.vue puts the lock screen up.
 const isLocked = ref(false);
+// Whether the open wallet's recovery phrase was verified (registry
+// `backedUp`); false drives the "back up your wallet" banner on Home.
+const walletBackedUp = ref(true);
 const _sdkInitialized = ref(false);
 const databaseAdapter = 'indexeddb';
 const syncing = ref(false);
@@ -66,6 +71,20 @@ export function getMnemonicWords() {
 
 export function clearMnemonicWords() {
   _mnemonicWords.value = [];
+}
+
+/** Puts the open wallet's phrase into memory for the verify screen (Backup → Verify). */
+export function loadMnemonicWordsForVerify() {
+  const km = _navioClient.value?.getKeyManager();
+  const phrase = km?.getMnemonic?.();
+  _mnemonicWords.value = phrase ? phrase.trim().split(/\s+/) : [];
+  return _mnemonicWords.value.length > 0;
+}
+
+export function markWalletBackedUp() {
+  if (!walletName.value) return;
+  updateWalletInRegistry(walletName.value, { backedUp: true });
+  walletBackedUp.value = true;
 }
 
 // Every wallet created or restored here must be encrypted. The screens
@@ -105,6 +124,7 @@ export {
   syncing,
   percent,
   isLocked,
+  walletBackedUp,
   walletName,
   walletHeight,
   chainTip,
@@ -577,7 +597,9 @@ export async function createWallet({
     encrypted: true,
     network,
     createdAt: Date.now(),
+    backedUp: false,
   });
+  walletBackedUp.value = false;
 
   updateReceiveAddress(network, password);
   startSync();
@@ -633,6 +655,7 @@ export async function loadWallet({
   isLocked.value = keyManager.isEncrypted() && !keyManager.isUnlocked();
   console.log("Wallet loaded");
   walletName.value=wallet_id;
+  walletBackedUp.value = isWalletBackedUp(wallet_id);
   localStorage.setItem(LAST_WALLET_KEY, wallet_id);
 
   // Update receive address
@@ -685,7 +708,9 @@ export async function restoreWallet({ wallet_name, network, mnemonic, startHeigh
     encrypted: true,
     network,
     createdAt: Date.now(),
+    backedUp: true,
   });
+  walletBackedUp.value = true;
 
   console.log("Wallet restored ✅");
 

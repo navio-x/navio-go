@@ -453,6 +453,9 @@
     "copy": "Panoya Kopyala",
     "copied": "Kopyalandı!",
     "hide": "Cümleyi Gizle",
+    "verify": "Yedeğimi doğrula",
+    "verified": "Yedek doğrulandı",
+    "notVerified": "Henüz doğrulanmadı. Kopyanızın doğru olduğundan emin olmak için cümleyi geri yazın.",
     "seedDescription": "Gelişmiş: onaltılık formatta ana seed anahtarınız.",
     "revealSeed": "Ana Seed'i Göster",
     "copySeed": "Seed'i Kopyala",
@@ -1280,7 +1283,9 @@
     "addAssetTitle": "Varlıklar",
     "hasBalance": "Bakiye var",
     "switchWallet": "Cüzdan değiştir",
-    "totalBalance": "Toplam bakiye"
+    "totalBalance": "Toplam bakiye",
+    "backupBannerTitle": "Cüzdanınızı yedekleyin",
+    "backupBannerDesc": "Kurtarma cümlesini yazın ve doğrulayın. O olmadan kaybolan cihaz, kaybolan para demektir."
   },
   "hlAsset": {
     "balanceOnHyperliquid": "Hyperliquid bakiyesi",

@@ -36,6 +36,22 @@
     </div>
 
     <div class="px-4 pt-5 pb-6 space-y-5">
+      <!-- Recovery phrase never verified (wizard skipped): keep asking until it is -->
+      <button
+        v-if="!walletBackedUp"
+        @click="router.push('/wallet/backup')"
+        class="w-full flex items-center gap-3 rounded-2xl border border-yellow-200 dark:border-yellow-700/50
+               bg-yellow-50 dark:bg-yellow-900/20 px-4 py-3 text-left transition-colors
+               hover:bg-yellow-100 dark:hover:bg-yellow-900/30"
+      >
+        <ShieldAlert class="w-5 h-5 text-yellow-600 dark:text-yellow-400 shrink-0" />
+        <span class="flex-1 min-w-0">
+          <span class="block text-sm font-medium text-yellow-900 dark:text-yellow-200">{{ $t('home.backupBannerTitle') }}</span>
+          <span class="block text-xs text-yellow-800/80 dark:text-yellow-300/80">{{ $t('home.backupBannerDesc') }}</span>
+        </span>
+        <ChevronRight class="w-4 h-4 text-yellow-600 dark:text-yellow-400 shrink-0" />
+      </button>
+
       <!-- HOW MUCH DO I HAVE -->
       <section>
         <div class="flex items-center justify-between gap-2">
@@ -218,7 +234,7 @@
   import { settings } from "@/stores/settings";
   import { hlEnabled } from "@/stores/network";
   import { wallpapers } from "@/assets/wallpapers";
-  import { percent, walletHeight, chainTip, getNavioClient, logoutWallet, tokenBalances, nftBalances, refreshAssetBalances } from "@/stores/navio";
+  import { percent, walletHeight, chainTip, getNavioClient, logoutWallet, tokenBalances, nftBalances, refreshAssetBalances, walletBackedUp } from "@/stores/navio";
   import { navPrice, startPricePolling, stopPricePolling } from "@/stores/navPrice";
   import { evmAddress } from "@/stores/evm";
   import { activeOperations } from "@/stores/operations";
@@ -229,7 +245,7 @@
   import HlAssetsMarkets from '@/components/HlAssetsMarkets.vue'
   import TokenIcon from '@/components/TokenIcon.vue'
   import ProcessCard from '@/components/process/ProcessCard.vue'
-  import { ArrowLeftRight, ChevronRight, Coins, Image, Loader2, Plus } from 'lucide-vue-next'
+  import { ArrowLeftRight, ChevronRight, Coins, Image, Loader2, Plus, ShieldAlert } from 'lucide-vue-next'
 
   const network = sessionStorage.getItem('network') ?? 'mainnet'
   const router = useRouter()

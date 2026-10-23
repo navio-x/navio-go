@@ -453,6 +453,9 @@
     "copy": "Copiar para área de transferência",
     "copied": "Copiado!",
     "hide": "Ocultar frase",
+    "verify": "Verificar meu backup",
+    "verified": "Backup verificado",
+    "notVerified": "Ainda não verificado. Digite a frase novamente para garantir que sua cópia está correta.",
     "seedDescription": "Avançado: sua chave semente mestre em formato hexadecimal.",
     "revealSeed": "Mostrar semente mestre",
     "copySeed": "Copiar semente",
@@ -1280,7 +1283,9 @@
     "addAssetTitle": "Ativos",
     "hasBalance": "Com saldo",
     "switchWallet": "Trocar de carteira",
-    "totalBalance": "Saldo total"
+    "totalBalance": "Saldo total",
+    "backupBannerTitle": "Faça backup da sua carteira",
+    "backupBannerDesc": "Anote a frase de recuperação e verifique-a. Sem ela, perder o aparelho significa perder os fundos."
   },
   "hlAsset": {
     "balanceOnHyperliquid": "Saldo na Hyperliquid",

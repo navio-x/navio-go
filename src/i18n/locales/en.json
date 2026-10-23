@@ -453,6 +453,9 @@
     "copy": "Copy to Clipboard",
     "copied": "Copied!",
     "hide": "Hide Phrase",
+    "verify": "Verify my backup",
+    "verified": "Backup verified",
+    "notVerified": "Not verified yet — type the phrase back to make sure your copy is right.",
     "seedDescription": "Advanced: your master seed key in hex format.",
     "revealSeed": "Show Master Seed",
     "copySeed": "Copy Seed",
@@ -1280,7 +1283,9 @@
     "addAssetTitle": "Assets",
     "hasBalance": "Has balance",
     "switchWallet": "Switch wallet",
-    "totalBalance": "Total balance"
+    "totalBalance": "Total balance",
+    "backupBannerTitle": "Back up your wallet",
+    "backupBannerDesc": "Write down the recovery phrase and verify it. Without it, a lost device means lost funds."
   },
   "hlAsset": {
     "balanceOnHyperliquid": "Balance on Hyperliquid",

@@ -453,6 +453,9 @@
     "copy": "Copiar al portapapeles",
     "copied": "¡Copiado!",
     "hide": "Ocultar frase",
+    "verify": "Verificar mi copia",
+    "verified": "Copia verificada",
+    "notVerified": "Aún no verificada. Vuelve a escribir la frase para asegurarte de que tu copia es correcta.",
     "seedDescription": "Avanzado: tu clave semilla maestra en formato hexadecimal.",
     "revealSeed": "Mostrar semilla maestra",
     "copySeed": "Copiar semilla",
@@ -1280,7 +1283,9 @@
     "addAssetTitle": "Activos",
     "hasBalance": "Con saldo",
     "switchWallet": "Cambiar de billetera",
-    "totalBalance": "Saldo total"
+    "totalBalance": "Saldo total",
+    "backupBannerTitle": "Haz una copia de seguridad",
+    "backupBannerDesc": "Anota la frase de recuperación y verifícala. Sin ella, perder el dispositivo significa perder los fondos."
   },
   "hlAsset": {
     "balanceOnHyperliquid": "Saldo en Hyperliquid",

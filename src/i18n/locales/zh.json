@@ -453,6 +453,9 @@
     "copy": "复制到剪贴板",
     "copied": "已复制！",
     "hide": "隐藏短语",
+    "verify": "验证我的备份",
+    "verified": "备份已验证",
+    "notVerified": "尚未验证。请重新输入短语，确认您的抄写无误。",
     "seedDescription": "高级：十六进制格式的主种子密钥。",
     "revealSeed": "显示主种子",
     "copySeed": "复制种子",
@@ -1280,7 +1283,9 @@
     "addAssetTitle": "资产",
     "hasBalance": "有余额",
     "switchWallet": "切换钱包",
-    "totalBalance": "总余额"
+    "totalBalance": "总余额",
+    "backupBannerTitle": "备份您的钱包",
+    "backupBannerDesc": "抄写恢复短语并验证。没有它，丢失设备就意味着丢失资金。"
   },
   "hlAsset": {
     "balanceOnHyperliquid": "Hyperliquid 上的余额",

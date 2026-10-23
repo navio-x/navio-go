@@ -32,6 +32,9 @@ const DEFAULT_ELECTRUM = {
  * @property {boolean} encrypted  - Şifreli mi?
  * @property {string}  network    - 'mainnet' | 'testnet'
  * @property {number}  createdAt  - Unix timestamp (ms)
+ * @property {boolean} [backedUp] - Kurtarma cümlesi doğrulandı mı? Alan yoksa
+ *                                  (bu özellikten önce oluşturulan cüzdanlar)
+ *                                  doğrulanmış sayılır.
  */
 
 /**
@@ -89,6 +92,26 @@ function addWalletToRegistry(entry) {
   reg.wallets = reg.wallets.filter((w) => w.id !== entry.id);
   reg.wallets.push(entry);
   saveRegistry(reg);
+}
+
+/**
+ * Adı verilen cüzdanın kaydına alanlar ekler / değiştirir.
+ *
+ * @param {string} name
+ * @param {Partial<WalletEntry>} patch
+ */
+function updateWalletInRegistry(name, patch) {
+  const reg = loadRegistry();
+  const entry = reg.wallets.find((w) => w.name === name);
+  if (!entry) return;
+  Object.assign(entry, patch);
+  saveRegistry(reg);
+}
+
+/** Kurtarma cümlesi doğrulandı mı? Kayıt yoksa ya da alan hiç yazılmamışsa true. */
+function isWalletBackedUp(name) {
+  const entry = loadRegistry().wallets.find((w) => w.name === name);
+  return entry?.backedUp !== false;
 }
 
 /**
@@ -231,6 +254,8 @@ export {
 
   // Cüzdan CRUD
   addWalletToRegistry,
+  updateWalletInRegistry,
+  isWalletBackedUp,
   removeWalletFromRegistry,
   getAllWallets,
   getWalletById,

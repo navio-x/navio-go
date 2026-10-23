@@ -453,6 +453,9 @@
     "copy": "In Zwischenablage kopieren",
     "copied": "Kopiert!",
     "hide": "Phrase ausblenden",
+    "verify": "Mein Backup prüfen",
+    "verified": "Backup bestätigt",
+    "notVerified": "Noch nicht bestätigt. Gib die Phrase ein, um sicherzugehen, dass deine Kopie stimmt.",
     "seedDescription": "Erweitert: dein Master-Seed-Schlüssel im Hexadezimalformat.",
     "revealSeed": "Master-Seed anzeigen",
     "copySeed": "Seed kopieren",
@@ -1280,7 +1283,9 @@
     "addAssetTitle": "Assets",
     "hasBalance": "Hat Guthaben",
     "switchWallet": "Wallet wechseln",
-    "totalBalance": "Gesamtguthaben"
+    "totalBalance": "Gesamtguthaben",
+    "backupBannerTitle": "Sichere deine Wallet",
+    "backupBannerDesc": "Schreib die Wiederherstellungsphrase auf und bestätige sie. Ohne sie bedeutet ein verlorenes Gerät verlorenes Guthaben."
   },
   "hlAsset": {
     "balanceOnHyperliquid": "Guthaben auf Hyperliquid",
