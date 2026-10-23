@@ -17,6 +17,7 @@
     <BottomNavbar v-if="showNavbar" />
     <TxToasts />
     <PwaInstallPrompt v-if="!isExtension" />
+    <LockScreen v-if="isLocked" />
 
     <!-- Android back button exit confirmation -->
     <div
@@ -67,6 +68,11 @@ import { hlEnabled } from './stores/network'
 import { syncSystemBarsToPage } from './lib/systemBars'
 import { setSecureScreen } from './lib/secureScreen'
 import { isExtensionContext } from './lib/extensionSession'
+import { startAutoLock } from './lib/autoLock'
+import { autoLockThresholdMs, unlockMaxAgeMs } from './stores/settings'
+import { recallPassword } from './lib/unlockCache'
+import { isLocked, lockWallet, getNavioClient, walletName } from './stores/navio'
+import LockScreen from './components/LockScreen.vue'
 import BottomNavbar from './components/BottomNavbar.vue'
 import ProcessTray from './components/process/ProcessTray.vue'
 import TxToasts from './components/TxToasts.vue'
@@ -151,9 +157,21 @@ function confirmExit() {
 const EXIT_ROUTES = ['/', '/welcome', '/wallet/home', '/wallet/balance']
 
 let backButtonListener = null
+let stopAutoLock = null
 
 onMounted(async () => {
   setTimeout(() => applyTheme(settings.theme), 100)
+
+  stopAutoLock = startAutoLock({
+    thresholdMs: autoLockThresholdMs,
+    canLock: () => {
+      const km = getNavioClient()?.getKeyManager()
+      return !!km && km.isEncrypted() && km.isUnlocked()
+    },
+    isRemembered: async () => !!(await recallPassword(walletName.value, unlockMaxAgeMs())),
+    lock: () => { lockWallet() },
+    addAppStateListener: (cb) => CapApp.addListener('appStateChange', ({ isActive }) => cb(isActive)),
+  })
 
   backButtonListener = await CapApp.addListener('backButton', () => {
     if (showExitConfirm.value) {
@@ -170,6 +188,7 @@ onMounted(async () => {
 
 onUnmounted(() => {
   backButtonListener?.remove()
+  stopAutoLock?.()
 })
 </script>
 

@@ -142,6 +142,16 @@
     "unlockDurationDesc": "Recuerda la contraseña de una billetera cifrada en este dispositivo, contando desde la última vez que la escribiste. Durante ese tiempo, cualquiera con acceso a este dispositivo puede abrir la billetera.",
     "autoOpenLastWallet": "Abrir automáticamente la última billetera",
     "autoOpenLastWalletDesc": "Omite la lista de billeteras al iniciar y abre la última billetera que usaste.",
+    "autoLock": "Bloqueo automático",
+    "autoLockOptions": {
+      "immediately": "En cuanto la app pasa a segundo plano",
+      "1m": "Tras 1 minuto",
+      "5m": "Tras 5 minutos",
+      "15m": "Tras 15 minutos",
+      "30m": "Tras 30 minutos",
+      "off": "Desactivado"
+    },
+    "autoLockDesc": "Bloquea la billetera abierta tras este tiempo sin actividad o en segundo plano; hace falta la contraseña para continuar. No se aplica mientras la contraseña esté recordada por «Mantener la billetera desbloqueada».",
     "logout": "Cerrar sesión",
     "developer": "Desarrollador",
     "developerDesc": "Ajustes para quienes ejecutan sus propios servicios."
@@ -357,6 +367,11 @@
     "unlockPlaceholder": "Contraseña",
     "unlockBtn": "Desbloquear",
     "wrongPassword": "Contraseña incorrecta. Inténtalo de nuevo."
+  },
+  "lock": {
+    "title": "Billetera bloqueada",
+    "desc": "Introduce la contraseña de «{name}» para continuar.",
+    "logout": "Cerrar sesión y cambiar de billetera"
   },
   "agreement": {
     "title": "Navio Go Wallet – Acuerdo",

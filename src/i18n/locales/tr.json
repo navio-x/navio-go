@@ -142,6 +142,16 @@
     "unlockDurationDesc": "Şifreli cüzdanın şifresini bu cihazda hatırlar; süre şifreyi en son yazdığınız andan itibaren sayılır. Bu süre boyunca cihaza erişen herkes cüzdanı açabilir.",
     "autoOpenLastWallet": "Son cüzdanı otomatik aç",
     "autoOpenLastWalletDesc": "Açılışta cüzdan listesini atlar ve en son kullandığınız cüzdanı açar.",
+    "autoLock": "Otomatik kilit",
+    "autoLockOptions": {
+      "immediately": "Uygulama arka plana geçer geçmez",
+      "1m": "1 dakika sonra",
+      "5m": "5 dakika sonra",
+      "15m": "15 dakika sonra",
+      "30m": "30 dakika sonra",
+      "off": "Kapalı"
+    },
+    "autoLockDesc": "Açık cüzdanı bu süre boyunca hiç dokunulmayınca ya da arka planda kalınca kilitler; devam etmek için şifre gerekir. \"Cüzdanı açık tut\" ile şifre hatırlanıyorken uygulanmaz.",
     "logout": "Çıkış yap",
     "developer": "Geliştirici",
     "developerDesc": "Kendi servislerini çalıştıranlar için ayarlar."
@@ -357,6 +367,11 @@
     "unlockPlaceholder": "Şifre",
     "unlockBtn": "Aç",
     "wrongPassword": "Yanlış şifre. Lütfen tekrar deneyin."
+  },
+  "lock": {
+    "title": "Cüzdan kilitli",
+    "desc": "Devam etmek için \"{name}\" cüzdanının şifresini girin.",
+    "logout": "Çıkış yap ve cüzdan değiştir"
   },
   "agreement": {
     "title": "Navio Go Cüzdan – Sözleşme",

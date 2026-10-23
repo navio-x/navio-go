@@ -142,6 +142,16 @@
     "unlockDurationDesc": "Remembers the password of an encrypted wallet on this device, counted from the last time you typed it. During that time anyone with access to this device can open the wallet.",
     "autoOpenLastWallet": "Auto-open last wallet",
     "autoOpenLastWalletDesc": "Skip the wallet list on startup and open the wallet you used last.",
+    "autoLock": "Auto-lock",
+    "autoLockOptions": {
+      "immediately": "As soon as the app goes to the background",
+      "1m": "After 1 minute",
+      "5m": "After 5 minutes",
+      "15m": "After 15 minutes",
+      "30m": "After 30 minutes",
+      "off": "Off"
+    },
+    "autoLockDesc": "Locks the open wallet after this long without any input, or in the background; the password is needed to continue. Not applied while the password is remembered by \"Keep wallet unlocked\".",
     "logout": "Log out",
     "developer": "Developer",
     "developerDesc": "Settings for people running their own services."
@@ -357,6 +367,11 @@
     "unlockPlaceholder": "Password",
     "unlockBtn": "Unlock",
     "wrongPassword": "Incorrect password. Please try again."
+  },
+  "lock": {
+    "title": "Wallet locked",
+    "desc": "Enter the password for \"{name}\" to continue.",
+    "logout": "Log out and switch wallet"
   },
   "agreement": {
     "title": "Navio Go Wallet – Agreement",

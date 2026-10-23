@@ -142,6 +142,16 @@
     "unlockDurationDesc": "Mémorise le mot de passe d'un portefeuille chiffré sur cet appareil, à compter de la dernière saisie. Pendant ce délai, toute personne ayant accès à cet appareil peut ouvrir le portefeuille.",
     "autoOpenLastWallet": "Ouvrir automatiquement le dernier portefeuille",
     "autoOpenLastWalletDesc": "Ignore la liste des portefeuilles au démarrage et ouvre le dernier portefeuille utilisé.",
+    "autoLock": "Verrouillage automatique",
+    "autoLockOptions": {
+      "immediately": "Dès que l'app passe en arrière-plan",
+      "1m": "Après 1 minute",
+      "5m": "Après 5 minutes",
+      "15m": "Après 15 minutes",
+      "30m": "Après 30 minutes",
+      "off": "Désactivé"
+    },
+    "autoLockDesc": "Verrouille le portefeuille ouvert après ce délai sans interaction ou en arrière-plan ; le mot de passe est requis pour continuer. Sans effet tant que le mot de passe est mémorisé par « Garder le portefeuille déverrouillé ».",
     "logout": "Se déconnecter",
     "developer": "Développeur",
     "developerDesc": "Réglages pour ceux qui font tourner leurs propres services."
@@ -357,6 +367,11 @@
     "unlockPlaceholder": "Mot de passe",
     "unlockBtn": "Déverrouiller",
     "wrongPassword": "Mot de passe incorrect. Veuillez réessayer."
+  },
+  "lock": {
+    "title": "Portefeuille verrouillé",
+    "desc": "Saisissez le mot de passe de « {name} » pour continuer.",
+    "logout": "Se déconnecter et changer de portefeuille"
   },
   "agreement": {
     "title": "Navio Go Wallet – Accord",

@@ -142,6 +142,16 @@
     "unlockDurationDesc": "Merkt sich das Passwort einer verschlüsselten Wallet auf diesem Gerät, gerechnet ab der letzten Eingabe. In dieser Zeit kann jeder mit Zugriff auf dieses Gerät die Wallet öffnen.",
     "autoOpenLastWallet": "Letzte Wallet automatisch öffnen",
     "autoOpenLastWalletDesc": "Überspringt beim Start die Wallet-Liste und öffnet die zuletzt verwendete Wallet.",
+    "autoLock": "Automatische Sperre",
+    "autoLockOptions": {
+      "immediately": "Sobald die App in den Hintergrund geht",
+      "1m": "Nach 1 Minute",
+      "5m": "Nach 5 Minuten",
+      "15m": "Nach 15 Minuten",
+      "30m": "Nach 30 Minuten",
+      "off": "Aus"
+    },
+    "autoLockDesc": "Sperrt die geöffnete Wallet nach dieser Zeit ohne Eingabe oder im Hintergrund; zum Fortfahren ist das Passwort nötig. Gilt nicht, solange das Passwort über „Wallet entsperrt halten“ gespeichert ist.",
     "logout": "Abmelden",
     "developer": "Entwickler",
     "developerDesc": "Einstellungen für alle, die eigene Dienste betreiben."
@@ -357,6 +367,11 @@
     "unlockPlaceholder": "Passwort",
     "unlockBtn": "Entsperren",
     "wrongPassword": "Falsches Passwort. Bitte erneut versuchen."
+  },
+  "lock": {
+    "title": "Wallet gesperrt",
+    "desc": "Gib das Passwort für „{name}“ ein, um fortzufahren.",
+    "logout": "Abmelden und Wallet wechseln"
   },
   "agreement": {
     "title": "Navio Go Wallet – Vereinbarung",

@@ -544,7 +544,7 @@
       </button>
     </div>
 
-    <!-- Security: optional "stay unlocked" + auto-open -->
+    <!-- Security: optional "stay unlocked", auto-lock + auto-open -->
     <div class="rounded-2xl border border-gray-200 dark:border-gh-700 bg-white dark:bg-gh-800 overflow-hidden">
       <div class="px-4 py-3">
         <label class="block mb-1.5 text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">
@@ -566,6 +566,26 @@
         <p class="mt-1.5 text-xs text-gray-400 dark:text-gray-500">{{ $t('settings.unlockDurationDesc') }}</p>
       </div>
 
+      <div class="border-t border-gray-200 dark:border-gh-700 px-4 py-3">
+        <label class="block mb-1.5 text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">
+          {{ $t('settings.autoLock') }}
+        </label>
+        <select
+          v-model="settings.autoLock"
+          class="w-full px-3 py-2 rounded-lg text-sm
+                 bg-gray-100 dark:bg-gh-700
+                 text-gray-900 dark:text-white
+                 border border-gray-200 dark:border-gh-600
+                 hover:bg-gray-200 dark:hover:bg-gh-600
+                 transition-colors outline-none cursor-pointer"
+        >
+          <option v-for="opt in autoLockOptions" :key="opt" :value="opt">
+            {{ $t('settings.autoLockOptions.' + opt) }}
+          </option>
+        </select>
+        <p class="mt-1.5 text-xs text-gray-400 dark:text-gray-500">{{ $t('settings.autoLockDesc') }}</p>
+      </div>
+
       <div class="border-t border-gray-200 dark:border-gh-700 px-4 py-3 flex items-center justify-between gap-3">
         <div>
           <label class="text-sm text-gray-700 dark:text-gray-300">{{ $t('settings.autoOpenLastWallet') }}</label>
@@ -582,6 +602,7 @@
           />
         </button>
       </div>
+
     </div>
 
     <!-- Log out: closes the wallet, back to the create/select screen -->
@@ -699,6 +720,7 @@ import { settings } from '../stores/settings'
 import { walletNetwork, isMainnet } from '../stores/network'
 import { disconnectWallet, logoutWallet, walletName } from '../stores/navio'
 import { UNLOCK_DURATIONS } from '../lib/unlockCache'
+import { AUTO_LOCK_OPTIONS } from '../lib/autoLock'
 import { FIAT_CURRENCIES } from '../stores/navPrice'
 
 const { locale, t } = useI18n()
@@ -758,6 +780,7 @@ const goToBackup = () => {
 }
 
 const unlockDurationOptions = ['off', ...Object.keys(UNLOCK_DURATIONS)]
+const autoLockOptions = [...Object.keys(AUTO_LOCK_OPTIONS), 'off']
 
 // Cüzdanı kapatır ve cüzdan oluşturma/seçme ekranına döner; veriler silinmez.
 const logout = async () => {

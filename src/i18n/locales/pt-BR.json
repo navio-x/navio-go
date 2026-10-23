@@ -142,6 +142,16 @@
     "unlockDurationDesc": "Lembra a senha de uma carteira criptografada neste dispositivo, contando a partir da última vez que você a digitou. Durante esse período, qualquer pessoa com acesso a este dispositivo pode abrir a carteira.",
     "autoOpenLastWallet": "Abrir automaticamente a última carteira",
     "autoOpenLastWalletDesc": "Pula a lista de carteiras ao iniciar e abre a última carteira usada.",
+    "autoLock": "Bloqueio automático",
+    "autoLockOptions": {
+      "immediately": "Assim que o app for para segundo plano",
+      "1m": "Após 1 minuto",
+      "5m": "Após 5 minutos",
+      "15m": "Após 15 minutos",
+      "30m": "Após 30 minutos",
+      "off": "Desativado"
+    },
+    "autoLockDesc": "Bloqueia a carteira aberta após esse tempo sem interação ou em segundo plano; a senha é necessária para continuar. Não se aplica enquanto a senha estiver lembrada por \"Manter a carteira desbloqueada\".",
     "logout": "Sair",
     "developer": "Desenvolvedor",
     "developerDesc": "Configurações para quem roda seus próprios serviços."
@@ -357,6 +367,11 @@
     "unlockPlaceholder": "Senha",
     "unlockBtn": "Desbloquear",
     "wrongPassword": "Senha incorreta. Tente novamente."
+  },
+  "lock": {
+    "title": "Carteira bloqueada",
+    "desc": "Digite a senha de \"{name}\" para continuar.",
+    "logout": "Sair e trocar de carteira"
   },
   "agreement": {
     "title": "Navio Go Wallet – Acordo",

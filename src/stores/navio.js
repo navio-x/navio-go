@@ -16,7 +16,7 @@ import {
 } from './wallet_management.js';
 import { publishWalletSession, clearWalletSession } from "@/lib/extensionSession.js";
 import { forgetPassword } from "@/lib/unlockCache.js";
-import { setWalletNetwork } from "@/stores/network";
+import { setWalletNetwork, walletNetwork } from "@/stores/network";
 import { trackTransactions, baselineTransactions, isTxTrackingArmed, resetTxTracking } from "@/stores/txNotifications";
 
 // Name of the most recently opened wallet — read by WalletHome.vue for the
@@ -35,6 +35,9 @@ const _navioClient = ref(null);
 // Only populated between creating a wallet and finishing the seed-phrase
 // verification step; cleared by clearMnemonicWords() / disconnectWallet().
 const _mnemonicWords = ref([]);
+// True while an open, encrypted wallet has had its keys dropped from memory
+// (auto-lock, see lib/autoLock.js). App.vue puts the lock screen up.
+const isLocked = ref(false);
 const _sdkInitialized = ref(false);
 const databaseAdapter = 'indexeddb';
 const syncing = ref(false);
@@ -72,6 +75,28 @@ function requirePassword(password) {
   if (!password) throw new Error("password_required");
 }
 
+/** Drops the decryption key and private keys from memory. Sync keeps running (it needs only the view key). */
+export async function lockWallet() {
+  const km = _navioClient.value?.getKeyManager();
+  if (!km || !km.isEncrypted()) return false;
+  km.lock();
+  isLocked.value = true;
+  await clearWalletSession();
+  console.log("Wallet locked");
+  return true;
+}
+
+/** Re-derives the keys from the password; resolves false on a wrong password. */
+export async function unlockWallet(password) {
+  const km = _navioClient.value?.getKeyManager();
+  if (!km) throw new Error("no_wallet");
+  if (!(await km.unlock(password))) return false;
+  isLocked.value = false;
+  updateReceiveAddress(walletNetwork.value, password);
+  console.log("Wallet unlocked");
+  return true;
+}
+
 export function isSdkReady() {
   return _sdkInitialized.value;
 }
@@ -79,6 +104,7 @@ export function isSdkReady() {
 export {
   syncing,
   percent,
+  isLocked,
   walletName,
   walletHeight,
   chainTip,
@@ -451,6 +477,7 @@ export async function disconnectWallet() {
   }
   _navioClient.value = null;
   _mnemonicWords.value = [];
+  isLocked.value = false;
   syncing.value = false;
   resetStaking();
   resetTxTracking();
@@ -530,6 +557,7 @@ export async function createWallet({
   setWalletNetwork(network);
 
   _navioClient.value = client;
+  isLocked.value = false;
   walletName.value=wallet_name;
   localStorage.setItem(LAST_WALLET_KEY, wallet_name);
   console.log("Wallet Ready ✅");
@@ -602,6 +630,7 @@ export async function loadWallet({
   console.log('Wallet encrypted:', keyManager.isEncrypted());
   console.log('Wallet unlocked:', keyManager.isUnlocked());
   _navioClient.value = client;
+  isLocked.value = keyManager.isEncrypted() && !keyManager.isUnlocked();
   console.log("Wallet loaded");
   walletName.value=wallet_id;
   localStorage.setItem(LAST_WALLET_KEY, wallet_id);
@@ -645,6 +674,7 @@ export async function restoreWallet({ wallet_name, network, mnemonic, startHeigh
   setWalletNetwork(network);
 
   _navioClient.value = client;
+  isLocked.value = false;
 
   await encryptNewWallet(client, password);
 

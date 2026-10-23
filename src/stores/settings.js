@@ -1,6 +1,7 @@
 import { reactive, watch } from 'vue'
 import { setSystemBarColors, syncSystemBarsToPage } from '../lib/systemBars'
 import { UNLOCK_DURATIONS, forgetAllPasswords } from '../lib/unlockCache'
+import { AUTO_LOCK_OPTIONS } from '../lib/autoLock'
 import { HL_SPOT_MARKETS } from '../lib/hyperliquid/market'
 
 function readStringList(key, fallback) {
@@ -112,7 +113,18 @@ export const settings = reactive({
   // Off by default: uygulama açılışında cüzdan listesinde beklemek yerine
   // en son açılan cüzdanı kendiliğinden yükler (bkz. WalletHome.vue).
   autoOpenLastWallet: localStorage.getItem('autoOpenLastWallet') === 'true',
+  // Açık cüzdanı şu kadar süre kullanıcı girişi olmayınca (ya da uygulama
+  // arka planda bu kadar kalınca) kilitler; devam etmek için şifre gerekir
+  // ('immediately' | '1m' | '5m' | '15m' | '30m' | 'off' — bkz. lib/autoLock.js).
+  // Şifre bu cihazda hatırlanıyorsa (unlockDuration) uygulanmaz.
+  autoLock:        localStorage.getItem('autoLock') in AUTO_LOCK_OPTIONS || localStorage.getItem('autoLock') === 'off'
+    ? localStorage.getItem('autoLock') : '5m',
 })
+
+/** Otomatik kilit eşiği (ms); kapalıysa null. */
+export function autoLockThresholdMs() {
+  return settings.autoLock in AUTO_LOCK_OPTIONS ? AUTO_LOCK_OPTIONS[settings.autoLock] : null
+}
 
 /** Hatırlanan şifrenin azami yaşı (ms); kapalıysa 0. */
 export function unlockMaxAgeMs() {
@@ -215,6 +227,10 @@ watch(() => settings.unlockDuration, (val) => {
 
 watch(() => settings.autoOpenLastWallet, (val) => {
   localStorage.setItem('autoOpenLastWallet', val)
+})
+
+watch(() => settings.autoLock, (val) => {
+  localStorage.setItem('autoLock', val)
 })
 
 watch(() => settings.evmNetwork, (val) => {
