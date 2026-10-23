@@ -1,23 +1,29 @@
 # Changelog
 
-## Unreleased
+## 0.1.5-alpha
+
+A security release: nothing changes in what the wallet can do, but a lot in how hard it is for someone else to do it.
 
 ### Added
-- Android: a rooted device (su binary, Magisk / KernelSU / SuperSU manager, test-keys build) gets a one-time warning on Home that other apps with root can read the wallet's storage and memory. Dismissable; the app keeps working
-- **Backup verification**: a wallet whose recovery phrase was never typed back (verification skipped in the wizard) shows a "Back up your wallet" banner on Home until it is. Settings → Backup shows whether the backup is verified and offers "Verify my backup", which opens the same type-it-back check without a skip option. Wallets that existed before this change count as verified; imported wallets always do
-- A seed phrase or master seed copied from the seed screen or Backup is wiped from the clipboard after 60 s, and as soon as the screen is left; the copy message says so. Backup also forgets what it revealed when the page is left
+- **Auto-lock** (Settings → security): the open wallet locks after 1, 5, 15 or 30 minutes without input or in the background, or as soon as the app goes to the background; a lock screen asks for the password to continue, or lets you log out. Default 5 minutes. Sync keeps running while locked. Not applied while the password is remembered by *Keep wallet unlocked*
+- **Biometric unlock on Android** (Settings → security, off by default): the wallet password is kept in the Android Keystore behind the device's fingerprint / face check, so the lock screen and the wallet list can open the wallet without typing it. The password keeps working as the fallback; nothing changes for wallets where this is left off. Uses `@capgo/capacitor-native-biometric`
+- **Confirm before spending** (Settings → security): the password, or the fingerprint / face when enrolled, is asked for again right before a send, token / NFT send or mint, stake, unstake, swap, guided process (start and re-approval), payroll run, DEX swap, trading-account withdrawal or dApp request, even while the wallet is unlocked. Modes: every transaction (default), only at or above a NAV amount (amounts not in NAV always ask), off
 - **Password guessing brake**: after five wrong passwords for a wallet, every further try waits 30 s, then 1, 2, 4 … up to 15 minutes, at every prompt (wallet list, lock screen, spend confirmation, biometric enrolment, extension windows). Only typed passwords count; the wait survives a reload and clears on a correct password
 - Create / import wallet refuses passwords that are a common word with digits and a symbol glued on ("Password123!", "Navio2026!"), digit-only patterns, or the wallet's own name
-- **Confirm before spending** (Settings → security): the password, or the fingerprint / face when enrolled, is asked for again right before a send, token / NFT send or mint, stake, unstake, swap, guided process (start and re-approval), payroll run, DEX swap, trading-account withdrawal or dApp request, even while the wallet is unlocked. Modes: every transaction (default), only at or above a NAV amount (amounts not in NAV always ask), off
-- **Biometric unlock on Android** (Settings → security, off by default): the wallet password is kept in the Android Keystore behind the device's fingerprint / face check, so the lock screen and the wallet list can open the wallet without typing it. The password keeps working as the fallback; nothing changes for wallets where this is left off. Uses `@capgo/capacitor-native-biometric`
-- **Auto-lock** (Settings → security): the open wallet locks after 1, 5, 15 or 30 minutes without input or in the background, or as soon as the app goes to the background; a lock screen asks for the password to continue, or lets you log out. Default 5 minutes. Sync keeps running while locked. Not applied while the password is remembered by *Keep wallet unlocked*
+- **Backup verification**: a wallet whose recovery phrase was never typed back (verification skipped in the wizard) shows a "Back up your wallet" banner on Home until it is. Settings → Backup shows whether the backup is verified and offers "Verify my backup", which opens the same type-it-back check without a skip option. Wallets that existed before this change count as verified; imported wallets always do
+- A seed phrase or master seed copied from the seed screen or Backup is wiped from the clipboard after 60 s, and as soon as the screen is left; the copy message says so. Backup also forgets what it revealed when the page is left
 - Android: screenshots, screen recording and the app-switcher preview are blocked on the screens that show or take the seed phrase (create, verify, import, backup)
+- Android: a rooted device (su binary, Magisk / KernelSU / SuperSU manager, test-keys build) gets a one-time warning on Home that other apps with root can read the wallet's storage and memory. Dismissable; the app keeps working
 
 ### Changed
 - The create/import wizard passes the wallet name and password between its screens in memory only; the seed phrase of a new wallet is held in memory until it is verified (or skipped), then dropped. None of these are written to sessionStorage any more
 - Creating or restoring a wallet without a password is refused at the store level (the screens already required one)
 - A wallet is in the unlocked state right after it is created or restored, as it is after being opened
 - Android: app data is excluded from system backups (`allowBackup=false`)
+
+### Known limitations
+- navio-sdk's `KeyManager.lock()` clears the decryption key and private keys but leaves the master seed in memory, so the lock protects against someone picking up the unlocked device, not against a memory dump or a script on the page. Reported upstream; a watch-only mode waits on that fix
+- The Android-side pieces (secure screens, biometric permission, root check) live in the `android/` project, which is not tracked in this repository
 
 ## 0.1.4-alpha
 
