@@ -28,10 +28,11 @@ const router = createRouter({
     { path: "/welcome", component: Welcome },
     { path: "/agreement", component: Agreement },
     { path: "/wallet/home", component: WalletHome },
-    { path: "/wallet/mnemonic", component: MnemonicGenerate },
+    // secureScreen: seed phrase on screen or being typed — see lib/secureScreen.js
+    { path: "/wallet/mnemonic", component: MnemonicGenerate, meta: { secureScreen: true } },
     { path: "/wallet/create", component: CreateWallet },
-    { path: "/wallet/import", component: ImportWallet },
-    { path: "/wallet/verify", component: MnemonicVerify },
+    { path: "/wallet/import", component: ImportWallet, meta: { secureScreen: true } },
+    { path: "/wallet/verify", component: MnemonicVerify, meta: { secureScreen: true } },
     { 
       path: "/wallet/balance", 
       component: WalletBalance,
@@ -65,7 +66,7 @@ const router = createRouter({
     {
       path: "/wallet/backup",
       component: WalletBackup,
-      meta: { showNavbar: true }
+      meta: { showNavbar: true, secureScreen: true }
     },
     {
       path: "/about",

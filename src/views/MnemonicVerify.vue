@@ -67,6 +67,7 @@ import { ref } from "vue";
 import { useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
 import WizardNav from "@/components/WizardNav.vue";
+import { getMnemonicWords, clearMnemonicWords } from "@/stores/navio";
 
 const router = useRouter();
 const { t } = useI18n();
@@ -74,14 +75,14 @@ const input = ref("");
 const showSkipModal = ref(false);
 
 function verify() {
-  const cachedMnemonic = sessionStorage.getItem("mnemonic_words");
+  const words = getMnemonicWords();
 
-  if (!cachedMnemonic) {
+  if (!words.length) {
     alert(t('wizard.mnemonicNotFound'));
     return;
   }
 
-  const expected = JSON.parse(cachedMnemonic).join(" ");
+  const expected = words.join(" ");
   const normalized_input = input.value.trim().replace(/\s+/g, " ");
 
   if (normalized_input !== expected) {
@@ -97,6 +98,9 @@ function skipAnyway() {
 }
 
 function next() {
+  // Verified or skipped: the seed phrase has no further use in memory.
+  // Settings → Backup reads it from the (unlocked) key manager instead.
+  clearMnemonicWords();
   router.push("/wallet/balance");
 }
 </script>

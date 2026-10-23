@@ -65,6 +65,7 @@ import { Capacitor } from '@capacitor/core'
 import { settings, applyTheme } from './stores/settings'
 import { hlEnabled } from './stores/network'
 import { syncSystemBarsToPage } from './lib/systemBars'
+import { setSecureScreen } from './lib/secureScreen'
 import { isExtensionContext } from './lib/extensionSession'
 import BottomNavbar from './components/BottomNavbar.vue'
 import ProcessTray from './components/process/ProcessTray.vue'
@@ -97,6 +98,10 @@ watch(() => route.path, async () => {
   // Android: repaint the status/navigation bars to the new page's background.
   syncSystemBarsToPage()
 })
+
+// Android: no screenshots / screen recording / app-switcher preview on the
+// screens that show or take the seed phrase (router meta.secureScreen).
+watch(() => !!route.meta.secureScreen, (secure) => setSecureScreen(secure), { immediate: true })
 
 // Merchant mode can be switched off from Settings while a POS route is
 // still active (e.g. another tab, or navigated back to Settings without

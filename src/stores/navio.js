@@ -32,6 +32,8 @@ function getHost(network) {
 }
 
 const _navioClient = ref(null);
+// Only populated between creating a wallet and finishing the seed-phrase
+// verification step; cleared by clearMnemonicWords() / disconnectWallet().
 const _mnemonicWords = ref([]);
 const _sdkInitialized = ref(false);
 const databaseAdapter = 'indexeddb';
@@ -57,6 +59,17 @@ export function getNavioClient() {
 
 export function getMnemonicWords() {
   return _mnemonicWords.value;
+}
+
+export function clearMnemonicWords() {
+  _mnemonicWords.value = [];
+}
+
+// Every wallet created or restored here must be encrypted. The screens
+// enforce a password already; this keeps a future caller (or a dev tool)
+// from quietly writing an unencrypted key store to IndexedDB.
+function requirePassword(password) {
+  if (!password) throw new Error("password_required");
 }
 
 export function isSdkReady() {
@@ -437,6 +450,7 @@ export async function disconnectWallet() {
     console.error("Disconnect error:", e);
   }
   _navioClient.value = null;
+  _mnemonicWords.value = [];
   syncing.value = false;
   resetStaking();
   resetTxTracking();
@@ -466,11 +480,33 @@ export async function logoutWallet() {
 
 export { stopSync };
 
+// Encrypts a freshly created/restored key store and persists the KDF
+// parameters.
+async function encryptNewWallet(client, password) {
+  const keyManager = client.getKeyManager();
+  try {
+    await keyManager.setPassword(password);
+    const params = keyManager.getEncryptionParams();
+    client.getWalletDB().saveEncryptionMetadata(params.salt, params.verificationHash);
+    console.log('Wallet encrypted:', keyManager.isEncrypted());
+    // Drop the plaintext keys setPassword() worked from, then come back up
+    // the same way loadWallet() does, so a brand-new wallet is in the same
+    // (unlocked, keys decrypted from the store) state as a reopened one.
+    keyManager.lock();
+    await keyManager.unlock(password);
+    console.log('Wallet unlocked:', keyManager.isUnlocked());
+  } catch (error) {
+    console.error("Failed to set password:", error);
+    throw new Error(`Password encryption failed: ${error.message}`);
+  }
+}
+
 export async function createWallet({
   wallet_name,
   network = "testnet",
   password,
 } = {}) {
+  requirePassword(password);
   // Normally done by the start screen (InitalizeSDK.vue), but the app can
   // come up on another route — a reload mid-flow, or the OS restoring the
   // page. initNavioSDK is a no-op when it has already run.
@@ -504,34 +540,16 @@ export async function createWallet({
   .trim()
   .split(/\s+/);
 
-  if (password)
-  {
-    try {
-      await keyManager.setPassword(password);
-      
-      const params = keyManager.getEncryptionParams();
-      const walletDb = client.getWalletDB();
-      walletDb.saveEncryptionMetadata(params.salt, params.verificationHash);
-      
-      console.log('Wallet encrypted:', keyManager.isEncrypted());
-      keyManager.lock();
-      console.log('Wallet unlocked:', keyManager.isUnlocked());
-    } catch (error) {
-      console.error("Failed to set password:", error);
-      throw new Error(`Password encryption failed: ${error.message}`);
-    }
-  }
+  await encryptNewWallet(client, password);
 
   // Her şey başarılıysa registry'e ekle
   addWalletToRegistry({
     id: generateUniqueId(wallet_name),
     name: wallet_name,
-    encrypted: !!password,
+    encrypted: true,
     network,
     createdAt: Date.now(),
   });
-
-  sessionStorage.setItem("mnemonic", _mnemonicWords.value.join(" "));
 
   updateReceiveAddress(network, password);
   startSync();
@@ -596,6 +614,7 @@ export async function loadWallet({
 
 export async function restoreWallet({ wallet_name, network, mnemonic, startHeight, password }) {
   if (!mnemonic) throw new Error("Mnemonic required");
+  requirePassword(password);
   await initNavioSDK();
 
   const restoreHeight =
@@ -627,30 +646,13 @@ export async function restoreWallet({ wallet_name, network, mnemonic, startHeigh
 
   _navioClient.value = client;
 
-  const keyManager = client.getKeyManager();
-
-  if (password) {
-    try {
-      await keyManager.setPassword(password);
-      
-      const params = keyManager.getEncryptionParams();
-      const walletDb = client.getWalletDB();
-      walletDb.saveEncryptionMetadata(params.salt, params.verificationHash);
-      
-      console.log('Wallet encrypted:', keyManager.isEncrypted());
-      keyManager.lock();
-      console.log('Wallet unlocked:', keyManager.isUnlocked());
-    } catch (error) {
-      console.error("Failed to set password:", error);
-      throw new Error(`Password encryption failed: ${error.message}`);
-    }
-  }
+  await encryptNewWallet(client, password);
 
   // Her şey başarılıysa registry'e ekle
   addWalletToRegistry({
     id: generateUniqueId(wallet_name),
     name: wallet_name,
-    encrypted: !!password,
+    encrypted: true,
     network,
     createdAt: Date.now(),
   });

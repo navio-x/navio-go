@@ -141,6 +141,7 @@
 import { ref, computed } from "vue";
 import { useRouter } from "vue-router";
 import WizardNav from "@/components/WizardNav.vue";
+import { setWizardDraft } from "@/lib/walletWizard";
 
 const router = useRouter();
 
@@ -185,9 +186,13 @@ const canContinue = computed(() =>
 async function MnemonicGenerate() {
   try {
     isLoading.value = true;
-    sessionStorage.setItem("network",     network.value);
-    sessionStorage.setItem("wallet_name", walletName.value.trim());
-    sessionStorage.setItem("password",    password.value);
+    sessionStorage.setItem("network", network.value);
+    // Name and password are handed over in memory only (see lib/walletWizard.js).
+    setWizardDraft({
+      walletName: walletName.value.trim(),
+      password:   password.value,
+      network:    network.value,
+    });
     router.push("/wallet/mnemonic");
   } catch (err) {
     console.error("Mnemonic generate failed:", err);

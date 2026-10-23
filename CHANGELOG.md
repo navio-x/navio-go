@@ -1,5 +1,16 @@
 # Changelog
 
+## Unreleased
+
+### Added
+- Android: screenshots, screen recording and the app-switcher preview are blocked on the screens that show or take the seed phrase (create, verify, import, backup)
+
+### Changed
+- The create/import wizard passes the wallet name and password between its screens in memory only; the seed phrase of a new wallet is held in memory until it is verified (or skipped), then dropped. None of these are written to sessionStorage any more
+- Creating or restoring a wallet without a password is refused at the store level (the screens already required one)
+- A wallet is in the unlocked state right after it is created or restored, as it is after being opened
+- Android: app data is excluded from system backups (`allowBackup=false`)
+
 ## 0.1.4-alpha
 
 ### Added

@@ -97,7 +97,8 @@
 import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
-import { createWallet } from "@/stores/navio";
+import { createWallet, getMnemonicWords, getNavioClient } from "@/stores/navio";
+import { takeWizardDraft } from "@/lib/walletWizard";
 import WizardNav from "@/components/WizardNav.vue";
 import copy from "copy-to-clipboard";
 
@@ -113,22 +114,29 @@ async function initWallet() {
     connectionError.value = null;
     loading.value = true;
 
-    const cached = sessionStorage.getItem("mnemonic_words");
-    if (cached) {
-      mnemonic_words.value = JSON.parse(cached);
+    // Coming back from the verify step: the wallet already exists and its
+    // seed phrase is still held in memory — don't create a second one.
+    if (getNavioClient() && getMnemonicWords().length) {
+      mnemonic_words.value = getMnemonicWords();
+      return;
+    }
+
+    // The name/password hand-off lives only in memory, so a reload mid-wizard
+    // leaves nothing to create from: start the wizard over.
+    const draft = takeWizardDraft();
+    if (!draft?.walletName || !draft?.password) {
+      router.replace("/wallet/create");
       return;
     }
 
     const result = await createWallet({
-      wallet_name: sessionStorage.getItem("wallet_name"),
-      network:     sessionStorage.getItem("network"),
-      password:    sessionStorage.getItem("password"),
+      wallet_name: draft.walletName,
+      network:     draft.network,
+      password:    draft.password,
     });
 
     client.value         = result.client;
     mnemonic_words.value = result.mnemonic_words;
-
-    sessionStorage.setItem("mnemonic_words", JSON.stringify(result.mnemonic_words));
   } catch (err) {
     console.error("Navio init failed", err);
     connectionError.value = { message: err?.message ?? String(err) };

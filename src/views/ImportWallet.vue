@@ -234,10 +234,7 @@ async function doImport() {
     });
 
     if (result && result.client) {
-      sessionStorage.setItem("mnemonic_words", JSON.stringify(mnemonic.value.split(" ")));
-      sessionStorage.setItem("network",        network.value);
-      sessionStorage.setItem("wallet_name",    walletName.value.trim());
-      sessionStorage.setItem("password",       password.value);
+      sessionStorage.setItem("network", network.value);
       router.push("/wallet/balance");
     }
   } catch (err) {
