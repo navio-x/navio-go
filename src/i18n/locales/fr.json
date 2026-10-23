@@ -10,6 +10,7 @@
     "close": "Fermer",
     "copy": "Copier",
     "copied": "Copié !",
+    "copiedClears": "Copié. Le presse-papiers sera vidé dans {seconds} s.",
     "loading": "Chargement...",
     "error": "Erreur",
     "success": "Succès",

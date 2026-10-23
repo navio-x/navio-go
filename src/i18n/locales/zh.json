@@ -10,6 +10,7 @@
     "close": "关闭",
     "copy": "复制",
     "copied": "已复制！",
+    "copiedClears": "已复制。剪贴板将在 {seconds} 秒后清空。",
     "loading": "加载中...",
     "error": "错误",
     "success": "成功",

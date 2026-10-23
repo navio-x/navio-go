@@ -68,6 +68,7 @@ import { settings, applyTheme } from './stores/settings'
 import { hlEnabled } from './stores/network'
 import { syncSystemBarsToPage } from './lib/systemBars'
 import { setSecureScreen } from './lib/secureScreen'
+import { clearSecretCopy } from './lib/clipboard'
 import { isExtensionContext } from './lib/extensionSession'
 import { startAutoLock } from './lib/autoLock'
 import { autoLockThresholdMs, unlockMaxAgeMs } from './stores/settings'
@@ -109,7 +110,11 @@ watch(() => route.path, async () => {
 
 // Android: no screenshots / screen recording / app-switcher preview on the
 // screens that show or take the seed phrase (router meta.secureScreen).
-watch(() => !!route.meta.secureScreen, (secure) => setSecureScreen(secure), { immediate: true })
+watch(() => !!route.meta.secureScreen, (secure) => {
+  setSecureScreen(secure)
+  // Off a seed screen: a seed copied there has no business staying on the clipboard.
+  if (!secure) clearSecretCopy()
+}, { immediate: true })
 
 // Merchant mode can be switched off from Settings while a POS route is
 // still active (e.g. another tab, or navigated back to Settings without

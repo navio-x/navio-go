@@ -10,6 +10,7 @@
     "close": "Close",
     "copy": "Copy",
     "copied": "Copied!",
+    "copiedClears": "Copied. The clipboard is cleared in {seconds} s.",
     "loading": "Loading...",
     "error": "Error",
     "success": "Success",

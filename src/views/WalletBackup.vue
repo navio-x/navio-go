@@ -173,7 +173,7 @@
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
           </svg>
           <span :class="copiedMnemonic ? 'text-green-500' : ''">
-            {{ copiedMnemonic ? $t('backup.copied') : $t('backup.copy') }}
+            {{ copiedMnemonic ? $t('common.copiedClears', { seconds: SECRET_CLIPBOARD_TTL_MS / 1000 }) : $t('backup.copy') }}
           </span>
         </button>
       </div>
@@ -204,7 +204,7 @@
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
           </svg>
           <span :class="copiedSeed ? 'text-green-500' : ''">
-            {{ copiedSeed ? $t('backup.copied') : $t('backup.copySeed') }}
+            {{ copiedSeed ? $t('common.copiedClears', { seconds: SECRET_CLIPBOARD_TTL_MS / 1000 }) : $t('backup.copySeed') }}
           </span>
         </button>
       </div>
@@ -214,9 +214,10 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { getNavioClient } from '@/stores/navio'
+import { copySecret, clearSecretCopy, SECRET_CLIPBOARD_TTL_MS } from '@/lib/clipboard'
 
 const router = useRouter()
 
@@ -275,24 +276,29 @@ const revealSeed = () => {
 }
 
 const copyMnemonic = async () => {
-  try {
-    await navigator.clipboard.writeText(mnemonic.value)
+  if (await copySecret(mnemonic.value)) {
     copiedMnemonic.value = true
-    setTimeout(() => (copiedMnemonic.value = false), 2000)
-  } catch (e) {
-    console.error('Clipboard error:', e)
+    setTimeout(() => (copiedMnemonic.value = false), 4000)
   }
 }
 
 const copySeed = async () => {
-  try {
-    await navigator.clipboard.writeText(masterSeed.value)
+  if (await copySecret(masterSeed.value)) {
     copiedSeed.value = true
-    setTimeout(() => (copiedSeed.value = false), 2000)
-  } catch (e) {
-    console.error('Clipboard error:', e)
+    setTimeout(() => (copiedSeed.value = false), 4000)
   }
 }
+
+// Leaving the page: nothing revealed stays in component state, and a
+// secret still on the clipboard is wiped (App.vue does the same on any
+// secure-screen exit; this covers the component being torn down first).
+onUnmounted(() => {
+  mnemonic.value = ''
+  masterSeed.value = ''
+  revealed.value = false
+  revealedSeed.value = false
+  clearSecretCopy()
+})
 </script>
 
 <style scoped>

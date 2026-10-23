@@ -10,6 +10,7 @@
     "close": "Kapat",
     "copy": "Kopyala",
     "copied": "Kopyalandı!",
+    "copiedClears": "Kopyalandı. Pano {seconds} sn sonra temizlenecek.",
     "loading": "Yükleniyor...",
     "error": "Hata",
     "success": "Başarılı",

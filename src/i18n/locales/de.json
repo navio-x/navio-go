@@ -10,6 +10,7 @@
     "close": "Schließen",
     "copy": "Kopieren",
     "copied": "Kopiert!",
+    "copiedClears": "Kopiert. Die Zwischenablage wird in {seconds} s geleert.",
     "loading": "Wird geladen...",
     "error": "Fehler",
     "success": "Erfolg",

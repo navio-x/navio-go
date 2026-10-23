@@ -10,6 +10,7 @@
     "close": "閉じる",
     "copy": "コピー",
     "copied": "コピーしました！",
+    "copiedClears": "コピーしました。クリップボードは {seconds} 秒後に消去されます。",
     "loading": "読み込み中...",
     "error": "エラー",
     "success": "成功",

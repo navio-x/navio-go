@@ -10,6 +10,7 @@
     "close": "Cerrar",
     "copy": "Copiar",
     "copied": "¡Copiado!",
+    "copiedClears": "Copiado. El portapapeles se vaciará en {seconds} s.",
     "loading": "Cargando...",
     "error": "Error",
     "success": "Éxito",

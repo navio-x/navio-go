@@ -100,7 +100,7 @@ import { useI18n } from "vue-i18n";
 import { createWallet, getMnemonicWords, getNavioClient } from "@/stores/navio";
 import { takeWizardDraft } from "@/lib/walletWizard";
 import WizardNav from "@/components/WizardNav.vue";
-import copy from "copy-to-clipboard";
+import { copySecret, SECRET_CLIPBOARD_TTL_MS } from "@/lib/clipboard";
 
 const router         = useRouter();
 const { t }          = useI18n();
@@ -151,10 +151,10 @@ function next() {
   router.push("/wallet/verify");
 }
 
-function copyMnemonic() {
+async function copyMnemonic() {
   const text = mnemonic_words.value.join(" ");
-  if (copy(text)) {
-    alert(t('common.copied'));
+  if (await copySecret(text)) {
+    alert(t('common.copiedClears', { seconds: SECRET_CLIPBOARD_TTL_MS / 1000 }));
   }
 }
 </script>

@@ -10,6 +10,7 @@
     "close": "Fechar",
     "copy": "Copiar",
     "copied": "Copiado!",
+    "copiedClears": "Copiado. A área de transferência será limpa em {seconds} s.",
     "loading": "Carregando...",
     "error": "Erro",
     "success": "Sucesso",

@@ -3,6 +3,7 @@
 ## Unreleased
 
 ### Added
+- A seed phrase or master seed copied from the seed screen or Backup is wiped from the clipboard after 60 s, and as soon as the screen is left; the copy message says so. Backup also forgets what it revealed when the page is left
 - **Password guessing brake**: after five wrong passwords for a wallet, every further try waits 30 s, then 1, 2, 4 … up to 15 minutes, at every prompt (wallet list, lock screen, spend confirmation, biometric enrolment, extension windows). Only typed passwords count; the wait survives a reload and clears on a correct password
 - Create / import wallet refuses passwords that are a common word with digits and a symbol glued on ("Password123!", "Navio2026!"), digit-only patterns, or the wallet's own name
 - **Confirm before spending** (Settings → security): the password, or the fingerprint / face when enrolled, is asked for again right before a send, token / NFT send or mint, stake, unstake, swap, guided process (start and re-approval), payroll run, DEX swap, trading-account withdrawal or dApp request, even while the wallet is unlocked. Modes: every transaction (default), only at or above a NAV amount (amounts not in NAV always ask), off
