@@ -3,6 +3,7 @@
 ## Unreleased
 
 ### Added
+- Android: a rooted device (su binary, Magisk / KernelSU / SuperSU manager, test-keys build) gets a one-time warning on Home that other apps with root can read the wallet's storage and memory. Dismissable; the app keeps working
 - **Backup verification**: a wallet whose recovery phrase was never typed back (verification skipped in the wizard) shows a "Back up your wallet" banner on Home until it is. Settings → Backup shows whether the backup is verified and offers "Verify my backup", which opens the same type-it-back check without a skip option. Wallets that existed before this change count as verified; imported wallets always do
 - A seed phrase or master seed copied from the seed screen or Backup is wiped from the clipboard after 60 s, and as soon as the screen is left; the copy message says so. Backup also forgets what it revealed when the page is left
 - **Password guessing brake**: after five wrong passwords for a wallet, every further try waits 30 s, then 1, 2, 4 … up to 15 minutes, at every prompt (wallet list, lock screen, spend confirmation, biometric enrolment, extension windows). Only typed passwords count; the wait survives a reload and clears on a correct password

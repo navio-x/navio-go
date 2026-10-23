@@ -8,6 +8,7 @@
     "delete": "Delete",
     "edit": "Edit",
     "close": "Close",
+    "dismiss": "Dismiss",
     "copy": "Copy",
     "copied": "Copied!",
     "copiedClears": "Copied. The clipboard is cleared in {seconds} s.",
@@ -1285,7 +1286,9 @@
     "switchWallet": "Switch wallet",
     "totalBalance": "Total balance",
     "backupBannerTitle": "Back up your wallet",
-    "backupBannerDesc": "Write down the recovery phrase and verify it. Without it, a lost device means lost funds."
+    "backupBannerDesc": "Write down the recovery phrase and verify it. Without it, a lost device means lost funds.",
+    "rootWarningTitle": "This device appears to be rooted",
+    "rootWarningDesc": "Apps with root access can read this wallet's storage and memory. Keep only small amounts here, or use another device."
   },
   "hlAsset": {
     "balanceOnHyperliquid": "Balance on Hyperliquid",

@@ -8,6 +8,7 @@
     "delete": "Excluir",
     "edit": "Editar",
     "close": "Fechar",
+    "dismiss": "Fechar",
     "copy": "Copiar",
     "copied": "Copiado!",
     "copiedClears": "Copiado. A área de transferência será limpa em {seconds} s.",
@@ -1285,7 +1286,9 @@
     "switchWallet": "Trocar de carteira",
     "totalBalance": "Saldo total",
     "backupBannerTitle": "Faça backup da sua carteira",
-    "backupBannerDesc": "Anote a frase de recuperação e verifique-a. Sem ela, perder o aparelho significa perder os fundos."
+    "backupBannerDesc": "Anote a frase de recuperação e verifique-a. Sem ela, perder o aparelho significa perder os fundos.",
+    "rootWarningTitle": "Este aparelho parece ter root",
+    "rootWarningDesc": "Apps com acesso root podem ler o armazenamento e a memória desta carteira. Mantenha aqui apenas quantias pequenas ou use outro aparelho."
   },
   "hlAsset": {
     "balanceOnHyperliquid": "Saldo na Hyperliquid",

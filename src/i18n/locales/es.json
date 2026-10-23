@@ -8,6 +8,7 @@
     "delete": "Eliminar",
     "edit": "Editar",
     "close": "Cerrar",
+    "dismiss": "Cerrar",
     "copy": "Copiar",
     "copied": "¡Copiado!",
     "copiedClears": "Copiado. El portapapeles se vaciará en {seconds} s.",
@@ -1285,7 +1286,9 @@
     "switchWallet": "Cambiar de billetera",
     "totalBalance": "Saldo total",
     "backupBannerTitle": "Haz una copia de seguridad",
-    "backupBannerDesc": "Anota la frase de recuperación y verifícala. Sin ella, perder el dispositivo significa perder los fondos."
+    "backupBannerDesc": "Anota la frase de recuperación y verifícala. Sin ella, perder el dispositivo significa perder los fondos.",
+    "rootWarningTitle": "Este dispositivo parece estar rooteado",
+    "rootWarningDesc": "Las apps con acceso root pueden leer el almacenamiento y la memoria de esta billetera. Guarda aquí solo cantidades pequeñas o usa otro dispositivo."
   },
   "hlAsset": {
     "balanceOnHyperliquid": "Saldo en Hyperliquid",

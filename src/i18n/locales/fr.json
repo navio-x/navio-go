@@ -8,6 +8,7 @@
     "delete": "Supprimer",
     "edit": "Modifier",
     "close": "Fermer",
+    "dismiss": "Fermer",
     "copy": "Copier",
     "copied": "Copié !",
     "copiedClears": "Copié. Le presse-papiers sera vidé dans {seconds} s.",
@@ -1285,7 +1286,9 @@
     "switchWallet": "Changer de portefeuille",
     "totalBalance": "Solde total",
     "backupBannerTitle": "Sauvegardez votre portefeuille",
-    "backupBannerDesc": "Notez la phrase de récupération et vérifiez-la. Sans elle, un appareil perdu signifie des fonds perdus."
+    "backupBannerDesc": "Notez la phrase de récupération et vérifiez-la. Sans elle, un appareil perdu signifie des fonds perdus.",
+    "rootWarningTitle": "Cet appareil semble rooté",
+    "rootWarningDesc": "Les applications disposant d'un accès root peuvent lire le stockage et la mémoire de ce portefeuille. N'y gardez que de petits montants, ou utilisez un autre appareil."
   },
   "hlAsset": {
     "balanceOnHyperliquid": "Solde sur Hyperliquid",

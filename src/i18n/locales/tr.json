@@ -8,6 +8,7 @@
     "delete": "Sil",
     "edit": "Düzenle",
     "close": "Kapat",
+    "dismiss": "Kapat",
     "copy": "Kopyala",
     "copied": "Kopyalandı!",
     "copiedClears": "Kopyalandı. Pano {seconds} sn sonra temizlenecek.",
@@ -1285,7 +1286,9 @@
     "switchWallet": "Cüzdan değiştir",
     "totalBalance": "Toplam bakiye",
     "backupBannerTitle": "Cüzdanınızı yedekleyin",
-    "backupBannerDesc": "Kurtarma cümlesini yazın ve doğrulayın. O olmadan kaybolan cihaz, kaybolan para demektir."
+    "backupBannerDesc": "Kurtarma cümlesini yazın ve doğrulayın. O olmadan kaybolan cihaz, kaybolan para demektir.",
+    "rootWarningTitle": "Bu cihaz root'lanmış görünüyor",
+    "rootWarningDesc": "Root erişimi olan uygulamalar bu cüzdanın depolamasını ve belleğini okuyabilir. Burada yalnızca küçük tutarlar tutun ya da başka bir cihaz kullanın."
   },
   "hlAsset": {
     "balanceOnHyperliquid": "Hyperliquid bakiyesi",

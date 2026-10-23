@@ -52,6 +52,26 @@
         <ChevronRight class="w-4 h-4 text-yellow-600 dark:text-yellow-400 shrink-0" />
       </button>
 
+      <!-- Rooted device (Android): one-time warning, dismissable -->
+      <div
+        v-if="rootWarning"
+        class="flex items-start gap-3 rounded-2xl border border-red-200 dark:border-red-800/60
+               bg-red-50 dark:bg-red-900/20 px-4 py-3"
+      >
+        <ShieldAlert class="w-5 h-5 text-red-600 dark:text-red-400 shrink-0 mt-0.5" />
+        <span class="flex-1 min-w-0">
+          <span class="block text-sm font-medium text-red-900 dark:text-red-200">{{ $t('home.rootWarningTitle') }}</span>
+          <span class="block text-xs text-red-800/80 dark:text-red-300/80">{{ $t('home.rootWarningDesc') }}</span>
+        </span>
+        <button
+          @click="hideRootWarning"
+          :aria-label="$t('common.dismiss')"
+          class="p-1 -m-1 rounded-lg text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/40 shrink-0"
+        >
+          <X class="w-4 h-4" />
+        </button>
+      </div>
+
       <!-- HOW MUCH DO I HAVE -->
       <section>
         <div class="flex items-center justify-between gap-2">
@@ -245,7 +265,20 @@
   import HlAssetsMarkets from '@/components/HlAssetsMarkets.vue'
   import TokenIcon from '@/components/TokenIcon.vue'
   import ProcessCard from '@/components/process/ProcessCard.vue'
-  import { ArrowLeftRight, ChevronRight, Coins, Image, Loader2, Plus, ShieldAlert } from 'lucide-vue-next'
+  import { ArrowLeftRight, ChevronRight, Coins, Image, Loader2, Plus, ShieldAlert, X } from 'lucide-vue-next'
+  import { checkDeviceIntegrity, rootWarningDismissed, dismissRootWarning } from '@/lib/deviceIntegrity'
+
+  // Rooted Android device: shown once per install, until dismissed.
+  const rootWarning = ref(false)
+  onMounted(async () => {
+    if (rootWarningDismissed()) return
+    const r = await checkDeviceIntegrity()
+    rootWarning.value = !!r?.rooted
+  })
+  function hideRootWarning() {
+    dismissRootWarning()
+    rootWarning.value = false
+  }
 
   const network = sessionStorage.getItem('network') ?? 'mainnet'
   const router = useRouter()

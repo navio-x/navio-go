@@ -8,6 +8,7 @@
     "delete": "删除",
     "edit": "编辑",
     "close": "关闭",
+    "dismiss": "关闭",
     "copy": "复制",
     "copied": "已复制！",
     "copiedClears": "已复制。剪贴板将在 {seconds} 秒后清空。",
@@ -1285,7 +1286,9 @@
     "switchWallet": "切换钱包",
     "totalBalance": "总余额",
     "backupBannerTitle": "备份您的钱包",
-    "backupBannerDesc": "抄写恢复短语并验证。没有它，丢失设备就意味着丢失资金。"
+    "backupBannerDesc": "抄写恢复短语并验证。没有它，丢失设备就意味着丢失资金。",
+    "rootWarningTitle": "此设备似乎已 root",
+    "rootWarningDesc": "拥有 root 权限的应用可以读取此钱包的存储和内存。请只在此存放小额资金，或改用其他设备。"
   },
   "hlAsset": {
     "balanceOnHyperliquid": "Hyperliquid 上的余额",

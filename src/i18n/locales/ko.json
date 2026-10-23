@@ -8,6 +8,7 @@
     "delete": "삭제",
     "edit": "편집",
     "close": "닫기",
+    "dismiss": "닫기",
     "copy": "복사",
     "copied": "복사됨!",
     "copiedClears": "복사되었습니다. {seconds}초 후 클립보드가 지워집니다.",
@@ -1285,7 +1286,9 @@
     "switchWallet": "지갑 전환",
     "totalBalance": "총 잔액",
     "backupBannerTitle": "지갑을 백업하세요",
-    "backupBannerDesc": "복구 문구를 적어 두고 확인하세요. 문구가 없으면 기기를 잃는 순간 자금도 잃습니다."
+    "backupBannerDesc": "복구 문구를 적어 두고 확인하세요. 문구가 없으면 기기를 잃는 순간 자금도 잃습니다.",
+    "rootWarningTitle": "이 기기는 루팅된 것으로 보입니다",
+    "rootWarningDesc": "루트 권한이 있는 앱은 이 지갑의 저장소와 메모리를 읽을 수 있습니다. 소액만 보관하거나 다른 기기를 사용하세요."
   },
   "hlAsset": {
     "balanceOnHyperliquid": "Hyperliquid 잔액",

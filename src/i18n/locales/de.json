@@ -8,6 +8,7 @@
     "delete": "Löschen",
     "edit": "Bearbeiten",
     "close": "Schließen",
+    "dismiss": "Schließen",
     "copy": "Kopieren",
     "copied": "Kopiert!",
     "copiedClears": "Kopiert. Die Zwischenablage wird in {seconds} s geleert.",
@@ -1285,7 +1286,9 @@
     "switchWallet": "Wallet wechseln",
     "totalBalance": "Gesamtguthaben",
     "backupBannerTitle": "Sichere deine Wallet",
-    "backupBannerDesc": "Schreib die Wiederherstellungsphrase auf und bestätige sie. Ohne sie bedeutet ein verlorenes Gerät verlorenes Guthaben."
+    "backupBannerDesc": "Schreib die Wiederherstellungsphrase auf und bestätige sie. Ohne sie bedeutet ein verlorenes Gerät verlorenes Guthaben.",
+    "rootWarningTitle": "Dieses Gerät scheint gerootet zu sein",
+    "rootWarningDesc": "Apps mit Root-Zugriff können Speicher und Arbeitsspeicher dieser Wallet lesen. Bewahre hier nur kleine Beträge auf oder nutze ein anderes Gerät."
   },
   "hlAsset": {
     "balanceOnHyperliquid": "Guthaben auf Hyperliquid",

@@ -8,6 +8,7 @@
     "delete": "削除",
     "edit": "編集",
     "close": "閉じる",
+    "dismiss": "閉じる",
     "copy": "コピー",
     "copied": "コピーしました！",
     "copiedClears": "コピーしました。クリップボードは {seconds} 秒後に消去されます。",
@@ -1285,7 +1286,9 @@
     "switchWallet": "ウォレットを切り替え",
     "totalBalance": "合計残高",
     "backupBannerTitle": "ウォレットをバックアップ",
-    "backupBannerDesc": "リカバリーフレーズを書き留めて確認してください。これがないと、端末を失えば資金も失います。"
+    "backupBannerDesc": "リカバリーフレーズを書き留めて確認してください。これがないと、端末を失えば資金も失います。",
+    "rootWarningTitle": "この端末は root 化されているようです",
+    "rootWarningDesc": "root 権限を持つアプリはこのウォレットのストレージとメモリを読み取れます。少額のみを保管するか、別の端末を使用してください。"
   },
   "hlAsset": {
     "balanceOnHyperliquid": "Hyperliquid 上の残高",
