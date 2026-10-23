@@ -1,5 +1,26 @@
 # Changelog
 
+## 0.1.4-alpha
+
+### Added
+- **Transfer between accounts** on the NAV page, inside the balance card right under the wallet / trading breakdown: one sheet for both directions, with a flip button, each account's balance, and the network fee under the amount (paid on top going to trading; paid in HYPE from the trading account coming back)
+- **Price chart ranges**: 1H, 1D, 1W, 1M, 3M, 1Y and All replace the candle-size buttons; each range picks the candle size that fills it (1 minute to 1 week). The gap since the last trade stays visible, and a range with no trades says so
+- **Confirmations in progress**: while a deposit or the setup payment waits for the network, the process shows "2/3 confirmations" counted by the wallet, then "Confirmed on Navio, waiting for the bridge" — instead of a minute countdown that stuck at "1 min left"
+- **View on Explorer** under every step of an operation that has a transaction: Navio sends on blocks.nav.io, HyperEVM calls on hyperevmscan.io
+- *Bring NAV back* now runs until the bridge has actually paid the wallet, so it has a progress card and a tray entry like *Move NAV to trading*; the timeline ends with "NAV arrived in your wallet"
+- Staking operators directory lives in this repo (`staking/operators.json`), with the format and review rules in `staking/README.md` and a test that rejects entries the app would drop
+
+### Changed
+- NAV page: the balance breakdown opens by default; Advanced follows the Send / Receive / Swap row and no longer carries the two "move it yourself" buttons (the transfer button replaces them)
+- Network fee is computed the way navio-sdk charges it — 0.002 NAV per input and output, from the wallet's own outputs — instead of a flat 0.01 reserve. Max (transfer, swap, stake) is now exactly balance minus fee
+- Guided-process copy (process pages, tray, Swap setup and blocker texts, Receive into trading, Bring NAV back, Trading account sheet, History rows) is translated into the other nine languages
+- Non-English locales are loaded the first time they are chosen; English ships in the main chunk
+
+### Fixed
+- *Move NAV to trading* with Max failed with "Insufficient funds … fee" on wallets made of several outputs: the fee grows with the number of inputs (five inputs cost 0.014 NAV), which the flat reserve did not cover
+- Max left 0.002 NAV behind: the SDK's input picker skips an output worth no more than the fee it adds. A send that empties the wallet now names every output
+- The web build failed when the main chunk passed the service worker's 2 MiB precache limit
+
 ## 0.1.3-alpha
 
 ### Added
