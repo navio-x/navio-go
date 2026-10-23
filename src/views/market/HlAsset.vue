@@ -276,6 +276,7 @@
 </template>
 
 <script setup>
+import { confirmSpend } from '@/lib/spendConfirm'
 import { ref, computed, watch, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
@@ -449,6 +450,10 @@ const canSubmit = computed(() =>
 async function confirmSend() {
   showConfirm.value = false
   if (!canSubmit.value) return
+  if (!(await confirmSpend({
+    summaryKey: 'spendConfirm.summary.hlTransfer',
+    summaryParams: { amount: amountStr.value, token: symbol },
+  }))) return
   await transfer.send({
     route: route.value,
     token: tokenInfo.value.token,

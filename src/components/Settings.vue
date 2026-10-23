@@ -603,6 +603,41 @@
         </button>
       </div>
 
+      <!-- Confirm before spending: password / biometric again per transaction -->
+      <div class="border-t border-gray-200 dark:border-gh-700 px-4 py-3">
+        <label class="block mb-1.5 text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">
+          {{ $t('settings.spendConfirm') }}
+        </label>
+        <select
+          v-model="settings.spendConfirm"
+          class="w-full px-3 py-2 rounded-lg text-sm
+                 bg-gray-100 dark:bg-gh-700
+                 text-gray-900 dark:text-white
+                 border border-gray-200 dark:border-gh-600
+                 hover:bg-gray-200 dark:hover:bg-gh-600
+                 transition-colors outline-none cursor-pointer"
+        >
+          <option v-for="opt in SPEND_CONFIRM_MODES" :key="opt" :value="opt">
+            {{ $t('settings.spendConfirmOptions.' + opt) }}
+          </option>
+        </select>
+        <div v-if="settings.spendConfirm === 'threshold'" class="flex items-center gap-2 mt-2">
+          <input
+            v-model.number="settings.spendConfirmThresholdNav"
+            type="number"
+            min="0"
+            step="any"
+            class="w-full rounded-xl px-3 py-2.5 text-sm outline-none transition-colors
+                   bg-gray-50 dark:bg-gh-700
+                   text-gray-900 dark:text-white
+                   border border-gray-200 dark:border-gh-600
+                   focus:border-blue-400 dark:focus:border-blue-500"
+          />
+          <span class="text-sm text-gray-400 dark:text-gray-500 shrink-0">NAV</span>
+        </div>
+        <p class="mt-1.5 text-xs text-gray-400 dark:text-gray-500">{{ $t('settings.spendConfirmDesc') }}</p>
+      </div>
+
       <!-- Biometric unlock: Android only, opt-in (see lib/biometric.js) -->
       <div v-if="biometricSupported()" class="border-t border-gray-200 dark:border-gh-700 px-4 py-3 flex items-center justify-between gap-3">
         <div>
@@ -792,6 +827,7 @@ import { getAllWallets } from '../stores/wallet_management'
 import { UNLOCK_DURATIONS } from '../lib/unlockCache'
 import { AUTO_LOCK_OPTIONS } from '../lib/autoLock'
 import { biometricSupported, biometricAvailability, storeBiometricPassword, forgetAllBiometricPasswords } from '../lib/biometric'
+import { SPEND_CONFIRM_MODES } from '../lib/spendConfirm'
 import { FIAT_CURRENCIES } from '../stores/navPrice'
 
 const { locale, t } = useI18n()

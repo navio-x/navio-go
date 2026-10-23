@@ -669,6 +669,7 @@
 </template>
 
 <script setup>
+import { confirmSpend } from "@/lib/spendConfirm";
 import { ref, computed, onMounted, onUnmounted } from "vue";
 import {
   tokenBalances,
@@ -797,6 +798,7 @@ function openMint(col) {
 
 async function submitMint() {
   if (!amountValid.value) return;
+  if (!(await confirmSpend({ summaryKey: "spendConfirm.summary.mint", summaryParams: { amount: mintAmount.value } }))) return;
   minting.value = true;
   mintError.value = "";
   try {
@@ -907,6 +909,7 @@ function openSendToken(asset) {
 
 async function submitSendToken() {
   if (!sendTokenAmountValid.value) return;
+  if (!(await confirmSpend({ summaryKey: "spendConfirm.summary.sendToken", summaryParams: { amount: sendTokenAmount.value } }))) return;
   sendingToken.value = true;
   sendTokenError.value = "";
   try {
@@ -945,6 +948,7 @@ function openSendNft(asset) {
 
 async function submitSendNft() {
   if (!sendNftAddress.value.trim()) return;
+  if (!(await confirmSpend({ summaryKey: "spendConfirm.summary.sendNft" }))) return;
   sendingNft.value = true;
   sendNftError.value = "";
   try {

@@ -211,6 +211,7 @@
 </template>
 
 <script setup>
+import { confirmProcess } from '@/lib/spendConfirm'
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
@@ -318,9 +319,10 @@ const diagRows = computed(() => {
 })
 const setupPlan = computed(() => (diag.value ? planReceiveViaBridge({ state: { ...diag.value, navWallet: nav.value.wallet, reserved: reservedByOperations.value } }) : null))
 const canSetup = computed(() => !!setupPlan.value && !setupPlan.value.blocker && !setupInProgress.value)
-function startSetup() {
+async function startSetup() {
   const p = setupPlan.value
   if (!p || p.blocker) return
+  if (!(await confirmProcess(p))) return
   const op = startOperation(p, { minutes: p.minutes })
   showDiag.value = false
   router.push(`/activity/${op.id}`)
@@ -454,9 +456,10 @@ const moveNotices = computed(() => {
   return notices
 })
 
-function confirmMove() {
+async function confirmMove() {
   const p = movePlan.value
   if (!p || p.blocker || busyOperation.value) return
+  if (!(await confirmProcess(p))) return
   const op = startOperation(p, { minutes: p.minutes })
   showReview.value = false
   moveDirection.value = null

@@ -156,6 +156,13 @@
     "biometricUnlockDesc": "Bu cüzdanın şifresini Android Keystore'da cihazın biyometrik doğrulaması arkasında saklar; yazmadan açabilirsiniz. Şifre her zaman çalışmaya devam eder. Şifre yazarak açtığınız cüzdanlar da eklenir.",
     "biometricUnavailable": "Bu cihazda kullanılamıyor.",
     "biometricNotEnrolled": "Bu cihazda kayıtlı parmak izi veya yüz yok.",
+    "spendConfirm": "Harcamadan önce onayla",
+    "spendConfirmOptions": {
+      "always": "Her işlemde",
+      "threshold": "Belirli tutarın üstünde",
+      "off": "Kapalı"
+    },
+    "spendConfirmDesc": "Cüzdan açık olsa bile gönderim, stake, takas, süreç veya dApp isteği öncesinde şifreyi (ya da parmak izi / yüzü) yeniden sorar. \"Belirli tutarın üstünde\" modunda NAV cinsinden olmayan tutarlar her zaman sorulur.",
     "logout": "Çıkış yap",
     "developer": "Geliştirici",
     "developerDesc": "Kendi servislerini çalıştıranlar için ayarlar."
@@ -387,6 +394,24 @@
     "enableBtn": "Etkinleştir",
     "staleStored": "Saklanan şifre artık bu cüzdanı açmıyor. Devam etmek için şifreyi yazın.",
     "notEncrypted": "Bu cüzdanın şifresi yok, korunacak bir şey yok."
+  },
+  "spendConfirm": {
+    "title": "İşlemi onayla",
+    "desc": "Devam etmek için şifrenizle onaylayın.",
+    "summary": {
+      "send": "{amount} NAV gönder",
+      "sendToken": "{amount} token gönder",
+      "sendNft": "Bir NFT gönder",
+      "mint": "{amount} token bas",
+      "stake": "{amount} NAV stake et",
+      "unstake": "{amount} NAV stake'ten çıkar",
+      "process": "Süreci başlat: {amount} NAV cüzdandan çıkıyor",
+      "processNoAmount": "Süreci başlat",
+      "payroll": "Maaş ödemesini imzala ve gönder",
+      "dapp": "{origin}, {method} çalıştırmak istiyor",
+      "dexSwap": "DEX'te takas yap",
+      "hlTransfer": "İşlem hesabından {amount} {token} gönder"
+    }
   },
   "agreement": {
     "title": "Navio Go Cüzdan – Sözleşme",

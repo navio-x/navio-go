@@ -156,6 +156,13 @@
     "biometricUnlockDesc": "Keeps this wallet's password in the Android Keystore behind the device's biometric check, so you can unlock without typing it. The password always works as well. Wallets you open by typing the password are added too.",
     "biometricUnavailable": "Not available on this device.",
     "biometricNotEnrolled": "No fingerprint or face is enrolled on this device.",
+    "spendConfirm": "Confirm before spending",
+    "spendConfirmOptions": {
+      "always": "Every transaction",
+      "threshold": "Above an amount",
+      "off": "Off"
+    },
+    "spendConfirmDesc": "Asks for the password (or fingerprint / face) again before a send, stake, swap, process or dApp request, even while the wallet is unlocked. In \"Above an amount\" mode, amounts not in NAV always ask.",
     "logout": "Log out",
     "developer": "Developer",
     "developerDesc": "Settings for people running their own services."
@@ -387,6 +394,24 @@
     "enableBtn": "Enable",
     "staleStored": "The stored password no longer opens this wallet. Type the password to continue.",
     "notEncrypted": "This wallet has no password, so there is nothing to protect."
+  },
+  "spendConfirm": {
+    "title": "Confirm transaction",
+    "desc": "Confirm with your password to continue.",
+    "summary": {
+      "send": "Send {amount} NAV",
+      "sendToken": "Send {amount} tokens",
+      "sendNft": "Send an NFT",
+      "mint": "Mint {amount} tokens",
+      "stake": "Stake {amount} NAV",
+      "unstake": "Unstake {amount} NAV",
+      "process": "Start the process: {amount} NAV leaves the wallet",
+      "processNoAmount": "Start the process",
+      "payroll": "Sign and send the payroll run",
+      "dapp": "{origin} asks to run {method}",
+      "dexSwap": "Swap on the DEX",
+      "hlTransfer": "Send {amount} {token} from the trading account"
+    }
   },
   "agreement": {
     "title": "Navio Go Wallet – Agreement",

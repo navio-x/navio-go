@@ -156,6 +156,13 @@
     "biometricUnlockDesc": "이 지갑의 비밀번호를 기기의 생체 인증 뒤에 있는 Android Keystore에 보관하여 입력 없이 잠금을 해제할 수 있습니다. 비밀번호는 항상 사용할 수 있습니다. 비밀번호를 입력해 연 지갑도 추가됩니다.",
     "biometricUnavailable": "이 기기에서는 사용할 수 없습니다.",
     "biometricNotEnrolled": "이 기기에 등록된 지문이나 얼굴이 없습니다.",
+    "spendConfirm": "지출 전 확인",
+    "spendConfirmOptions": {
+      "always": "모든 거래",
+      "threshold": "특정 금액 이상",
+      "off": "끄기"
+    },
+    "spendConfirmDesc": "지갑이 잠금 해제된 상태여도 전송, 스테이킹, 스왑, 프로세스 또는 dApp 요청 전에 비밀번호(또는 지문 / 얼굴)를 다시 요구합니다. '특정 금액 이상' 모드에서는 NAV가 아닌 금액은 항상 확인합니다.",
     "logout": "로그아웃",
     "developer": "개발자",
     "developerDesc": "직접 서비스를 운영하는 사용자를 위한 설정."
@@ -387,6 +394,24 @@
     "enableBtn": "켜기",
     "staleStored": "보관된 비밀번호로는 더 이상 이 지갑을 열 수 없습니다. 계속하려면 비밀번호를 입력하세요.",
     "notEncrypted": "이 지갑에는 비밀번호가 없어 보호할 것이 없습니다."
+  },
+  "spendConfirm": {
+    "title": "거래 확인",
+    "desc": "계속하려면 비밀번호로 확인하세요.",
+    "summary": {
+      "send": "{amount} NAV 보내기",
+      "sendToken": "토큰 {amount}개 보내기",
+      "sendNft": "NFT 보내기",
+      "mint": "토큰 {amount}개 발행",
+      "stake": "{amount} NAV 스테이킹",
+      "unstake": "{amount} NAV 스테이킹 해제",
+      "process": "프로세스 시작: {amount} NAV가 지갑에서 나갑니다",
+      "processNoAmount": "프로세스 시작",
+      "payroll": "급여 지급 서명 및 전송",
+      "dapp": "{origin}이(가) {method} 실행을 요청합니다",
+      "dexSwap": "DEX에서 스왑",
+      "hlTransfer": "거래 계정에서 {amount} {token} 보내기"
+    }
   },
   "agreement": {
     "title": "Navio Go 지갑 – 이용 약관",

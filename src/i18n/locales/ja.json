@@ -156,6 +156,13 @@
     "biometricUnlockDesc": "このウォレットのパスワードを端末の生体認証で保護された Android Keystore に保管し、入力せずにロック解除できます。パスワードは常に使えます。パスワードを入力して開いたウォレットも追加されます。",
     "biometricUnavailable": "この端末では利用できません。",
     "biometricNotEnrolled": "この端末に指紋または顔が登録されていません。",
+    "spendConfirm": "支出前に確認",
+    "spendConfirmOptions": {
+      "always": "すべての取引",
+      "threshold": "一定額以上",
+      "off": "オフ"
+    },
+    "spendConfirmDesc": "ウォレットがロック解除中でも、送金・ステーキング・スワップ・プロセス・dApp リクエストの前にパスワード（または指紋 / 顔）を再度求めます。「一定額以上」モードでは、NAV 建てでない金額は常に確認します。",
     "logout": "ログアウト",
     "developer": "開発者",
     "developerDesc": "自分でサービスを運用する人向けの設定。"
@@ -387,6 +394,24 @@
     "enableBtn": "有効にする",
     "staleStored": "保管されたパスワードではこのウォレットを開けなくなりました。続行するにはパスワードを入力してください。",
     "notEncrypted": "このウォレットにはパスワードがないため、保護するものがありません。"
+  },
+  "spendConfirm": {
+    "title": "取引を確認",
+    "desc": "続行するにはパスワードで確認してください。",
+    "summary": {
+      "send": "{amount} NAV を送金",
+      "sendToken": "トークン {amount} を送信",
+      "sendNft": "NFT を送信",
+      "mint": "トークン {amount} を発行",
+      "stake": "{amount} NAV をステーキング",
+      "unstake": "{amount} NAV のステーキングを解除",
+      "process": "プロセスを開始：{amount} NAV がウォレットから出ます",
+      "processNoAmount": "プロセスを開始",
+      "payroll": "給与支払いに署名して送信",
+      "dapp": "{origin} が {method} の実行を求めています",
+      "dexSwap": "DEX でスワップ",
+      "hlTransfer": "取引口座から {amount} {token} を送信"
+    }
   },
   "agreement": {
     "title": "Navio Go ウォレット – 利用規約",

@@ -599,6 +599,7 @@
 </template>
 
 <script setup>
+import { confirmSpend } from '@/lib/spendConfirm'
 import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { isAddress, getAddress, parseUnits, formatUnits } from 'viem'
@@ -1111,6 +1112,7 @@ function resetSwapForm() {
 }
 
 async function runSwap() {
+  if (!(await confirmSpend({ summaryKey: 'spendConfirm.summary.dexSwap' }))) return
   await swap.executeSwap({
     chainId: network.value.chainId,
     fromAsset: fromAsset.value,

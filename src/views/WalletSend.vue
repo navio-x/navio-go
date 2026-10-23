@@ -243,6 +243,7 @@
 </template>
 
 <script setup>
+import { confirmSpend } from "@/lib/spendConfirm";
 import { ref, computed, onMounted, onUnmounted } from "vue";
 import { useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
@@ -442,9 +443,14 @@ async function scanQR() {
 
 const toSatoshi = (nav) => BigInt(Math.round(nav * 1e8));
 
-const sendTransaction = () => {
+const sendTransaction = async () => {
   const client = getNavioClient();
   showConfirm.value = false;
+  if (!(await confirmSpend({
+    amountNav: Number(amount.value),
+    summaryKey: 'spendConfirm.summary.send',
+    summaryParams: { amount: amount.value },
+  }))) return;
   isLoading.value = true;
   errorMessage.value = '';
 

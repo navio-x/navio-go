@@ -156,6 +156,13 @@
     "biometricUnlockDesc": "Guarda a senha desta carteira no Keystore do Android, atrás da verificação biométrica do aparelho, para desbloquear sem digitá-la. A senha continua funcionando sempre. Carteiras que você abrir digitando a senha também são adicionadas.",
     "biometricUnavailable": "Indisponível neste aparelho.",
     "biometricNotEnrolled": "Nenhuma digital ou rosto cadastrado neste aparelho.",
+    "spendConfirm": "Confirmar antes de gastar",
+    "spendConfirmOptions": {
+      "always": "Toda transação",
+      "threshold": "Acima de um valor",
+      "off": "Desativado"
+    },
+    "spendConfirmDesc": "Pede a senha (ou digital / rosto) novamente antes de um envio, staking, troca, processo ou solicitação de dApp, mesmo com a carteira desbloqueada. No modo \"Acima de um valor\", valores que não estão em NAV sempre perguntam.",
     "logout": "Sair",
     "developer": "Desenvolvedor",
     "developerDesc": "Configurações para quem roda seus próprios serviços."
@@ -387,6 +394,24 @@
     "enableBtn": "Ativar",
     "staleStored": "A senha guardada não abre mais esta carteira. Digite a senha para continuar.",
     "notEncrypted": "Esta carteira não tem senha, não há nada para proteger."
+  },
+  "spendConfirm": {
+    "title": "Confirmar transação",
+    "desc": "Confirme com sua senha para continuar.",
+    "summary": {
+      "send": "Enviar {amount} NAV",
+      "sendToken": "Enviar {amount} tokens",
+      "sendNft": "Enviar um NFT",
+      "mint": "Cunhar {amount} tokens",
+      "stake": "Fazer staking de {amount} NAV",
+      "unstake": "Retirar {amount} NAV do staking",
+      "process": "Iniciar o processo: {amount} NAV saem da carteira",
+      "processNoAmount": "Iniciar o processo",
+      "payroll": "Assinar e enviar a folha de pagamento",
+      "dapp": "{origin} pede para executar {method}",
+      "dexSwap": "Trocar na DEX",
+      "hlTransfer": "Enviar {amount} {token} da conta de trading"
+    }
   },
   "agreement": {
     "title": "Navio Go Wallet – Acordo",

@@ -156,6 +156,13 @@
     "biometricUnlockDesc": "Bewahrt das Passwort dieser Wallet im Android Keystore hinter der biometrischen Prüfung des Geräts auf, damit du ohne Tippen entsperren kannst. Das Passwort funktioniert weiterhin. Wallets, die du mit dem Passwort öffnest, werden ebenfalls hinzugefügt.",
     "biometricUnavailable": "Auf diesem Gerät nicht verfügbar.",
     "biometricNotEnrolled": "Auf diesem Gerät ist kein Fingerabdruck oder Gesicht registriert.",
+    "spendConfirm": "Vor dem Ausgeben bestätigen",
+    "spendConfirmOptions": {
+      "always": "Jede Transaktion",
+      "threshold": "Ab einem Betrag",
+      "off": "Aus"
+    },
+    "spendConfirmDesc": "Fragt vor einem Senden, Staken, Tausch, Prozess oder einer dApp-Anfrage erneut nach dem Passwort (oder Fingerabdruck / Gesicht), auch wenn die Wallet entsperrt ist. Im Modus „Ab einem Betrag“ wird bei Beträgen, die nicht in NAV sind, immer gefragt.",
     "logout": "Abmelden",
     "developer": "Entwickler",
     "developerDesc": "Einstellungen für alle, die eigene Dienste betreiben."
@@ -387,6 +394,24 @@
     "enableBtn": "Aktivieren",
     "staleStored": "Das gespeicherte Passwort öffnet diese Wallet nicht mehr. Gib das Passwort ein, um fortzufahren.",
     "notEncrypted": "Diese Wallet hat kein Passwort, es gibt nichts zu schützen."
+  },
+  "spendConfirm": {
+    "title": "Transaktion bestätigen",
+    "desc": "Bestätige mit deinem Passwort, um fortzufahren.",
+    "summary": {
+      "send": "{amount} NAV senden",
+      "sendToken": "{amount} Token senden",
+      "sendNft": "Ein NFT senden",
+      "mint": "{amount} Token prägen",
+      "stake": "{amount} NAV staken",
+      "unstake": "{amount} NAV aus dem Staking lösen",
+      "process": "Prozess starten: {amount} NAV verlassen die Wallet",
+      "processNoAmount": "Prozess starten",
+      "payroll": "Gehaltslauf signieren und senden",
+      "dapp": "{origin} möchte {method} ausführen",
+      "dexSwap": "Auf der DEX tauschen",
+      "hlTransfer": "{amount} {token} vom Handelskonto senden"
+    }
   },
   "agreement": {
     "title": "Navio Go Wallet – Vereinbarung",

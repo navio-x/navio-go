@@ -171,6 +171,7 @@
 </template>
 
 <script setup>
+import { confirmSpend } from '@/lib/spendConfirm'
 import { ref, computed, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { Capacitor } from '@capacitor/core'
@@ -342,6 +343,11 @@ const reviewDetails = computed(() => [t('staking.steps.pick'), t('staking.steps.
 
 async function confirm() {
   if (busy.value || !canReview.value) return
+  if (!(await confirmSpend({
+    amountNav: Number(amount.value),
+    summaryKey: 'spendConfirm.summary.stake',
+    summaryParams: { amount: formatAmount(amount.value, 8) },
+  }))) return
   busy.value = true
   const staked = amount.value
   try {

@@ -3,6 +3,7 @@
 ## Unreleased
 
 ### Added
+- **Confirm before spending** (Settings → security): the password, or the fingerprint / face when enrolled, is asked for again right before a send, token / NFT send or mint, stake, unstake, swap, guided process (start and re-approval), payroll run, DEX swap, trading-account withdrawal or dApp request, even while the wallet is unlocked. Modes: every transaction (default), only at or above a NAV amount (amounts not in NAV always ask), off
 - **Biometric unlock on Android** (Settings → security, off by default): the wallet password is kept in the Android Keystore behind the device's fingerprint / face check, so the lock screen and the wallet list can open the wallet without typing it. The password keeps working as the fallback; nothing changes for wallets where this is left off. Uses `@capgo/capacitor-native-biometric`
 - **Auto-lock** (Settings → security): the open wallet locks after 1, 5, 15 or 30 minutes without input or in the background, or as soon as the app goes to the background; a lock screen asks for the password to continue, or lets you log out. Default 5 minutes. Sync keeps running while locked. Not applied while the password is remembered by *Keep wallet unlocked*
 - Android: screenshots, screen recording and the app-switcher preview are blocked on the screens that show or take the seed phrase (create, verify, import, backup)

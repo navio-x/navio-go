@@ -18,6 +18,7 @@
     <TxToasts />
     <PwaInstallPrompt v-if="!isExtension" />
     <LockScreen v-if="isLocked" />
+    <SpendConfirm />
 
     <!-- Android back button exit confirmation -->
     <div
@@ -73,6 +74,7 @@ import { autoLockThresholdMs, unlockMaxAgeMs } from './stores/settings'
 import { recallPassword } from './lib/unlockCache'
 import { isLocked, lockWallet, getNavioClient, walletName } from './stores/navio'
 import LockScreen from './components/LockScreen.vue'
+import SpendConfirm from './components/SpendConfirm.vue'
 import BottomNavbar from './components/BottomNavbar.vue'
 import ProcessTray from './components/process/ProcessTray.vue'
 import TxToasts from './components/TxToasts.vue'

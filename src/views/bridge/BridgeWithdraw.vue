@@ -79,6 +79,7 @@
 </template>
 
 <script setup>
+import { confirmProcess } from '@/lib/spendConfirm'
 import { ref, computed, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
@@ -134,9 +135,10 @@ const reviewSteps = computed(() => {
   return lines
 })
 
-function confirmWithdraw() {
+async function confirmWithdraw() {
   const p = plan.value
   if (!p || p.blocker) return
+  if (!(await confirmProcess(p))) return
   const op = startOperation(p, { minutes: p.minutes })
   showReview.value = false
   amountInput.value = ''

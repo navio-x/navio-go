@@ -126,6 +126,7 @@
 </template>
 
 <script setup>
+import { confirmSpend } from "@/lib/spendConfirm";
 import { ref, computed, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
@@ -245,6 +246,7 @@ function signErrorMessage(code) {
 }
 
 async function startSigning() {
+  if (!(await confirmSpend({ summaryKey: "spendConfirm.summary.payroll" }))) return;
   signing.value = true;
   signError.value = "";
   signErrorCode.value = "";

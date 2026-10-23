@@ -153,6 +153,7 @@
 </template>
 
 <script setup>
+import { confirmProcess } from '@/lib/spendConfirm'
 import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
@@ -464,9 +465,10 @@ const confirmLabel = computed(() => {
   return payments > 1 ? t('swap.review.confirmPayments', { n: payments }) : t('swap.review.confirmOne')
 })
 
-function confirm() {
+async function confirm() {
   const p = plan.value
   if (!p || p.blocker || problem.value) return
+  if (!(await confirmProcess(p))) return
   const op = startOperation(p, { minutes: p.minutes })
   try { localStorage.setItem(LAST_PAIR_KEY, JSON.stringify([from.value, to.value])) } catch {}
   showReview.value = false

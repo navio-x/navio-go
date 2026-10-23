@@ -1,3 +1,4 @@
+import { confirmProcess } from "@/lib/spendConfirm";
 import { ref, computed } from "vue";
 import { useI18n } from "vue-i18n";
 import { settings } from "@/stores/settings";
@@ -68,9 +69,10 @@ export function useProcessActions(op) {
     resolveOperation(op.value.id, "retry", { limitPx, minOut, size });
   }
 
-  function approve() {
+  async function approve() {
     const a = op.value?.approval;
     const patch = a?.amountNav != null ? { amountNav: String(a.amountNav), approved: { amountNav: Number(a.amountNav) } } : null;
+    if (!(await confirmProcess(op.value, a?.amountNav ?? null))) return;
     approveOperation(op.value.id, patch);
   }
 

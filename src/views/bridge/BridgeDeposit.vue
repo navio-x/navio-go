@@ -121,6 +121,7 @@
 </template>
 
 <script setup>
+import { confirmProcess } from '@/lib/spendConfirm'
 import { ref, computed, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
@@ -169,9 +170,10 @@ function copyAddress() {
   setTimeout(() => { copied.value = false }, 2000)
 }
 
-function confirmSetup() {
+async function confirmSetup() {
   const p = plan.value
   if (!p || p.blocker) return
+  if (!(await confirmProcess(p))) return
   const op = startOperation(p, { minutes: p.minutes })
   showReview.value = false
   router.push(`/activity/${op.id}`)

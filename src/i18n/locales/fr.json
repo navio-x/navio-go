@@ -156,6 +156,13 @@
     "biometricUnlockDesc": "Conserve le mot de passe de ce portefeuille dans le Keystore Android, derrière la vérification biométrique de l'appareil, pour déverrouiller sans le saisir. Le mot de passe reste toujours utilisable. Les portefeuilles ouverts en saisissant le mot de passe sont ajoutés aussi.",
     "biometricUnavailable": "Indisponible sur cet appareil.",
     "biometricNotEnrolled": "Aucune empreinte ni aucun visage n'est enregistré sur cet appareil.",
+    "spendConfirm": "Confirmer avant de dépenser",
+    "spendConfirmOptions": {
+      "always": "Chaque transaction",
+      "threshold": "Au-dessus d'un montant",
+      "off": "Désactivé"
+    },
+    "spendConfirmDesc": "Redemande le mot de passe (ou l'empreinte / le visage) avant un envoi, un staking, un échange, un processus ou une requête dApp, même si le portefeuille est déverrouillé. En mode « Au-dessus d'un montant », les montants qui ne sont pas en NAV demandent toujours.",
     "logout": "Se déconnecter",
     "developer": "Développeur",
     "developerDesc": "Réglages pour ceux qui font tourner leurs propres services."
@@ -387,6 +394,24 @@
     "enableBtn": "Activer",
     "staleStored": "Le mot de passe enregistré n'ouvre plus ce portefeuille. Saisissez le mot de passe pour continuer.",
     "notEncrypted": "Ce portefeuille n'a pas de mot de passe, il n'y a rien à protéger."
+  },
+  "spendConfirm": {
+    "title": "Confirmer la transaction",
+    "desc": "Confirmez avec votre mot de passe pour continuer.",
+    "summary": {
+      "send": "Envoyer {amount} NAV",
+      "sendToken": "Envoyer {amount} jetons",
+      "sendNft": "Envoyer un NFT",
+      "mint": "Émettre {amount} jetons",
+      "stake": "Staker {amount} NAV",
+      "unstake": "Retirer {amount} NAV du staking",
+      "process": "Lancer le processus : {amount} NAV quittent le portefeuille",
+      "processNoAmount": "Lancer le processus",
+      "payroll": "Signer et envoyer la paie",
+      "dapp": "{origin} demande à exécuter {method}",
+      "dexSwap": "Échanger sur le DEX",
+      "hlTransfer": "Envoyer {amount} {token} depuis le compte de trading"
+    }
   },
   "agreement": {
     "title": "Navio Go Wallet – Accord",

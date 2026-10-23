@@ -123,6 +123,12 @@ export const settings = reactive({
   // biyometri arkasında saklar ve kilit ekranında / açılışta parmak izi ya da yüz
   // ile açar (bkz. lib/biometric.js). Parola her zaman yedek yol olarak kalır.
   biometricUnlock: localStorage.getItem('biometricUnlock') === 'true',
+  // Harcama / imza öncesi yeniden doğrulama (bkz. lib/spendConfirm.js):
+  // 'always' her işlemde, 'threshold' yalnızca spendConfirmThresholdNav ve
+  // üstünde (NAV cinsinden olmayan tutarlar her zaman sorar), 'off' kapalı.
+  spendConfirm:    ['always', 'threshold', 'off'].includes(localStorage.getItem('spendConfirm'))
+    ? localStorage.getItem('spendConfirm') : 'always',
+  spendConfirmThresholdNav: Number(localStorage.getItem('spendConfirmThresholdNav') ?? 100),
 })
 
 /** Otomatik kilit eşiği (ms); kapalıysa null. */
@@ -239,6 +245,14 @@ watch(() => settings.autoLock, (val) => {
 
 watch(() => settings.biometricUnlock, (val) => {
   localStorage.setItem('biometricUnlock', val)
+})
+
+watch(() => settings.spendConfirm, (val) => {
+  localStorage.setItem('spendConfirm', val)
+})
+
+watch(() => settings.spendConfirmThresholdNav, (val) => {
+  localStorage.setItem('spendConfirmThresholdNav', val)
 })
 
 watch(() => settings.evmNetwork, (val) => {

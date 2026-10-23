@@ -156,6 +156,13 @@
     "biometricUnlockDesc": "Guarda la contraseña de esta billetera en el Keystore de Android, detrás de la verificación biométrica del dispositivo, para desbloquear sin escribirla. La contraseña sigue funcionando siempre. Las billeteras que abras escribiendo la contraseña también se añaden.",
     "biometricUnavailable": "No disponible en este dispositivo.",
     "biometricNotEnrolled": "No hay ninguna huella ni rostro registrado en este dispositivo.",
+    "spendConfirm": "Confirmar antes de gastar",
+    "spendConfirmOptions": {
+      "always": "Cada transacción",
+      "threshold": "Por encima de un importe",
+      "off": "Desactivado"
+    },
+    "spendConfirmDesc": "Vuelve a pedir la contraseña (o huella / rostro) antes de un envío, staking, intercambio, proceso o solicitud de dApp, aunque la billetera esté desbloqueada. En el modo «Por encima de un importe», los importes que no están en NAV siempre preguntan.",
     "logout": "Cerrar sesión",
     "developer": "Desarrollador",
     "developerDesc": "Ajustes para quienes ejecutan sus propios servicios."
@@ -387,6 +394,24 @@
     "enableBtn": "Activar",
     "staleStored": "La contraseña guardada ya no abre esta billetera. Escribe la contraseña para continuar.",
     "notEncrypted": "Esta billetera no tiene contraseña, no hay nada que proteger."
+  },
+  "spendConfirm": {
+    "title": "Confirmar transacción",
+    "desc": "Confirma con tu contraseña para continuar.",
+    "summary": {
+      "send": "Enviar {amount} NAV",
+      "sendToken": "Enviar {amount} tokens",
+      "sendNft": "Enviar un NFT",
+      "mint": "Acuñar {amount} tokens",
+      "stake": "Hacer staking de {amount} NAV",
+      "unstake": "Retirar {amount} NAV del staking",
+      "process": "Iniciar el proceso: {amount} NAV salen de la billetera",
+      "processNoAmount": "Iniciar el proceso",
+      "payroll": "Firmar y enviar la nómina",
+      "dapp": "{origin} pide ejecutar {method}",
+      "dexSwap": "Intercambiar en el DEX",
+      "hlTransfer": "Enviar {amount} {token} desde la cuenta de trading"
+    }
   },
   "agreement": {
     "title": "Navio Go Wallet – Acuerdo",

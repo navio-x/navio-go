@@ -156,6 +156,13 @@
     "biometricUnlockDesc": "将此钱包的密码保存在 Android Keystore 中，并由设备的生物识别验证保护，无需输入即可解锁。密码始终可用。通过输入密码打开的钱包也会被加入。",
     "biometricUnavailable": "此设备不可用。",
     "biometricNotEnrolled": "此设备未录入指纹或面容。",
+    "spendConfirm": "支出前确认",
+    "spendConfirmOptions": {
+      "always": "每笔交易",
+      "threshold": "超过一定金额",
+      "off": "关闭"
+    },
+    "spendConfirmDesc": "即使钱包已解锁，在发送、质押、兑换、流程或 dApp 请求前也会再次要求密码（或指纹 / 面容）。在“超过一定金额”模式下，非 NAV 计价的金额始终会询问。",
     "logout": "退出登录",
     "developer": "开发者",
     "developerDesc": "面向自行运行服务的用户的设置。"
@@ -387,6 +394,24 @@
     "enableBtn": "启用",
     "staleStored": "已保存的密码无法再打开此钱包。请输入密码以继续。",
     "notEncrypted": "此钱包没有密码，无需保护。"
+  },
+  "spendConfirm": {
+    "title": "确认交易",
+    "desc": "请输入密码确认以继续。",
+    "summary": {
+      "send": "发送 {amount} NAV",
+      "sendToken": "发送 {amount} 个代币",
+      "sendNft": "发送一个 NFT",
+      "mint": "铸造 {amount} 个代币",
+      "stake": "质押 {amount} NAV",
+      "unstake": "解除质押 {amount} NAV",
+      "process": "启动流程：{amount} NAV 将离开钱包",
+      "processNoAmount": "启动流程",
+      "payroll": "签名并发送工资发放",
+      "dapp": "{origin} 请求执行 {method}",
+      "dexSwap": "在 DEX 上兑换",
+      "hlTransfer": "从交易账户发送 {amount} {token}"
+    }
   },
   "agreement": {
     "title": "Navio Go 钱包 – 协议",

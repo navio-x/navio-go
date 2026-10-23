@@ -95,6 +95,7 @@
 </template>
 
 <script setup>
+import { confirmSpend } from '@/lib/spendConfirm'
 import { ref, computed, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { unstakeNav, getMinStakeNav } from '@/stores/navio'
@@ -185,6 +186,11 @@ const reviewNotices = computed(() => {
 
 async function confirm() {
   if (busy.value || problem.value || !(unlock.value > 0)) return
+  if (!(await confirmSpend({
+    amountNav: Number(unlock.value),
+    summaryKey: 'spendConfirm.summary.unstake',
+    summaryParams: { amount: formatAmount(unlock.value, 8) },
+  }))) return
   busy.value = true
   const unlocked = unlock.value
   try {

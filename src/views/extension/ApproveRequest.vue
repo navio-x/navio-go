@@ -1,4 +1,5 @@
 <script setup>
+import { confirmSpend } from "@/lib/spendConfirm";
 import { ref, computed, nextTick, watch, onMounted } from "vue";
 import { useRoute } from "vue-router";
 import { useI18n } from "vue-i18n";
@@ -144,6 +145,10 @@ const sdkCallPreview = computed(() =>
 );
 
 async function run() {
+  if (executor.value?.mutating && !(await confirmSpend({
+    summaryKey: "spendConfirm.summary.dapp",
+    summaryParams: { origin: request.value?.origin ?? "", method: request.value?.method ?? "" },
+  }))) return;
   phase.value = "working";
   executionError.value = "";
   try {
