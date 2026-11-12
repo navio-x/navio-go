@@ -34,6 +34,11 @@ export function fetchSpotMetaAndAssetCtxs() {
   return postInfo({ type: "spotMetaAndAssetCtxs" });
 }
 
+/** { name, maxSupply, totalSupply, circulatingSupply, szDecimals, weiDecimals, midPx, markPx, prevDayPx, deployer, deployTime (ISO, UTC, no zone suffix), deployGas, seededUsdc, futureEmissions, nonCirculatingUserBalances: [[address, amount]], genesis: { userBalances: [[address, amount]], existingTokenBalances, blacklistUsers } } — everything the exchange records about a spot token. */
+export function fetchTokenDetails(tokenId) {
+  return postInfo({ type: "tokenDetails", tokenId });
+}
+
 /** { levels: [bids[], asks[]] } — each level is { px, sz, n } (strings). `nSigFigs` (2–4) has the exchange aggregate levels to that many significant figures; omitted = full precision. */
 export function fetchL2Book(coin, nSigFigs = null) {
   return postInfo({ type: "l2Book", coin, ...(nSigFigs ? { nSigFigs } : {}) });

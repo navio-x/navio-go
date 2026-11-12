@@ -8,7 +8,10 @@ import { safeParseUnits } from "@/lib/hyperliquid/decimal";
 
 const MAX_RECONNECT_DELAY_MS = 30_000;
 const PING_INTERVAL_MS = 30_000;
-const FALLBACK_POLL_MS = 5_000;
+// The l2Book subscription only pushes a full snapshot every ~10 s (measured
+// on spot and perp alike), so REST is polled every second for depth while
+// the `bbo` subscription moves the top of the book the instant it changes.
+const POLL_MS = 1_000;
 const DEFAULT_SIZE_DECIMALS = 8;
 
 // Spot prices never carry more fractional digits than this.
@@ -63,11 +66,14 @@ async function resolveSizeDecimals(coinStr) {
 
 /**
  * Live Hyperliquid L2 order book for a resolved spot market (`coin`, e.g.
- * "@7" — a Ref<string|null>, resolved by lib/hyperliquid/market.js). Primary
- * transport is the l2Book websocket subscription (each message is a full
- * snapshot, not a diff); falls back to 5s REST polling if the socket can't
- * stay up. Only ever runs while the owning component is mounted and the app
- * is foregrounded.
+ * "@7" — a Ref<string|null>, resolved by lib/hyperliquid/market.js). Depth
+ * comes from a 1 s REST l2Book poll plus the l2Book websocket's occasional
+ * full snapshot (each message is a full snapshot, not a diff; the exchange
+ * sends one only every ~10 s); the `bbo` subscription on the same socket
+ * updates the best bid/ask on every change in between, so the top of the
+ * book and the mid are real-time. Snapshots carry the exchange's `time`, and
+ * an older one never overwrites a newer one. Only ever runs while the owning
+ * component is mounted and the app is foregrounded.
  *
  * Price grouping (both optional, plain values or refs): `stepExp` merges
  * levels into buckets of 10^stepExp, and `nSigFigs` (2–4) asks the exchange
@@ -96,6 +102,8 @@ export function useHyperliquidOrderBook(coin, { levels = 10, nSigFigs = null, st
   let lastSnapshot = null;
 
   function applySnapshot(data) {
+    // REST answers and socket pushes race: keep the newest by exchange time.
+    if (lastSnapshot?.time && data?.time && data.time < lastSnapshot.time) return;
     lastSnapshot = data;
     const rawBids = data?.levels?.[0] || [];
     const rawAsks = data?.levels?.[1] || [];
@@ -116,10 +124,35 @@ export function useHyperliquidOrderBook(coin, { levels = 10, nSigFigs = null, st
     error.value = null;
   }
 
+  // Puts a fresh best level on top of one side: levels the new best has
+  // overtaken are gone (they would be the best otherwise), one at the same
+  // price is replaced, the rest move down.
+  function mergeTop(side, best, isBid) {
+    if (!best) return side;
+    const px = Number(best.px);
+    return [best, ...side.filter((l) => (isBid ? Number(l.px) < px : Number(l.px) > px))];
+  }
+
+  // A `bbo` push: only meaningful on the full-precision book — an aggregated
+  // one (nSigFigs) has buckets the raw top level doesn't line up with.
+  function applyBbo(data) {
+    if (!lastSnapshot || toValue(nSigFigs) != null) return;
+    if (lastSnapshot.time && data?.time && data.time < lastSnapshot.time) return;
+    const [bid, ask] = data?.bbo || [];
+    const levels = [
+      mergeTop(lastSnapshot.levels?.[0] || [], bid, true),
+      mergeTop(lastSnapshot.levels?.[1] || [], ask, false),
+    ];
+    applySnapshot({ ...lastSnapshot, levels, time: data?.time ?? lastSnapshot.time });
+  }
+
+  let inFlight = false;
+
   async function fetchSnapshot() {
     const c = coin.value;
-    if (!c) return;
-    loading.value = true;
+    if (!c || inFlight) return;
+    inFlight = true;
+    if (!lastSnapshot) loading.value = true;
     try {
       const sigFigs = toValue(nSigFigs);
       const data = await fetchL2Book(c, sigFigs);
@@ -131,6 +164,7 @@ export function useHyperliquidOrderBook(coin, { levels = 10, nSigFigs = null, st
       error.value = e?.message || "unknown";
       // Last good bids/asks are left untouched — don't blank the UI.
     } finally {
+      inFlight = false;
       loading.value = false;
     }
   }
@@ -142,13 +176,14 @@ export function useHyperliquidOrderBook(coin, { levels = 10, nSigFigs = null, st
     }
   }
 
-  // Fallback path only — used while the socket is down/reconnecting.
+  // Runs the whole time the book is live, socket or no socket: this is
+  // where the depth comes from (see POLL_MS).
   function startPolling() {
     stopPolling();
     fetchSnapshot();
     pollTimer = setInterval(() => {
       if (document.visibilityState === "visible") fetchSnapshot();
-    }, FALLBACK_POLL_MS);
+    }, POLL_MS);
   }
 
   function stopPing() {
@@ -198,16 +233,12 @@ export function useHyperliquidOrderBook(coin, { levels = 10, nSigFigs = null, st
     if (!c) return;
     closeSocket();
 
-    // REST snapshot first so the book isn't empty while the socket connects.
-    fetchSnapshot();
-
     console.log("[hyperliquid] order book ws connecting:", HL_WS_URL, "coin:", c);
 
     try {
       ws = new WebSocket(HL_WS_URL);
     } catch (e) {
-      console.error("[hyperliquid] order book ws unavailable, falling back to polling:", e);
-      startPolling();
+      console.error("[hyperliquid] order book ws unavailable, REST polling only:", e);
       return;
     }
 
@@ -215,9 +246,10 @@ export function useHyperliquidOrderBook(coin, { levels = 10, nSigFigs = null, st
       console.log("[hyperliquid] order book ws open");
       reconnectDelay = 1000;
       connected.value = true;
-      stopPolling(); // socket is live — stop the REST fallback
       const sigFigs = toValue(nSigFigs);
       ws.send(JSON.stringify({ method: "subscribe", subscription: { type: "l2Book", coin: c, ...(sigFigs ? { nSigFigs: sigFigs } : {}) } }));
+      // Top-of-book on every change; the raw level only fits the full-precision book.
+      if (!sigFigs) ws.send(JSON.stringify({ method: "subscribe", subscription: { type: "bbo", coin: c } }));
       pingTimer = setInterval(() => {
         if (ws?.readyState === WebSocket.OPEN) ws.send(JSON.stringify({ method: "ping" }));
       }, PING_INTERVAL_MS);
@@ -226,6 +258,7 @@ export function useHyperliquidOrderBook(coin, { levels = 10, nSigFigs = null, st
       try {
         const msg = JSON.parse(event.data);
         if (msg?.channel === "l2Book" && msg.data) applySnapshot(msg.data);
+        else if (msg?.channel === "bbo" && msg.data?.coin === c) applyBbo(msg.data);
       } catch (e) {
         console.error("[hyperliquid] order book ws message parse failed:", e);
       }
@@ -235,8 +268,7 @@ export function useHyperliquidOrderBook(coin, { levels = 10, nSigFigs = null, st
       connected.value = false;
       stopPing();
       if (unmounted || backgrounded || !coin.value) return;
-      startPolling(); // keep the book fresh-ish while reconnecting
-      scheduleReconnect();
+      scheduleReconnect(); // REST polling carries on meanwhile
     };
     ws.onerror = (event) => {
       console.error("[hyperliquid] order book ws error:", event);
@@ -253,6 +285,7 @@ export function useHyperliquidOrderBook(coin, { levels = 10, nSigFigs = null, st
     if (!c) return;
     sizeDecimals = await resolveSizeDecimals(c);
     if (unmounted || backgrounded || coin.value !== c) return; // coin/state moved on while resolving
+    startPolling();
     openSocket();
   }
 

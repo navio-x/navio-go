@@ -24,6 +24,7 @@ async function resolveSpotMarket(baseTokenId, quoteIndex = 0) {
     // The token's real spotMeta name (e.g. "UBTC" for the market shown as
     // BTC) — what app.hyperliquid.xyz uses in its /trade/<base>/<quote> URLs.
     baseTokenName: baseTok.name,
+    baseTokenId: baseTok.tokenId,
     baseSzDecimals: baseTok.szDecimals,
   };
 }

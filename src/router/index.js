@@ -217,6 +217,17 @@ const router = createRouter({
     // Old "Wrapped Navio" account page — now part of the NAV page.
     { path: "/market/hl/:pair/account", redirect: "/asset/NAV" },
     {
+      // Everything about the pair's base token (supply, holders, deployer,
+      // links) — reached from the market screen's header icon. Gated by
+      // dexMode like /market/hl.
+      path: "/market/hl/:pair/token",
+      component: () => import("../views/market/TokenDetails.vue"),
+      meta: { showNavbar: true },
+      beforeEnter: (to, from, next) => {
+        next(hlEnabled.value ? true : "/wallet/balance");
+      },
+    },
+    {
       // Candlestick price chart for a Hyperliquid spot pair — reached from
       // the market screen's header icon. Gated by dexMode like /market/hl.
       path: "/market/hl/:pair/chart",

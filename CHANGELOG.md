@@ -1,5 +1,22 @@
 # Changelog
 
+## 0.1.6-alpha
+
+### Added
+- Market screen → **Token details** (the ⓘ in the header): live price, 24h volume, market cap and fully diluted value; circulating / total / max supply with the share in circulation, non-circulating balances and future emissions; holder count (from Hypurrscan); the exchange's own record of the token (created, name, token ID, deployer, market, decimals, deploy gas, genesis distribution); who issues it on Hyperliquid (Unit for the bridged majors, the Navio bridge for NAV); and links to the project's website, docs, GitHub and explorers
+- Price chart: live. The newest candle moves on every trade (Hyperliquid's `candle` websocket subscription) on every range, with a Live / Delayed indicator; new candle sizes **1s** (built on the device from the live mid price, since Hyperliquid has no candles under a minute) and **5m**; the 1H range is now labelled **1m** after its candle size
+
+### Changed
+- The Markets tab is now **Spot Markets**, and the market screen and price chart name the venue as **Hyperliquid Spot**, so the pairs aren't taken for perpetuals
+- Market Trades: a trade that didn't happen today shows its date beside the time
+
+### Fixed
+- Home / DEX → Markets: prices, 24h change and volume now update live over the Hyperliquid websocket (one `activeAssetCtx` subscription per pair) instead of a REST refresh every 30 s; the 30 s poll only runs while the socket is down
+- Market screen (advanced trading): the order book is real-time. Hyperliquid's `l2Book` websocket only sends a full book every ~10 s, so the depth is now refreshed from REST every second and the best bid / ask (and the mid price) move on every change through a `bbo` subscription on the same socket; an older snapshot never overwrites a newer one
+- Market screen (advanced trading): the Market Trades tab (the pair's tape: everyone's trades, newest first) streams over the `trades` websocket subscription instead of a 5 s REST refresh; REST polling only while the socket is down
+- Market screen (advanced trading): open orders and trade history update live over the Hyperliquid websocket (`orderUpdates` + `userFills` on one shared socket per account) instead of a 10 s / 30 s REST refresh, and balances refetch as soon as an order opens, fills or is cancelled; REST polling only runs while the socket is down
+- Swap: selling NAV for USDC no longer refuses amounts worth less than 10 USDC. Hyperliquid applies that minimum to buys, not sells, so a small NAV balance can be sold outright; swaps into another token still need at least 10 USDC for the buy leg
+
 ## 0.1.5-alpha
 
 A security release: nothing changes in what the wallet can do, but a lot in how hard it is for someone else to do it.

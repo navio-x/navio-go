@@ -38,3 +38,25 @@ export const HL_NAMES = {
   NAV: "Navio", USDC: "USD Coin", HYPE: "Hyperliquid", BTC: "Bitcoin",
   ETH: "Ethereum", SOL: "Solana", ZEC: "Zcash", AVAX: "Avalanche",
 };
+
+export const HL_EXPLORER_URL = "https://app.hyperliquid.xyz/explorer";
+export const HYPURRSCAN_URL = "https://hypurrscan.io";
+export const HYPURRSCAN_API_URL = "https://api.hypurrscan.io";
+
+/**
+ * Off-exchange facts per HL_TOKENS symbol for the token details screen:
+ * the project's own links, and who issues the token on Hyperliquid. The
+ * Unit-bridged majors are minted by Unit (hyperunit.xyz) against the real
+ * coin; NAV is minted by the Navio–Hyperliquid bridge. Keep to official
+ * sources only — a wrong link here points people at a scam.
+ */
+export const UNIT_URL = "https://hyperunit.xyz";
+export const HL_TOKEN_LINKS = {
+  NAV: { website: "https://nav.io", docs: "https://docs.nav.io", github: "https://github.com/nav-io", explorer: "https://blocks.nav.io", issuer: "bridge" },
+  HYPE: { website: "https://hyperliquid.xyz", x: "https://x.com/HyperliquidX", docs: "https://hyperliquid.gitbook.io/hyperliquid-docs", github: "https://github.com/hyperliquid-dex" },
+  BTC: { website: "https://bitcoin.org", github: "https://github.com/bitcoin/bitcoin", issuer: "unit" },
+  ETH: { website: "https://ethereum.org", x: "https://x.com/ethereum", github: "https://github.com/ethereum", issuer: "unit" },
+  SOL: { website: "https://solana.com", x: "https://x.com/solana", github: "https://github.com/solana-labs", issuer: "unit" },
+  ZEC: { website: "https://z.cash", x: "https://x.com/zcash", github: "https://github.com/zcash/zcash", issuer: "unit" },
+  AVAX: { website: "https://avax.network", x: "https://x.com/avax", github: "https://github.com/ava-labs", issuer: "unit" },
+};

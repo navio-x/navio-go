@@ -51,7 +51,12 @@ describe("quoteSell", () => {
     expect(quoteSell({ ...base, size: 0 }).error).toBe("invalid_amount");
     expect(quoteSell({ ...base, size: 10, bids: [] }).error).toBe("no_liquidity");
     expect(quoteSell({ ...base, size: 7000 }).error).toBe("insufficient_liquidity");
-    expect(quoteSell({ ...base, size: 5 }).error).toBe("below_minimum");
+  });
+
+  it("has no order minimum: the exchange accepts sub-10 USDC sells", () => {
+    const q = quoteSell({ size: 5, bids, szDecimals: 2, slippageBps: 100, feeRate: 0 });
+    expect(q.error).toBeUndefined();
+    expect(q.estOut).toBeCloseTo(2.1, 6);
   });
 });
 
@@ -103,6 +108,13 @@ describe("quoteSwap", () => {
     expect(q.legs.map((l) => l.pair)).toEqual(["NAV-USDC", "BTC-USDC"]);
     // The minimum assumes both legs fill at their worst acceptable price.
     expect(q.minReceive).toBeLessThan(q.estReceive);
+  });
+
+  it("lets a sub-10 USDC <token> -> USDC sell through, but not a two-leg swap", () => {
+    // 10 NAV ≈ 4.2 USDC: fine as a plain sell, too small to fund the buy leg.
+    expect(quoteSwap({ ...opts, from: "NAV", to: "USDC", amount: 10 }).error).toBeUndefined();
+    expect(quoteSwap({ ...opts, from: "NAV", to: "BTC", amount: 10 }).error).toBe("below_minimum");
+    expect(quoteSwap({ ...opts, from: "USDC", to: "NAV", amount: 5 }).error).toBe("below_minimum");
   });
 
   it("rejects unknown markets and identical assets", () => {

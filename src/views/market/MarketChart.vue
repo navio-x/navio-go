@@ -11,7 +11,7 @@
         <h1 class="text-lg font-bold leading-tight text-gray-900 dark:text-white truncate">{{ headerLabel }}</h1>
         <!-- Venue, small and muted, with the 24h change beside it -->
         <p v-if="market" class="text-[11px] leading-tight tabular-nums text-gray-400 dark:text-gray-500 truncate">
-          {{ $t('dex.hyperliquid.title') }}
+          {{ $t('market.venueSpot') }}
           <template v-if="change24h != null">
             ·
             <span class="font-medium" :class="change24h >= 0 ? 'text-buy' : 'text-sell'">{{ change24h > 0 ? '+' : '' }}{{ change24h.toFixed(2) }}%</span>
@@ -33,16 +33,25 @@
     <div v-else class="px-5 pb-6 space-y-3">
       <div class="rounded-2xl border border-gray-200 dark:border-gh-700 bg-white dark:bg-gh-800 p-3 space-y-3">
         <!-- Range: how far back, with the candle size chosen to fit -->
-        <div class="flex gap-1 text-[11px]">
-          <button
-            v-for="r in RANGES"
-            :key="r.id"
-            @click="rangeId = r.id"
-            class="px-2.5 py-1 rounded-md font-medium tabular-nums"
-            :class="rangeId === r.id ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400' : 'text-gray-400 dark:text-gray-500'"
+        <div class="range-strip flex items-center gap-0.5 text-[11px] overflow-x-auto">
+          <template v-for="r in RANGES" :key="r.id">
+            <!-- Candle sizes (1s 1m 5m) | look-back ranges -->
+            <span v-if="r.id === '1D'" class="mx-1 h-3 w-px shrink-0 bg-gray-200 dark:bg-gh-600" />
+            <button
+              @click="rangeId = r.id"
+              class="px-2 py-1 rounded-md font-medium tabular-nums shrink-0"
+              :class="rangeId === r.id ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400' : 'text-gray-400 dark:text-gray-500'"
+            >
+              {{ r.id === 'all' ? $t('market.range.all') : r.id }}
+            </button>
+          </template>
+          <span
+            class="ml-auto pl-2 flex items-center gap-1 shrink-0 text-[10px] font-semibold uppercase tracking-wide"
+            :class="liveConnected ? 'text-green-600 dark:text-green-400' : 'text-gray-400 dark:text-gray-500'"
           >
-            {{ r.id === 'all' ? $t('market.range.all') : r.id }}
-          </button>
+            <span class="w-1.5 h-1.5 rounded-full" :class="liveConnected ? 'bg-green-500 animate-pulse' : 'bg-gray-300 dark:bg-gh-600'" />
+            {{ liveConnected ? $t('market.live') : $t('market.delayed') }}
+          </span>
         </div>
 
         <!-- Readout: the candle under the crosshair, else the latest one -->
@@ -59,6 +68,7 @@
               <span>{{ $t('market.ohlc.low') }} {{ formatPrice(readout.l) }}</span>
               <span>{{ $t('market.ohlc.close') }} {{ formatPrice(readout.c) }}</span>
             </p>
+            <p v-if="range.live" class="text-[10px] text-gray-400 dark:text-gray-500">{{ $t('market.liveMidHint') }}</p>
           </template>
         </div>
 
@@ -74,7 +84,7 @@
             </button>
           </div>
           <p v-else-if="!candles.length" class="absolute inset-0 flex items-center justify-center text-xs text-gray-400 dark:text-gray-500 text-center px-6">
-            {{ $t(range.span ? 'market.noTradesInRange' : 'market.noChartData') }}
+            {{ $t(range.live ? 'common.loading' : range.span ? 'market.noTradesInRange' : 'market.noChartData') }}
           </p>
 
           <svg
@@ -144,6 +154,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { ChevronLeft, Loader2 } from 'lucide-vue-next'
 import { fetchCandleSnapshot } from '@/lib/hyperliquid/api'
+import { HL_WS_URL } from '@/lib/hyperliquid/config'
 import { HL_SPOT_MARKETS } from '@/lib/hyperliquid/market'
 import { useHyperliquidSpotTickers } from '@/composables/useHyperliquidSpotTickers'
 
@@ -157,11 +168,16 @@ const WEEK = 7 * DAY
 
 // Each range picks the Hyperliquid candle interval that fills it with
 // roughly 50–90 candles: enough shape, still wide enough to read and tap.
-// 1m is the finest candle Hyperliquid serves; there are no per-second ones.
+// The first three are named by candle size, the rest by how far back they
+// look. 1m is the finest candle Hyperliquid serves: "1s" (`live`) is built
+// on this device from the live mid price, one candle a second, starting
+// when the chart opens — there is no history to fetch for it.
 // "all" asks for daily candles from the market's first trade and folds them
 // into weeks once there are too many to draw.
 const RANGES = [
-  { id: '1H', span: HOUR, interval: '1m', intervalMs: 60_000, slots: 60 },
+  { id: '1s', live: true, intervalMs: 1000, slots: 120 },
+  { id: '1m', span: HOUR, interval: '1m', intervalMs: 60_000, slots: 60 },
+  { id: '5m', span: 5 * HOUR, interval: '5m', intervalMs: 5 * 60_000, slots: 60 },
   { id: '1D', span: DAY, interval: '30m', intervalMs: 30 * 60_000, slots: 48 },
   { id: '1W', span: WEEK, interval: '2h', intervalMs: 2 * HOUR, slots: 84 },
   { id: '1M', span: 30 * DAY, interval: '12h', intervalMs: 12 * HOUR, slots: 60 },
@@ -201,11 +217,16 @@ const headerLabel = computed(() => {
 const tickerIndices = computed(() => (market.value ? [market.value.pairIndex] : []))
 const { tickers } = useHyperliquidSpotTickers(tickerIndices)
 const change24h = computed(() => tickers.value[market.value?.pairIndex]?.change24h ?? null)
+// The ticker's mid (about one a second, with its own REST fallback) keeps
+// the 1s candles going even if this page's socket is down.
+watch(() => tickers.value[market.value?.pairIndex]?.price, (px) => {
+  if (px != null && !liveConnected.value) onMid(px)
+})
 
 // --- data ---
 let requestSeq = 0
 async function load() {
-  if (!market.value) return
+  if (!market.value || range.value.live) return
   const seq = ++requestSeq
   const r = range.value
   if (!candles.value.length) status.value = 'loading'
@@ -249,11 +270,155 @@ function foldToWeeks(daily) {
   return [...weeks.values()]
 }
 
+// --- live ---
+// One socket for the page: `bbo` (best bid/ask on every change) feeds the
+// 1s candles, and a `candle` subscription for the range on screen moves its
+// newest candle on every trade. The 15 s REST refresh stays as the backstop.
+const MAX_RECONNECT_DELAY_MS = 30_000
+const PING_INTERVAL_MS = 30_000
+const liveConnected = ref(false)
+let ws = null
+let pingTimer = null
+let reconnectTimer = null
+let reconnectDelay = 1000
+let unmounted = false
+let candleSub = null // interval the socket is subscribed to
+
+// 1s candles, kept from the moment the chart opens whatever range is shown,
+// so switching to 1s has the last couple of minutes ready.
+let secCandles = []
+let lastMid = null
+let secTimer = null
+const SEC_SLOTS = RANGES[0].slots
+
+function onMid(mid, now = Date.now()) {
+  if (!Number.isFinite(mid) || mid <= 0) return
+  lastMid = mid
+  const bucket = Math.floor(now / 1000) * 1000
+  let last = secCandles[secCandles.length - 1]
+  if (last && bucket > last.t) {
+    // Quiet seconds are flat candles at the price that stood through them.
+    const from = Math.max(last.t + 1000, bucket - (SEC_SLOTS - 1) * 1000)
+    for (let t = from; t < bucket; t += 1000) secCandles.push({ t, o: last.c, h: last.c, l: last.c, c: last.c })
+  }
+  if (!last || bucket > last.t) {
+    const open = last ? last.c : mid
+    secCandles.push({ t: bucket, o: open, h: Math.max(open, mid), l: Math.min(open, mid), c: mid })
+  } else {
+    last.h = Math.max(last.h, mid)
+    last.l = Math.min(last.l, mid)
+    last.c = mid
+  }
+  if (secCandles.length > SEC_SLOTS) secCandles = secCandles.slice(-SEC_SLOTS)
+  if (range.value.live) showSeconds()
+}
+
+function showSeconds() {
+  candles.value = secCandles.map((c) => ({ ...c }))
+  candleMs.value = 1000
+  trailingSlots.value = 0
+  if (candles.value.length) status.value = 'ready'
+}
+
+// A `candle` push for the range on screen: the same candle again (a trade
+// moved it) or the next one opening.
+function onCandle(row) {
+  const r = range.value
+  if (r.live || row.i !== r.interval || row.s !== market.value?.coin) return
+  const c = { t: row.t, o: Number(row.o), h: Number(row.h), l: Number(row.l), c: Number(row.c) }
+  if (![c.o, c.h, c.l, c.c].every(Number.isFinite)) return
+  const list = candles.value
+  const last = list[list.length - 1]
+  if (candleMs.value !== r.intervalMs) {
+    // "all" folded into weeks: the day's candle only moves the week's.
+    if (last) candles.value = [...list.slice(0, -1), { ...last, h: Math.max(last.h, c.h), l: Math.min(last.l, c.l), c: c.c }]
+  } else if (last && c.t === last.t) {
+    candles.value = [...list.slice(0, -1), c]
+  } else if (!last || c.t > last.t) {
+    candles.value = r.slots ? [...list, c].slice(-r.slots) : [...list, c]
+    trailingSlots.value = 0
+    status.value = 'ready'
+  }
+}
+
+function wsSend(msg) {
+  if (ws?.readyState === WebSocket.OPEN) ws.send(JSON.stringify(msg))
+}
+
+function syncCandleSub() {
+  const coin = market.value?.coin
+  if (!coin || ws?.readyState !== WebSocket.OPEN) return
+  const want = range.value.interval ?? null
+  if (want === candleSub) return
+  if (candleSub) wsSend({ method: 'unsubscribe', subscription: { type: 'candle', coin, interval: candleSub } })
+  if (want) wsSend({ method: 'subscribe', subscription: { type: 'candle', coin, interval: want } })
+  candleSub = want
+}
+
+function openSocket() {
+  const coin = market.value?.coin
+  if (unmounted || !coin) return
+  try {
+    ws = new WebSocket(HL_WS_URL)
+  } catch (e) {
+    console.error('[market] chart ws unavailable:', e)
+    return
+  }
+  ws.onopen = () => {
+    reconnectDelay = 1000
+    liveConnected.value = true
+    candleSub = null
+    wsSend({ method: 'subscribe', subscription: { type: 'bbo', coin } })
+    syncCandleSub()
+    pingTimer = setInterval(() => wsSend({ method: 'ping' }), PING_INTERVAL_MS)
+  }
+  ws.onmessage = (event) => {
+    try {
+      const msg = JSON.parse(event.data)
+      if (msg?.channel === 'bbo' && msg.data?.coin === coin) {
+        const [bid, ask] = msg.data.bbo || []
+        if (bid && ask) onMid((Number(bid.px) + Number(ask.px)) / 2)
+      } else if (msg?.channel === 'candle' && msg.data) {
+        onCandle(msg.data)
+      }
+    } catch (e) {
+      console.error('[market] chart ws message parse failed:', e)
+    }
+  }
+  ws.onclose = () => {
+    liveConnected.value = false
+    clearInterval(pingTimer)
+    if (unmounted) return
+    reconnectTimer = setTimeout(() => {
+      reconnectDelay = Math.min(reconnectDelay * 2, MAX_RECONNECT_DELAY_MS)
+      openSocket()
+    }, reconnectDelay)
+  }
+  ws.onerror = () => {
+    try { ws?.close() } catch { /* onclose reconnects */ }
+  }
+}
+
+function closeSocket() {
+  clearTimeout(reconnectTimer)
+  clearInterval(pingTimer)
+  if (ws) {
+    ws.onopen = ws.onmessage = ws.onclose = ws.onerror = null
+    try { ws.close() } catch { /* already closed */ }
+    ws = null
+  }
+  liveConnected.value = false
+}
+
 watch(rangeId, () => {
   candles.value = []
   trailingSlots.value = 0
   hoverIndex.value = null
-  load()
+  syncCandleSub()
+  if (range.value.live) {
+    status.value = 'loading'
+    showSeconds()
+  } else load()
 })
 
 // --- layout ---
@@ -362,8 +527,10 @@ function formatCandleTime(ms, full) {
   const date = d.toLocaleDateString(undefined, { day: 'numeric', month: 'short' })
   if (full) {
     if (candleMs.value >= DAY) return date
+    if (candleMs.value < 60_000) return d.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit', second: '2-digit' })
     return `${date} ${d.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' })}`
   }
+  if (candleMs.value < 60_000) return d.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit', second: '2-digit' })
   const first = candles.value[0]?.t ?? ms
   const span = Date.now() - first
   if (span <= DAY + HOUR) return d.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' })
@@ -399,11 +566,28 @@ onMounted(async () => {
   refreshTimer = setInterval(() => {
     if (document.visibilityState === 'visible') load()
   }, REFRESH_MS)
+  openSocket()
+  // Closes each second's candle on time, ticks or no ticks.
+  secTimer = setInterval(() => {
+    if (lastMid != null) onMid(lastMid)
+  }, 1000)
 })
 
 onUnmounted(() => {
   requestSeq++
+  unmounted = true
   clearInterval(refreshTimer)
+  clearInterval(secTimer)
+  closeSocket()
   resizeObserver?.disconnect()
 })
 </script>
+
+<style scoped>
+.range-strip {
+  scrollbar-width: none;
+}
+.range-strip::-webkit-scrollbar {
+  display: none;
+}
+</style>

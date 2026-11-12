@@ -1,6 +1,8 @@
 import { roundPrice } from "@/lib/hyperliquid/precision";
 
-// Hyperliquid rejects spot orders worth less than 10 USDC.
+// Hyperliquid rejects spot BUY orders worth less than 10 USDC. Sells are not
+// held to it: sub-10 USDC NAV sells (e.g. a whole balance worth 0.40 USDC)
+// are accepted and fill on mainnet, so only the buy leg of a swap checks it.
 export const MIN_ORDER_USDC = 10;
 // Used for the "minimum received" figure when the account's own fee rate
 // can't be fetched — deliberately above Hyperliquid's base spot taker fee so
@@ -50,7 +52,6 @@ export function quoteSell({ size, bids, szDecimals, slippageBps, feeRate }) {
   const avgPx = gross / sz;
   const limitPx = roundPrice(avgPx * (1 - slippageBps / 10000), szDecimals);
   if (!limitPx) return { error: "no_liquidity" };
-  if (gross < MIN_ORDER_USDC) return { error: "below_minimum" };
 
   const fee = feeRate ?? FALLBACK_FEE_RATE;
   return {

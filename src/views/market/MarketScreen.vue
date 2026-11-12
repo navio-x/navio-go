@@ -11,7 +11,7 @@
         <h1 class="text-lg font-bold leading-tight text-gray-900 dark:text-white truncate">{{ headerLabel }}</h1>
         <!-- Venue, small and muted, with the 24h change beside it -->
         <p v-if="market" class="text-[11px] leading-tight tabular-nums text-gray-400 dark:text-gray-500 truncate">
-          {{ $t('dex.hyperliquid.title') }}
+          {{ $t('market.venueSpot') }}
           <template v-if="change24h != null">
             ·
             <span class="font-medium" :class="change24h >= 0 ? 'text-buy' : 'text-sell'">{{ change24h > 0 ? '+' : '' }}{{ change24h.toFixed(2) }}%</span>
@@ -27,6 +27,15 @@
         class="order-last p-2 rounded-xl transition hover:bg-gray-100 dark:hover:bg-gh-800 text-gray-600 dark:text-gray-400 shrink-0"
       >
         <ChartCandlestick class="w-5 h-5" />
+      </button>
+      <button
+        v-if="market"
+        @click="router.push(`/market/hl/${route.params.pair}/token`)"
+        :title="$t('market.token.title')"
+        :aria-label="$t('market.token.title')"
+        class="order-last p-2 rounded-xl transition hover:bg-gray-100 dark:hover:bg-gh-800 text-gray-600 dark:text-gray-400 shrink-0"
+      >
+        <Info class="w-5 h-5" />
       </button>
       <span
         v-if="market"
@@ -359,7 +368,7 @@
             :key="tr.tid"
             class="px-4 py-1 grid grid-cols-3 text-xs tabular-nums"
           >
-            <span class="text-gray-500 dark:text-gray-400">{{ formatTradeTime(tr.time) }}</span>
+            <span class="text-gray-500 dark:text-gray-400 whitespace-nowrap">{{ formatTradeTime(tr.time) }}</span>
             <span class="text-right font-medium" :class="tr.side === 'B' ? 'text-buy' : 'text-sell'">{{ formatPrice(tr.px) }}</span>
             <span class="text-right text-gray-600 dark:text-gray-300">{{ formatSize(tr.sz) }}</span>
           </div>
@@ -437,7 +446,7 @@
 import { ref, computed, watch, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
-import { ChevronLeft, Loader2, X, AlertTriangle, ChartCandlestick } from 'lucide-vue-next'
+import { ChevronLeft, Loader2, X, AlertTriangle, ChartCandlestick, Info } from 'lucide-vue-next'
 import { settings } from '@/stores/settings'
 import { evmAddress } from '@/stores/evm'
 import { deriveEvmAddress } from '@/composables/useEvmAccount'
@@ -476,6 +485,14 @@ const hl = useHyperliquidBalances(evmAddress)
 const openOrders = useHyperliquidOpenOrders(evmAddress, coin)
 const tradeHistory = useHyperliquidTradeHistory(evmAddress, coin)
 const trading = useHyperliquidTrading()
+
+// An order opening, filling or being cancelled (here or anywhere else —
+// another device, the swap flow) moves balances / holds too: refetch them
+// the moment the stream reports it. Fills reach the history tab live on
+// their own.
+watch(() => openOrders.lastEvent.value, (ev) => {
+  if (ev) hl.refresh()
+})
 
 // 24h change shown under the pair name — same REST ticker the home screen's
 // market list uses.
@@ -706,8 +723,15 @@ const ORDER_TABS = [
 // Only fetched while its tab is the one showing.
 const recentTrades = useHyperliquidRecentTrades(coin, computed(() => ordersTab.value === 'trades'))
 
+// Time alone for today's trades; on a quiet market the tape reaches back
+// days, and those rows carry their date too.
 function formatTradeTime(ms) {
-  return new Date(ms).toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false })
+  const d = new Date(ms)
+  const time = d.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false })
+  if (d.toDateString() === new Date().toDateString()) return time
+  const sameYear = d.getFullYear() === new Date().getFullYear()
+  const date = d.toLocaleDateString(undefined, sameYear ? { day: 'numeric', month: 'short' } : { day: 'numeric', month: 'short', year: '2-digit' })
+  return `${date} ${time}`
 }
 const cancelConfirmOid = ref(null)
 function askCancel(oid) {
