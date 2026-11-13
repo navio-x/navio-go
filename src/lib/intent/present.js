@@ -141,12 +141,42 @@ export function minutesLeft(wait, op) {
 const NAVIO_EXPLORER_TX = "https://blocks.nav.io/tx/";
 const HYPEREVM_EXPLORER_TX = "https://hyperevmscan.io/tx/";
 
-/** Explorer links for a step (and the wait that follows it): [{ url, hash }]. */
-export function explorerLinks(step) {
+/**
+ * Explorer links for a step (and the wait that follows it): [{ url, hash }].
+ * `navioTxOf(step)` gives the id a Navio send has on chain, or null while
+ * the explorer can't show it yet (unconfirmed) — see lib/navioSend.js for
+ * why that is not simply `step.txId`. Without it the step's own id is used.
+ */
+export function explorerLinks(step, navioTxOf = null) {
   const links = [];
-  if (step?.txId) links.push({ url: NAVIO_EXPLORER_TX + step.txId, hash: step.txId });
+  const navioTx = step?.txId ? (navioTxOf ? navioTxOf(step) : step.txId) : null;
+  if (navioTx) links.push({ url: NAVIO_EXPLORER_TX + navioTx, hash: navioTx });
   if (step?.hash) links.push({ url: HYPEREVM_EXPLORER_TX + step.hash, hash: step.hash });
   return links;
+}
+
+/**
+ * NAV that has left one side and not yet shown up on the other, one entry
+ * per transfer: [{ opId, direction: "toExchange" | "toWallet", amount, link }].
+ * `link` ({ url, hash }) is the transaction that carries it on its chain's
+ * explorer — the Navio send for a deposit, the HyperEVM burn for a payout —
+ * or null when there is nothing to show there yet (a send still unconfirmed,
+ * or one whose id the app never learnt). `navioTxOf`: see explorerLinks.
+ */
+export function transitItems(ops, navioTxOf = null) {
+  const items = [];
+  const stepOf = (op, type) => op.steps?.find((s) => s.type === type);
+  for (const op of ops || []) {
+    const deposit = stepOf(op, "deposit");
+    const credit = stepOf(op, "waitCredit");
+    if (deposit?.status === "done" && credit && credit.status !== "done" && op.status !== "cancelled") {
+      items.push({ opId: op.id, direction: "toExchange", amount: deposit.amount, link: explorerLinks(deposit, navioTxOf)[0] ?? null });
+    }
+    if (op.ctx?.payout && !op.ctx.payoutSettled) {
+      items.push({ opId: op.id, direction: "toWallet", amount: op.ctx.payout.amount, link: explorerLinks(stepOf(op, "burn"))[0] ?? null });
+    }
+  }
+  return items;
 }
 
 /** Title + subtitle of an operation. */

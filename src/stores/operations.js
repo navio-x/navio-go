@@ -1,11 +1,11 @@
 import { ref, computed, watch } from "vue";
 import { hlEnabled } from "@/stores/network";
 import { evmAddress } from "@/stores/evm";
-import { balance } from "@/stores/navio";
+import { balance, minedSendTxId } from "@/stores/navio";
 import { createEngine } from "@/lib/intent/engine";
 import { STEP_TYPES } from "@/lib/intent/steps";
 import { reservedNav } from "@/lib/intent/requirements";
-import { isActive as isActiveOp, needsUser as needsUserOp } from "@/lib/intent/present";
+import { isActive as isActiveOp, needsUser as needsUserOp, transitItems } from "@/lib/intent/present";
 import { scenarioEnabled } from "@/dev/scenario";
 
 /**
@@ -107,20 +107,21 @@ export const setupInProgress = computed(() =>
   activeOperations.value.some((op) => op.steps.some((s) => ["faucet", "waitAccount", "register"].includes(s.type) && s.status !== "done"))
 );
 
-const stepOf = (op, type) => op.steps.find((s) => s.type === type);
 const awaitsPayout = (op) => !!op.ctx?.payout && !op.ctx.payoutSettled;
+
+/** Each transfer still under way, with the explorer page of its transaction (present.js transitItems). */
+/** The id a step's Navio send has on chain, once mined (for explorer links). */
+export const navioTxOfStep = (step) => minedSendTxId(step.txId, step.spentOutput);
+
+export const navTransitItems = computed(() => transitItems(operations.value, navioTxOfStep));
 
 /** NAV that has left one side and not yet shown up on the other. */
 export const navInTransit = computed(() => {
   let toExchange = 0;
   let toWallet = 0;
-  for (const op of operations.value) {
-    const deposit = stepOf(op, "deposit");
-    const credit = stepOf(op, "waitCredit");
-    if (deposit?.status === "done" && credit && credit.status !== "done" && op.status !== "cancelled") {
-      toExchange += deposit.amount;
-    }
-    if (awaitsPayout(op)) toWallet += op.ctx.payout.amount;
+  for (const item of navTransitItems.value) {
+    if (item.direction === "toExchange") toExchange += item.amount;
+    else toWallet += item.amount;
   }
   return { toExchange, toWallet };
 });

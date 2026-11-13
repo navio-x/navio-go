@@ -1746,6 +1746,7 @@
       "exchange_rejected": "A exchange rejeitou esta etapa.",
       "no_market": "Este mercado não está disponível no momento.",
       "user_rejected": "A transação foi cancelada.",
+      "credit_delayed": "A ponte ainda não creditou este depósito, bem mais tarde que o normal. Ele ainda está a caminho ou já está na sua conta de trading.",
       "unknown": "Algo deu errado nesta etapa."
     }
   },
@@ -1777,6 +1778,7 @@
       "exchangeHintOrders": "Na sua conta de trading. {amount} em ordens abertas.",
       "moving": "A caminho",
       "movingHint": "Movendo entre os dois.",
+      "movingDetails": "Mais detalhes",
       "staked": "Em staking",
       "stakedHint": "Delegado a um staker. Retire do staking para gastar."
     },
@@ -2173,6 +2175,10 @@
       "body": "O app fechou durante o envio e os saldos não resolvem a dúvida. Verifique o Histórico antes de escolher.",
       "checked": "Verificado após reiniciar: saldo da carteira, saldo de trading."
     },
+    "delayed": {
+      "title": "Isto está demorando mais que o normal",
+      "hint": "Confira seu saldo de trading na página de NAV. Se o NAV estiver lá, escolha “Já chegou”; caso contrário, continue aguardando."
+    },
     "actions": {
       "retry": "Tentar de novo",
       "stop": "Parar",
@@ -2183,7 +2189,9 @@
       "requote": "Trocar ao preço atual",
       "keepWaiting": "Tentar o mesmo preço de novo",
       "back": "Voltar",
-      "accept": "Trocar"
+      "accept": "Trocar",
+      "keepWaitingCredit": "Continuar aguardando",
+      "creditArrived": "Já chegou"
     },
     "empty": {
       "title": "Nada em andamento",

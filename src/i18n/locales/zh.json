@@ -1746,6 +1746,7 @@
       "exchange_rejected": "交易所拒绝了此步骤。",
       "no_market": "此市场暂时不可用。",
       "user_rejected": "交易已取消。",
+      "credit_delayed": "跨链桥尚未入账这笔存款，已远超正常时间。它要么仍在途中，要么已到达你的交易账户。",
       "unknown": "此步骤出了点问题。"
     }
   },
@@ -1777,6 +1778,7 @@
       "exchangeHintOrders": "在你的交易账户中。{amount} 处于未成交订单。",
       "moving": "转移途中",
       "movingHint": "正在两者之间转移。",
+      "movingDetails": "查看详情",
       "staked": "质押中",
       "stakedHint": "已委托给质押者。解除质押后才能花费。"
     },
@@ -2173,6 +2175,10 @@
       "body": "发送过程中应用被关闭，余额无法说明结果。请先查看历史记录再做选择。",
       "checked": "重启后已检查：钱包余额、交易账户余额。"
     },
+    "delayed": {
+      "title": "耗时比平时更长",
+      "hint": "请在 NAV 页面查看交易余额。如果 NAV 已到账，请选择“已到账”；否则请继续等待。"
+    },
     "actions": {
       "retry": "重试",
       "stop": "停止",
@@ -2183,7 +2189,9 @@
       "requote": "按当前价格兑换",
       "keepWaiting": "以相同价格再试",
       "back": "返回",
-      "accept": "兑换"
+      "accept": "兑换",
+      "keepWaitingCredit": "继续等待",
+      "creditArrived": "已到账"
     },
     "empty": {
       "title": "没有进行中的操作",

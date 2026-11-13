@@ -20,6 +20,7 @@ import { publishWalletSession, clearWalletSession } from "@/lib/extensionSession
 import { forgetPassword } from "@/lib/unlockCache.js";
 import { setWalletNetwork, walletNetwork } from "@/stores/network";
 import { trackTransactions, baselineTransactions, isTxTrackingArmed, resetTxTracking } from "@/stores/txNotifications";
+import { spentOutputOf, sendConfirmations, minedTxId } from "@/lib/navioSend";
 
 // Name of the most recently opened wallet — read by WalletHome.vue for the
 // optional "auto-open last wallet" setting.
@@ -163,23 +164,32 @@ export function getUtxos() {
 }
 
 /**
- * Confirmations of one of this wallet's transactions: 0 while it waits in
- * the mempool, null if the wallet has not seen it. Found through the
- * outputs it created or spent (a Max send creates none, but spends some).
+ * Confirmations of one of this wallet's sends: 0 while it waits in the
+ * mempool, null if the wallet has not seen it. `spentOutput` (an output the
+ * send spent) keeps it findable once its block has merged it with other
+ * transactions under another id — see lib/navioSend.js.
  */
-export function txConfirmations(txId) {
-  if (!txId) return null;
-  let height = null;
-  let seen = false;
-  for (const o of utxos.value) {
-    if (o.txHash === txId) { seen = true; if (o.blockHeight > 0) height = o.blockHeight; }
-    else if (o.spentTxHash === txId) { seen = true; if (o.spentBlockHeight > 0) height = Number(o.spentBlockHeight); }
-    if (height) break;
+export function txConfirmations(txId, spentOutput = "") {
+  return sendConfirmations(utxos.value, { txId, spentOutput }, Math.max(chainTip.value, walletHeight.value));
+}
+
+/** The id a mined send has on chain (for the explorer); null while unconfirmed or unknown to the wallet. */
+export function minedSendTxId(txId, spentOutput = "") {
+  return minedTxId(utxos.value, { txId, spentOutput });
+}
+
+/**
+ * An output the just-made send `txId` spent, read from the wallet itself
+ * (the reactive list may not have caught up yet). "" when it can't be told;
+ * never throws — the send has already gone out.
+ */
+export async function findSpentOutput(txId) {
+  try {
+    return spentOutputOf(await _navioClient.value.getAllOutputs(), txId);
+  } catch (e) {
+    console.error("[navio] spent output lookup failed:", e?.message);
+    return "";
   }
-  if (!seen) return null;
-  if (!height) return 0;
-  const tip = Math.max(chainTip.value, walletHeight.value);
-  return tip >= height ? tip - height + 1 : 0;
 }
 
 /** NAV per spendable output, for the fee estimate (see lib/navioFee.js). */

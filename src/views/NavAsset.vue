@@ -41,6 +41,23 @@
               <dt class="min-w-0">
                 <span class="block text-sm text-gray-700 dark:text-gray-200">{{ row.label }}</span>
                 <span class="block text-xs text-gray-400 dark:text-gray-500 leading-snug">{{ row.hint }}</span>
+                <!-- Each transfer under way: its transaction on the explorer, or its own page when the id is unknown -->
+                <template v-for="item in row.transfers || []" :key="item.opId + item.direction">
+                  <a
+                    v-if="item.link"
+                    :href="item.link.url"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="mt-1 flex items-center gap-1 text-xs font-medium text-blue-600 dark:text-blue-400"
+                  >
+                    <ExternalLink class="w-3.5 h-3.5 shrink-0" />
+                    <span>{{ transferLabel(item, row.transfers.length) }}</span>
+                  </a>
+                  <router-link v-else :to="`/activity/${item.opId}`" class="mt-1 flex items-center gap-1 text-xs font-medium text-blue-600 dark:text-blue-400">
+                    <ChevronRight class="w-3.5 h-3.5 shrink-0" />
+                    <span>{{ transferLabel(item, row.transfers.length) }}</span>
+                  </router-link>
+                </template>
               </dt>
               <dd class="shrink-0 text-sm font-mono text-gray-900 dark:text-white">{{ formatAmount(row.amount, 8) }}</dd>
             </div>
@@ -217,13 +234,13 @@ import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import {
   ChevronLeft, ChevronDown, ChevronRight, SendHorizontal, Download, Repeat,
-  ArrowLeftRight, ArrowRightLeft, ArrowDownUp, Loader2,
+  ArrowLeftRight, ArrowRightLeft, ArrowDownUp, Loader2, ExternalLink,
 } from 'lucide-vue-next'
 import { settings } from '@/stores/settings'
 import { hlEnabled } from '@/stores/network'
 import { evmAddress } from '@/stores/evm'
 import { receiveAddress } from '@/stores/navio'
-import { activeOperations, startOperation, reservedByOperations, setupInProgress } from '@/stores/operations'
+import { activeOperations, startOperation, reservedByOperations, setupInProgress, navTransitItems } from '@/stores/operations'
 import { usePortfolio } from '@/composables/usePortfolio'
 import { HL_LOGOS, HL_NAMES } from '@/lib/hyperliquid/config'
 import { readAccountState } from '@/lib/intent/executors'
@@ -269,10 +286,14 @@ const breakdown = computed(() => {
     },
   )
   if (nav.value.moving > 0) {
-    rows.push({ id: 'moving', label: t('asset.where.moving'), hint: t('asset.where.movingHint'), amount: nav.value.moving })
+    rows.push({ id: 'moving', label: t('asset.where.moving'), hint: t('asset.where.movingHint'), amount: nav.value.moving, transfers: navTransitItems.value })
   }
   return rows
 })
+
+// With several transfers under way each link says which one it is.
+const transferLabel = (item, count) =>
+  count > 1 ? `${formatAmount(item.amount)} NAV · ${t('asset.where.movingDetails')}` : t('asset.where.movingDetails')
 
 const actions = computed(() => [
   { id: 'send', to: '/wallet/send', icon: SendHorizontal, label: 'wallet.send' },

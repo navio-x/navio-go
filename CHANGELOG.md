@@ -1,5 +1,25 @@
 # Changelog
 
+## 0.1.8-alpha
+
+### Fixed
+- **A deposit could say "Waiting for the bridge to credit your trading account" forever** although the bridge had credited it long ago. The wait only compared the trading balance with what it expected, so NAV sold or put in an order in the meantime kept it from ever noticing the arrival. It now reads the credit itself: the bridge's own NAV transfer in the account's Hyperliquid ledger since the send, with the balance as a second sign. An operation stuck this way finishes by itself the next time the app is opened, provided the deposit was sent with 0.1.3-alpha or later and the device clock is roughly right
+- That wait now ends on its own. After three times the estimated time, and never before two hours, the operation stops with **This is taking longer than usual** and offers *Keep waiting*, *It arrived* and *Stop*. When nothing could be read from the exchange it reports the network error instead of a late credit
+- Requests to the Hyperliquid API time out after 20 seconds. A request that never answered (a phone changing networks in the background) froze whatever was polling through it until the app was restarted
+- Confirmations of a wallet send ("2/3 confirmations", "Confirmed on Navio") are counted through an output the send spent rather than through its transaction ID. Navio merges the transactions of a block into one, so a send mined together with others is known to the chain under another ID and was no longer found
+
+### Added
+- NAV page → Details → **On the way**: each transfer still under way has a **More details** link to its transaction on the explorer (the Navio send for a deposit, the HyperEVM burn for a withdrawal); with several under way each link names its amount. Until a deposit is in a block, where the explorer has nothing to show yet, the link opens the operation's own page instead
+
+### Changed
+- Explorer links for Navio sends (On the way, and the steps of an operation) appear once the send is in a block and use the ID it has on chain
+
+### Known limitations
+- A deposit is matched to its credit by the time it was sent, taken from the device clock. On a device whose clock is minutes behind, a credit that arrived just before the send can be taken for it; the next step then stops with "the balance isn't there" and nothing is lost
+- Operations started before this version have no spent output recorded. If their send was merged with others in its block, the confirmation count and the explorer link are not available for them
+- The merged-block case was derived from the wallet library and is covered by tests on sample records; it was not observed on mainnet
+- The new texts in languages other than English and Turkish were not reviewed by a native speaker
+
 ## 0.1.7-alpha
 
 ### Added

@@ -1746,6 +1746,7 @@
       "exchange_rejected": "The exchange rejected this step.",
       "no_market": "This market isn't available right now.",
       "user_rejected": "The transaction was cancelled.",
+      "credit_delayed": "The bridge hasn't credited this deposit yet, much later than usual. It is either still on its way or already on your trading account.",
       "unknown": "Something went wrong with this step."
     }
   },
@@ -1777,6 +1778,7 @@
       "exchangeHintOrders": "In your trading account. {amount} in open orders.",
       "moving": "On the way",
       "movingHint": "Moving between the two.",
+      "movingDetails": "More details",
       "staked": "Staked",
       "stakedHint": "Delegated to a staker. Unstake to spend."
     },
@@ -2173,6 +2175,10 @@
       "body": "The app closed while it was being sent, and the balances didn't settle the question. Check History before choosing.",
       "checked": "Checked after restart: wallet balance, trading balance."
     },
+    "delayed": {
+      "title": "This is taking longer than usual",
+      "hint": "Check your trading balance on the NAV page. If the NAV is there, choose “It arrived”; otherwise keep waiting."
+    },
     "actions": {
       "retry": "Retry",
       "stop": "Stop",
@@ -2183,7 +2189,9 @@
       "requote": "Swap at current price",
       "keepWaiting": "Try the same price again",
       "back": "Back",
-      "accept": "Swap"
+      "accept": "Swap",
+      "keepWaitingCredit": "Keep waiting",
+      "creditArrived": "It arrived"
     },
     "empty": {
       "title": "Nothing in progress",

@@ -26,9 +26,9 @@
       </div>
 
       <div v-else-if="op.status === 'attention'" class="rounded-2xl border border-red-200 dark:border-red-900/60 bg-red-50 dark:bg-red-900/20 p-4 space-y-3">
-        <p class="text-sm font-semibold text-red-900 dark:text-red-100">{{ attentionCode === 'interrupted' ? $t('process.interrupted.title') : $t('process.failed.title') }}</p>
+        <p class="text-sm font-semibold text-red-900 dark:text-red-100">{{ attentionCode === 'interrupted' ? $t('process.interrupted.title') : attentionCode === 'credit_delayed' ? $t('process.delayed.title') : $t('process.failed.title') }}</p>
         <p class="text-sm text-red-800 dark:text-red-200 leading-snug">{{ attentionCode === 'interrupted' ? $t('process.interrupted.body') : attentionText }}</p>
-        <p class="text-xs text-red-700/80 dark:text-red-300/80 leading-snug">{{ attentionCode === 'interrupted' ? $t('process.interrupted.checked') : $t('process.failed.keep') }}</p>
+        <p class="text-xs text-red-700/80 dark:text-red-300/80 leading-snug">{{ attentionCode === 'interrupted' ? $t('process.interrupted.checked') : attentionCode === 'credit_delayed' ? $t('process.delayed.hint') : $t('process.failed.keep') }}</p>
 
         <template v-if="requote">
           <p class="text-sm font-semibold text-gray-900 dark:text-white">

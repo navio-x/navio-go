@@ -1746,6 +1746,7 @@
       "exchange_rejected": "Die Börse hat diesen Schritt abgelehnt.",
       "no_market": "Dieser Markt ist gerade nicht verfügbar.",
       "user_rejected": "Die Transaktion wurde abgebrochen.",
+      "credit_delayed": "Die Bridge hat diese Einzahlung noch nicht gutgeschrieben – deutlich später als üblich. Sie ist entweder noch unterwegs oder bereits auf deinem Trading-Konto.",
       "unknown": "Bei diesem Schritt ist etwas schiefgelaufen."
     }
   },
@@ -1777,6 +1778,7 @@
       "exchangeHintOrders": "Auf deinem Trading-Konto. {amount} in offenen Orders.",
       "moving": "Unterwegs",
       "movingHint": "Wird zwischen beiden verschoben.",
+      "movingDetails": "Mehr Details",
       "staked": "Gestaked",
       "stakedHint": "An einen Staker delegiert. Zum Ausgeben entstaken."
     },
@@ -2173,6 +2175,10 @@
       "body": "Die App wurde während des Sendens geschlossen, und die Guthaben geben keine Antwort. Prüfe den Verlauf, bevor du wählst.",
       "checked": "Nach dem Neustart geprüft: Wallet-Guthaben, Trading-Guthaben."
     },
+    "delayed": {
+      "title": "Das dauert länger als üblich",
+      "hint": "Prüfe dein Trading-Guthaben auf der NAV-Seite. Ist das NAV dort, wähle „Angekommen“; andernfalls warte weiter."
+    },
     "actions": {
       "retry": "Erneut versuchen",
       "stop": "Stoppen",
@@ -2183,7 +2189,9 @@
       "requote": "Zum aktuellen Preis tauschen",
       "keepWaiting": "Denselben Preis erneut versuchen",
       "back": "Zurück",
-      "accept": "Tauschen"
+      "accept": "Tauschen",
+      "keepWaitingCredit": "Weiter warten",
+      "creditArrived": "Angekommen"
     },
     "empty": {
       "title": "Nichts in Arbeit",

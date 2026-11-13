@@ -47,12 +47,13 @@ import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { Check, Loader2, Clock, AlertTriangle, Hand, Pause, ExternalLink } from 'lucide-vue-next'
 import { visibleSteps, describeStep, explorerLinks } from '@/lib/intent/present'
+import { navioTxOfStep } from '@/stores/operations'
 
 const props = defineProps({ op: { type: Object, required: true } })
 const { t } = useI18n()
 
 const items = computed(() =>
-  visibleSteps(props.op).map((v) => ({ ...v, ...describeStep(v, props.op, t), links: explorerLinks(v.step) }))
+  visibleSteps(props.op).map((v) => ({ ...v, ...describeStep(v, props.op, t), links: explorerLinks(v.step, navioTxOfStep) }))
 )
 
 function markerClass(state) {

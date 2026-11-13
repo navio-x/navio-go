@@ -1746,6 +1746,7 @@
       "exchange_rejected": "L'exchange a rejeté cette étape.",
       "no_market": "Ce marché n'est pas disponible pour le moment.",
       "user_rejected": "La transaction a été annulée.",
+      "credit_delayed": "Le pont n'a pas encore crédité ce dépôt, bien plus tard que d'habitude. Il est soit encore en route, soit déjà sur votre compte de trading.",
       "unknown": "Un problème est survenu lors de cette étape."
     }
   },
@@ -1777,6 +1778,7 @@
       "exchangeHintOrders": "Sur votre compte de trading. {amount} dans des ordres ouverts.",
       "moving": "En transit",
       "movingHint": "En déplacement entre les deux.",
+      "movingDetails": "Plus de détails",
       "staked": "En staking",
       "stakedHint": "Délégué à un staker. Retirez-le du staking pour le dépenser."
     },
@@ -2173,6 +2175,10 @@
       "body": "L'app s'est fermée pendant l'envoi et les soldes ne tranchent pas la question. Vérifiez l'historique avant de choisir.",
       "checked": "Vérifié après redémarrage : solde du portefeuille, solde de trading."
     },
+    "delayed": {
+      "title": "Cela prend plus de temps que d'habitude",
+      "hint": "Vérifiez votre solde de trading sur la page NAV. Si les NAV y sont, choisissez « C'est arrivé » ; sinon, continuez d'attendre."
+    },
     "actions": {
       "retry": "Réessayer",
       "stop": "Arrêter",
@@ -2183,7 +2189,9 @@
       "requote": "Échanger au prix actuel",
       "keepWaiting": "Réessayer au même prix",
       "back": "Retour",
-      "accept": "Échanger"
+      "accept": "Échanger",
+      "keepWaitingCredit": "Continuer d'attendre",
+      "creditArrived": "C'est arrivé"
     },
     "empty": {
       "title": "Rien en cours",

@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { visibleSteps, progressOf, statusLine, describeStep, historyRowOf, technicalDetails, explorerLinks, outcomeOf } from "../present";
+import { visibleSteps, progressOf, statusLine, describeStep, historyRowOf, technicalDetails, explorerLinks, outcomeOf, transitItems } from "../present";
 
 const t = (key, p = {}) => `${key}${Object.keys(p).length ? ":" + Object.values(p).join("/") : ""}`;
 const op = (status, steps, extra = {}) => ({
@@ -41,6 +41,14 @@ describe("present", () => {
     expect(explorerLinks({ type: "order", cloid: "x" })).toEqual([]);
   });
 
+  it("links a Navio send by the id it has on chain, and not before it is mined", () => {
+    const step = { type: "deposit", txId: "signed", spentOutput: "in1" };
+    expect(explorerLinks(step, () => "merged")).toEqual([{ url: "https://blocks.nav.io/tx/merged", hash: "merged" }]);
+    expect(explorerLinks(step, () => null)).toEqual([]);
+    // The resolver is only asked about Navio sends.
+    expect(explorerLinks({ type: "burn", hash: "0xcd" }, () => "merged")).toEqual([{ url: "https://hyperevmscan.io/tx/0xcd", hash: "0xcd" }]);
+  });
+
   it("keeps a withdrawal running until the bridge has paid the wallet, then says it arrived", () => {
     const steps = (payout) => [{ type: "burn", kind: "send", status: "done", amount: 5, hash: "0x1" }, { type: "waitPayout", kind: "wait", ...payout }];
     const waiting = op("running", steps({ status: "active" }), { kind: "toWallet", send: 5 });
@@ -66,5 +74,60 @@ describe("present", () => {
     const row = historyRowOf(o, t);
     expect(row).toMatchObject({ id: "op-op1", source: "op", time: 5, title: "process.title.swapDone:NAV/USDC" });
     expect(technicalDetails(o, t).map((r) => r.label)).toEqual(["process.tech.id", "order · done", "process.tech.received"]);
+  });
+});
+
+describe("transitItems", () => {
+  const depositOp = (over = {}) => ({
+    id: "dep",
+    status: "running",
+    ctx: {},
+    steps: [
+      { type: "deposit", status: "done", amount: 500, txId: "navtx" },
+      { type: "waitCredit", status: "active" },
+    ],
+    ...over,
+  });
+  const payoutOp = (over = {}) => ({
+    id: "out",
+    status: "done",
+    ctx: { payout: { amount: 70, baseline: 0, at: 1 } },
+    steps: [{ type: "burn", status: "done", hash: "0xburn" }, { type: "waitPayout", status: "done", timedOut: true }],
+    ...over,
+  });
+
+  it("links a deposit under way to its Navio transaction", () => {
+    expect(transitItems([depositOp()])).toEqual([
+      { opId: "dep", direction: "toExchange", amount: 500, link: { url: "https://blocks.nav.io/tx/navtx", hash: "navtx" } },
+    ]);
+  });
+
+  it("links a payout under way to its burn on HyperEVM", () => {
+    expect(transitItems([payoutOp()])).toEqual([
+      { opId: "out", direction: "toWallet", amount: 70, link: { url: "https://hyperevmscan.io/tx/0xburn", hash: "0xburn" } },
+    ]);
+  });
+
+  it("has no explorer link for a deposit that is not mined yet, and the chain's id once it is", () => {
+    expect(transitItems([depositOp()], () => null)[0].link).toBeNull();
+    expect(transitItems([depositOp()], () => "merged")[0].link).toEqual({ url: "https://blocks.nav.io/tx/merged", hash: "merged" });
+  });
+
+  it("keeps a transfer whose transaction id is unknown, without a link", () => {
+    const op = depositOp({ steps: [{ type: "deposit", status: "done", amount: 5 }, { type: "waitCredit", status: "pending" }] });
+    expect(transitItems([op])).toEqual([{ opId: "dep", direction: "toExchange", amount: 5, link: null }]);
+  });
+
+  it("still lists a deposit whose credit is late", () => {
+    const op = depositOp({ status: "attention", steps: [{ type: "deposit", status: "done", amount: 500, txId: "navtx" }, { type: "waitCredit", status: "failed" }] });
+    expect(transitItems([op])).toHaveLength(1);
+  });
+
+  it("leaves out what has arrived, was stopped or never left", () => {
+    const credited = depositOp({ steps: [{ type: "deposit", status: "done", amount: 500, txId: "a" }, { type: "waitCredit", status: "done" }] });
+    const unsent = depositOp({ steps: [{ type: "deposit", status: "submitting", amount: 500 }, { type: "waitCredit", status: "pending" }] });
+    const settled = payoutOp({ ctx: { payout: { amount: 70 }, payoutSettled: true } });
+    expect(transitItems([credited, unsent, depositOp({ status: "cancelled" }), settled, { id: "x", status: "running", ctx: {}, steps: [] }])).toEqual([]);
+    expect(transitItems(null)).toEqual([]);
   });
 });

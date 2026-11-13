@@ -107,6 +107,14 @@ export function useProcessActions(op) {
           stopAction,
         ];
       }
+      if (attentionCode.value === "credit_delayed") {
+        return [
+          // Waiting again restarts the step's clock; "arrived" carries on after it.
+          { id: "retry", label: t("process.actions.keepWaitingCredit"), primary: true, run: () => resolveOperation(id, "retry", { waitFrom: Date.now() }) },
+          { id: "skip", label: t("process.actions.creditArrived"), run: () => resolveOperation(id, "skip") },
+          stopAction,
+        ];
+      }
       return [{ id: "retry", label: t("process.actions.retry"), primary: true, run: () => resolveOperation(id, "retry") }, stopAction];
     }
     if (o.status === "done" || o.status === "cancelled") {

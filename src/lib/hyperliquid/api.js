@@ -1,14 +1,37 @@
 import { HL_API_URL } from "./config";
 
+// No request may stay open forever: a hung one (a phone changing networks
+// in the background) would freeze whatever is polling through it.
+export const REQUEST_TIMEOUT_MS = 20_000;
+
 // Error convention matches lib/evm/swapMath.js's mapErrorCode: the thrown
 // Error's `message` itself is the code, read back via e.message by callers.
-async function postInfo(body) {
+// A request that takes longer than REQUEST_TIMEOUT_MS is a "network_error".
+export async function postInfo(body) {
+  const controller = new AbortController();
+  let timer;
+  // Raced as well as aborted, so the wait ends even where abort is ignored.
+  const timeout = new Promise((_, reject) => {
+    timer = setTimeout(() => {
+      controller.abort();
+      reject(new Error("network_error"));
+    }, REQUEST_TIMEOUT_MS);
+  });
+  try {
+    return await Promise.race([request(body, controller.signal), timeout]);
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+async function request(body, signal) {
   let response;
   try {
     response = await fetch(HL_API_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),
+      signal,
     });
   } catch {
     throw new Error("network_error");

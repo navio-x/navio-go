@@ -1746,6 +1746,7 @@
       "exchange_rejected": "Borsa bu adımı reddetti.",
       "no_market": "Bu piyasa şu an kullanılamıyor.",
       "user_rejected": "İşlem iptal edildi.",
+      "credit_delayed": "Köprü bu yatırımı henüz hesabınıza geçirmedi; normalden çok daha uzun sürdü. NAV ya hâlâ yolda ya da zaten trading hesabınızda.",
       "unknown": "Bu adımda bir şeyler ters gitti."
     }
   },
@@ -1777,6 +1778,7 @@
       "exchangeHintOrders": "Alım satım hesabınızda. {amount} açık emirlerde.",
       "moving": "Yolda",
       "movingHint": "İkisi arasında taşınıyor.",
+      "movingDetails": "Daha fazla detay",
       "staked": "Stake'te",
       "stakedHint": "Bir staker'a devredildi. Harcamak için stake'ten çıkarın."
     },
@@ -2173,6 +2175,10 @@
       "body": "Gönderim sırasında uygulama kapandı ve bakiyeler soruyu netleştirmedi. Seçmeden önce Geçmiş'i kontrol edin.",
       "checked": "Yeniden başlatma sonrası kontrol edildi: cüzdan bakiyesi, alım satım bakiyesi."
     },
+    "delayed": {
+      "title": "Bu, normalden uzun sürüyor",
+      "hint": "NAV sayfasından trading bakiyenizi kontrol edin. NAV oradaysa “Ulaştı”yı seçin; değilse beklemeye devam edin."
+    },
     "actions": {
       "retry": "Yeniden dene",
       "stop": "Durdur",
@@ -2183,7 +2189,9 @@
       "requote": "Güncel fiyattan takas et",
       "keepWaiting": "Aynı fiyatı yeniden dene",
       "back": "Geri",
-      "accept": "Takas et"
+      "accept": "Takas et",
+      "keepWaitingCredit": "Beklemeye devam et",
+      "creditArrived": "Ulaştı"
     },
     "empty": {
       "title": "Süren işlem yok",

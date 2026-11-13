@@ -1,9 +1,9 @@
 import { parseUnits, formatUnits } from "viem";
-import { getNavioClient, balance, spendableNavUtxoAmounts, txConfirmations } from "@/stores/navio";
+import { getNavioClient, balance, spendableNavUtxoAmounts, txConfirmations, findSpentOutput } from "@/stores/navio";
 import { navSendFee } from "@/lib/navioFee";
 import { outputsToSpend } from "@/stores/trade";
 import { getEvmAccount } from "@/composables/useEvmAccount";
-import { fetchSpotClearinghouseState, fetchL2Book, fetchUserFees, fetchOrderStatus } from "@/lib/hyperliquid/api";
+import { fetchSpotClearinghouseState, fetchL2Book, fetchUserFees, fetchOrderStatus, fetchUserLedger } from "@/lib/hyperliquid/api";
 import { getSpotMeta, resolveTokens } from "@/lib/hyperliquid/meta";
 import { HL_SPOT_MARKETS } from "@/lib/hyperliquid/market";
 import { placeSpotOrder, spotSendNavToEvm } from "@/lib/hyperliquid/exchange";
@@ -27,6 +27,7 @@ import { ensureEvmGas, estimateBridgeGasCost } from "@/lib/hyperliquid/bridge/ga
 import { floorTo, toDecimalString, FALLBACK_FEE_RATE } from "./quote";
 import { MIN_BRIDGE_NAV } from "./requirements";
 import { STEP_TYPES } from "./steps";
+import { CREDIT_TOLERANCE, waitForCredit } from "./creditWait";
 import { isMainnet } from "@/stores/network";
 import { scenarioEnabled, scenarioAccountState, scenarioExchangeBalances } from "@/dev/scenario";
 
@@ -34,10 +35,6 @@ const POLL_MS = 15_000;
 // The bridge normally pays a burn out within minutes; after this long the
 // wait ends on its own (the NAV page keeps showing the amount as in transit).
 const PAYOUT_MAX_AGE_MS = 3 * 60 * 60 * 1000;
-// A credited deposit is accepted as "arrived" within this margin of the
-// expected amount, so an operation never waits forever on a rounding
-// difference between what was sent and what the bridge credits.
-const CREDIT_TOLERANCE = 0.01;
 // The setup price is only held for a while; a quote this much above the
 // approved amount is not paid without a fresh OK.
 const SETUP_PRICE_TOLERANCE = 0.02;
@@ -186,13 +183,15 @@ function newCloid() {
 // Keeps a waiting step's `confirmed` (Navio confirmations of the send it
 // follows) current, so the UI can show "2/3 confirmations" instead of a
 // countdown. Saved only when the count changes.
-function trackConfirmations(step, txId, api) {
-  if (scenarioEnabled()) return;
-  const n = txConfirmations(txId);
+function trackConfirmations(step, send, api) {
+  if (scenarioEnabled() || !send) return;
+  const n = txConfirmations(send.txId, send.spentOutput);
   if (n == null || n === step.confirmed) return;
   step.confirmed = n;
   api.save();
 }
+
+const stepOfType = (op, type) => op.steps.find((s) => s.type === type);
 
 function walletSendOutcome(step, amount) {
   if (step.walletBefore == null) return "unknown";
@@ -239,6 +238,8 @@ export const executors = {
         throw fail("send_failed", e?.message);
       }
       step.txId = result?.txId || "";
+      // What the send can be followed by once its block has merged it (lib/navioSend.js).
+      step.spentOutput = await findSpentOutput(step.txId);
       return { setupTxId: step.txId };
     },
     async verify(step) {
@@ -263,7 +264,7 @@ export const executors = {
         } catch (e) {
           console.error("[intent] waitAccount poll failed:", e.message);
         }
-        trackConfirmations(step, op.ctx.setupTxId, api);
+        trackConfirmations(step, stepOfType(op, "faucet"), api);
         await api.sleep(POLL_MS);
       }
     },
@@ -327,6 +328,7 @@ export const executors = {
         throw fail("send_failed", e?.message);
       }
       step.txId = result?.txId || "";
+      step.spentOutput = await findSpentOutput(step.txId);
       return { depositTxId: step.txId, creditBaseline: step.creditBaseline };
     },
     async verify(step) {
@@ -341,22 +343,17 @@ export const executors = {
     },
   },
 
+  // Arrival is read from the bridge's own transfer in the account's ledger,
+  // with the balance as a second sign; see creditWait.js.
   waitCredit: {
     async run(step, op, api) {
       const { address } = requireAccount();
-      for (;;) {
-        try {
-          const exchange = await readExchangeBalances(address);
-          const arrived = step.need != null
-            ? exchange.available.NAV >= step.need * (1 - CREDIT_TOLERANCE)
-            : exchange.total.NAV >= (op.ctx.creditBaseline ?? 0) + step.added * (1 - CREDIT_TOLERANCE);
-          if (arrived) return null;
-        } catch (e) {
-          console.error("[intent] waitCredit poll failed:", e.message);
-        }
-        trackConfirmations(step, op.ctx.depositTxId, api);
-        await api.sleep(POLL_MS);
-      }
+      return waitForCredit(step, op, api, {
+        address,
+        readBalances: () => readExchangeBalances(address),
+        readLedger: (since) => fetchUserLedger(address, since),
+        onPoll: () => trackConfirmations(step, stepOfType(op, "deposit"), api),
+      });
     },
   },
 
