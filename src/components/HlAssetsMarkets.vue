@@ -99,14 +99,26 @@
         </div>
       </button>
 
-      <button
-        @click="showPairPicker = true"
-        class="mt-2 w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-medium transition-colors
-               border border-dashed border-gray-300 dark:border-gh-600 text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gh-800"
-      >
-        <Plus class="w-4 h-4" />
-        {{ $t('home.addPair') }}
-      </button>
+      <div class="mt-2 flex gap-2">
+        <button
+          @click="showPairPicker = true"
+          class="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-medium transition-colors
+                 border border-dashed border-gray-300 dark:border-gh-600 text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gh-800"
+        >
+          <Plus class="w-4 h-4" />
+          {{ $t('home.addPair') }}
+        </button>
+        <!-- Android only: pick pairs, then shrink the app into a floating window showing their live prices -->
+        <button
+          v-if="pipSupported"
+          @click="showPipPicker = true"
+          class="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-medium transition-colors
+                 border border-dashed border-gray-300 dark:border-gh-600 text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gh-800"
+        >
+          <PictureInPicture2 class="w-4 h-4" />
+          {{ $t('home.floatingPrices') }}
+        </button>
+      </div>
     </section>
 
     <!-- NFTS: the host's rows -->
@@ -167,6 +179,61 @@
     </div>
 
     <!-- Pair picker -->
+    <!-- Floating price window: which pairs it shows, and the button that opens it -->
+    <div
+      v-if="showPipPicker"
+      class="fixed inset-0 z-[200] flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm"
+      @click.self="showPipPicker = false"
+    >
+      <div class="bg-white dark:bg-gh-900 border-t border-gray-100 dark:border-gh-800 rounded-t-2xl sm:rounded-2xl p-4 w-full max-w-md shadow-2xl">
+        <div class="w-10 h-1 rounded-full bg-gray-300 dark:bg-gh-700 mx-auto mb-3 sm:hidden" />
+        <div class="flex items-center justify-between">
+          <h3 class="text-base font-bold text-gray-900 dark:text-white">{{ $t('home.floatingPrices') }}</h3>
+          <button
+            @click="showPipPicker = false"
+            class="p-1.5 rounded-lg text-gray-400 hover:bg-gray-100 dark:hover:bg-gh-800"
+            :aria-label="$t('common.close')"
+          >
+            <X class="w-5 h-5" />
+          </button>
+        </div>
+        <p class="text-xs text-gray-500 dark:text-gray-400 leading-snug mb-2">{{ $t('home.floatingPricesHint') }}</p>
+        <button
+          v-for="m in allMarkets"
+          :key="m.pair"
+          @click="togglePipPair(m.pair)"
+          class="w-full px-2 py-2.5 rounded-xl flex items-center justify-between gap-3 text-left hover:bg-gray-50 dark:hover:bg-gh-800"
+          role="checkbox"
+          :aria-checked="settings.pipPairs.includes(m.pair)"
+        >
+          <div class="flex items-center gap-3 min-w-0">
+            <TokenIcon :symbol="m.base" :logo="m.logo" :size="28" />
+            <p class="text-sm font-semibold text-gray-900 dark:text-white">
+              {{ m.base }}<span class="font-normal text-gray-400 dark:text-gray-500">/{{ m.quote }}</span>
+            </p>
+          </div>
+          <div class="flex items-center gap-3 shrink-0">
+            <p class="text-sm font-mono text-gray-900 dark:text-white">{{ formatPrice(m.ticker?.price) }}</p>
+            <span
+              class="w-6 h-6 rounded-full flex items-center justify-center"
+              :class="settings.pipPairs.includes(m.pair) ? 'bg-blue-600 text-white' : 'border border-gray-300 dark:border-gh-600'"
+            >
+              <Check v-if="settings.pipPairs.includes(m.pair)" class="w-3.5 h-3.5" />
+            </span>
+          </div>
+        </button>
+        <button
+          @click="openPip"
+          :disabled="!pipPairCount"
+          class="mt-3 w-full flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-semibold transition-colors
+                 bg-blue-600 hover:bg-blue-700 text-white disabled:opacity-40 disabled:pointer-events-none"
+        >
+          <PictureInPicture2 class="w-4 h-4" />
+          {{ $t('home.floatingPricesOpen') }}
+        </button>
+      </div>
+    </div>
+
     <div
       v-if="showPairPicker"
       class="fixed inset-0 z-[200] flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm"
@@ -230,7 +297,8 @@ import { useHyperliquidSpotTickers } from '@/composables/useHyperliquidSpotTicke
 import { HL_SPOT_MARKETS } from '@/lib/hyperliquid/market'
 import { HL_LOGOS, HL_NAMES } from '@/lib/hyperliquid/config'
 import TokenIcon from '@/components/TokenIcon.vue'
-import { ChevronRight, Plus, Check, X } from 'lucide-vue-next'
+import { ChevronRight, Plus, Check, X, PictureInPicture2 } from 'lucide-vue-next'
+import { pipSupported, enterPip, usePipMarketsOnScreen } from '@/lib/pip'
 
 const props = defineProps({
   // localStorage key remembering which of the two tabs was last open —
@@ -334,6 +402,8 @@ const tabs = computed(() => [
 ])
 // Falls back to Assets while the remembered tab isn't on offer.
 const activeTab = computed(() => (tabs.value.includes(homeTab.value) ? homeTab.value : 'assets'))
+// While this list is on screen, going home floats the prices (Android 12+).
+usePipMarketsOnScreen(computed(() => activeTab.value === 'markets'))
 function setHomeTab(tab) {
   homeTab.value = tab
   try { localStorage.setItem(props.storageKey, tab) } catch {}
@@ -349,6 +419,20 @@ function toggleAsset(symbol) {
   settings.homeAssets = settings.homeAssets.includes(symbol)
     ? settings.homeAssets.filter((x) => x !== symbol)
     : [...settings.homeAssets, symbol]
+}
+
+// Floating price window (Android): its own pick of pairs, kept in the
+// order they were ticked.
+const showPipPicker = ref(false)
+const pipPairCount = computed(() => settings.pipPairs.filter((p) => HL_SPOT_MARKETS[p]).length)
+function togglePipPair(pair) {
+  settings.pipPairs = settings.pipPairs.includes(pair)
+    ? settings.pipPairs.filter((p) => p !== pair)
+    : [...settings.pipPairs, pair]
+}
+async function openPip() {
+  showPipPicker.value = false
+  await enterPip(pipPairCount.value)
 }
 
 const showPairPicker = ref(false)

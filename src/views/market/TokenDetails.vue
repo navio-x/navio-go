@@ -2,7 +2,9 @@
      reached from the market screen's header. Exchange facts come from
      tokenDetails (supply, deployer, genesis), the holder count from
      Hypurrscan, the price from the same live ticker the market screen
-     shows, and the project links from config.js. -->
+     shows, and the project links and the native chain's "About" card
+     (layer-1 coins: intro, key facts, what the coin offers) from config.js
+     and the locales. -->
 <template>
   <div class="bg-gray-50 dark:bg-gh-900 min-h-full flex flex-col">
     <div class="flex items-center gap-3 px-5 pt-5 pb-4">
@@ -55,6 +57,42 @@
           <Fact :label="$t('market.token.fdv')" :value="fdv != null ? formatUsd(fdv) : null" />
           <Fact :label="$t('market.token.holders')" :value="holders ? formatInt(holders.count) : null" :pending="holdersLoading" />
         </dl>
+      </section>
+
+      <!-- ABOUT: the native chain and what its coin offers (layer 1s only).
+           Static, so it shows whether or not the exchange details load. -->
+      <section v-if="about?.layer1" class="rounded-2xl border border-gray-200 dark:border-gh-700 bg-white dark:bg-gh-800 p-4 space-y-3">
+        <div class="flex items-center justify-between gap-3">
+          <h2 class="text-sm font-bold text-gray-900 dark:text-white">{{ $t('market.token.aboutTitle', { name: displayName }) }}</h2>
+          <span class="shrink-0 px-2 py-0.5 rounded-md text-[11px] font-semibold bg-blue-50 text-blue-700 dark:bg-blue-500/15 dark:text-blue-300">{{ $t('market.token.layer1') }}</span>
+        </div>
+        <p class="text-xs text-gray-600 dark:text-gray-300 leading-relaxed">{{ $t(`market.token.about.${symbol}.intro`) }}</p>
+        <dl class="grid grid-cols-1 gap-y-2.5 pt-1">
+          <Row :label="$t('market.token.launched')" :value="String(about.launched)" />
+          <Row :label="$t('market.token.consensus')" :value="about.consensus" />
+          <Row v-if="about.blockTimeSec" :label="$t('market.token.blockTime')" :value="formatBlockTime(about.blockTimeSec)" />
+          <Row
+            v-if="about.supplyCap !== undefined"
+            :label="$t('market.token.nativeSupplyCap')"
+            :value="about.supplyCap == null ? $t('market.token.noCap') : formatInt(about.supplyCap)"
+            :unit="about.supplyCap == null ? null : symbol"
+          />
+        </dl>
+        <div class="pt-3 border-t border-gray-100 dark:border-gh-700 space-y-3">
+          <div>
+            <h3 class="text-xs font-bold text-gray-900 dark:text-white">{{ $t('market.token.featuresTitle', { name: displayName }) }}</h3>
+            <p class="text-[11px] text-gray-400 dark:text-gray-500">{{ $t('market.token.nativeCoin', { symbol }) }}</p>
+          </div>
+          <ul class="space-y-3">
+            <li v-for="f in about.features" :key="f" class="flex gap-2.5">
+              <span class="mt-1.5 w-1.5 h-1.5 rounded-full bg-blue-500 shrink-0" />
+              <div class="min-w-0">
+                <p class="text-xs font-semibold text-gray-900 dark:text-white">{{ $t(`market.token.about.${symbol}.features.${f}.title`) }}</p>
+                <p class="mt-0.5 text-xs text-gray-500 dark:text-gray-400 leading-snug">{{ $t(`market.token.about.${symbol}.features.${f}.desc`) }}</p>
+              </div>
+            </li>
+          </ul>
+        </div>
       </section>
 
       <!-- Details failed: everything below needs them -->
@@ -199,7 +237,7 @@ import TokenIcon from '@/components/TokenIcon.vue'
 import { HL_SPOT_MARKETS } from '@/lib/hyperliquid/market'
 import { fetchTokenDetails, fetchSpotClearinghouseState } from '@/lib/hyperliquid/api'
 import { fetchHolderCount } from '@/lib/hyperliquid/holders'
-import { HL_LOGOS, HL_NAMES, HL_TOKEN_LINKS, HL_APP_URL, HL_EXPLORER_URL, HYPURRSCAN_URL, UNIT_URL } from '@/lib/hyperliquid/config'
+import { HL_LOGOS, HL_NAMES, HL_TOKEN_LINKS, HL_TOKEN_ABOUT, HL_APP_URL, HL_EXPLORER_URL, HYPURRSCAN_URL, UNIT_URL } from '@/lib/hyperliquid/config'
 import { useHyperliquidSpotTickers } from '@/composables/useHyperliquidSpotTickers'
 
 const route = useRoute()
@@ -233,6 +271,7 @@ const symbol = computed(() => HL_SPOT_MARKETS[pairKey.value]?.base ?? '')
 const logo = computed(() => HL_LOGOS[symbol.value] ?? null)
 const displayName = computed(() => HL_NAMES[symbol.value] ?? symbol.value ?? t('market.token.title'))
 const links = computed(() => HL_TOKEN_LINKS[symbol.value] ?? {})
+const about = computed(() => HL_TOKEN_ABOUT[symbol.value] ?? null)
 
 const marketNotFound = ref(false)
 const market = ref(null) // resolveSpotMarket() result: coin, pairIndex, pairName, baseTokenName, baseTokenId, …
@@ -314,6 +353,14 @@ function formatAmount(value) {
   const n = num(value)
   if (n == null) return '—'
   return n.toLocaleString(undefined, { maximumFractionDigits: n >= 1000 ? 0 : 4 })
+}
+// "~10 min", "~12 sec", "~0.4 sec" in the app's language.
+function formatBlockTime(sec) {
+  const inMinutes = sec >= 60
+  const value = new Intl.NumberFormat(locale.value, {
+    style: 'unit', unit: inMinutes ? 'minute' : 'second', unitDisplay: 'short', maximumFractionDigits: 1,
+  }).format(inMinutes ? sec / 60 : sec)
+  return `~${value}`
 }
 // tokenDetails' deployTime is UTC with nanoseconds and no zone suffix.
 function formatDate(iso) {

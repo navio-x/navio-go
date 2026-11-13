@@ -110,6 +110,8 @@
     "merchantRequiredConfirmationsDesc": "Nombre de blocs qui doivent confirmer un paiement supérieur à la limite d'acceptation instantanée avant qu'il soit considéré comme payé. Plus de confirmations protègent mieux contre une réorganisation de la blockchain, mais font attendre le client plus longtemps en caisse.",
     "dexMode": "Mode DEX / EVM",
     "dexModeDesc": "Ajoute un compte BSC (EVM) facultatif, dérivé de la phrase de récupération de ce portefeuille, pour échanger sur PancakeSwap. Aucun appel réseau tant qu'il est désactivé.",
+    "pipAutoEnter": "Prix flottants en quittant",
+    "pipAutoEnterDesc": "Quand vous quittez l'application depuis un écran de marché, elle se réduit en une fenêtre flottante affichant les prix en direct.",
     "hlMainnetOnly": "Hyperliquid (pont, swap et trading de NAV) n'est disponible que sur le mainnet. Ce portefeuille est sur un autre réseau.",
     "tradeMode": "Trading",
     "tradeModeDesc": "Trading RFQ pair-à-pair sur le bus p2p chiffré de Navio, distinct du mode DEX/EVM ci-dessus. Nécessite un serveur proposant le pont de trading. Désactivé par défaut : aucun appel réseau tant qu'il n'est pas activé.",
@@ -965,7 +967,165 @@
       "loadError": "Impossible de charger les détails du jeton.",
       "issued": "Émis sur Hyperliquid",
       "issuerReserve": "Détenu par l'émetteur",
-      "issuedPct": "{pct} % de l'offre a été émis sur Hyperliquid"
+      "issuedPct": "{pct} % de l'offre a été émis sur Hyperliquid",
+      "aboutTitle": "À propos de {name}",
+      "layer1": "Layer 1",
+      "nativeCoin": "{symbol} est la monnaie native de sa propre blockchain",
+      "featuresTitle": "Ce que propose {name}",
+      "launched": "Lancement du réseau",
+      "consensus": "Consensus",
+      "blockTime": "Temps de bloc",
+      "nativeSupplyCap": "Plafond de l'offre",
+      "noCap": "Aucun plafond",
+      "about": {
+        "NAV": {
+          "intro": "Navio est une blockchain de couche 1 axée sur la confidentialité, bâtie sur le code de Bitcoin Core et qui succède à Navcoin. Chaque transaction est confidentielle par défaut : les montants, les soldes et les parties concernées restent masqués, mais chacun peut vérifier que la chaîne est valide. NAV est sa monnaie native. Elle paie les frais, sécurise le réseau grâce au staking et sert de contrepartie aux NAV échangés sur ce marché.",
+          "features": {
+            "privacy": {
+              "title": "Privé par défaut",
+              "desc": "Le protocole BLSCT masque le montant, l'expéditeur et le destinataire de chaque transaction. La confidentialité est imposée par les règles mêmes du réseau, et non par un mixeur ou une sidechain en option."
+            },
+            "staking": {
+              "title": "Proof of Private Stake",
+              "desc": "Les blocs sont produits par des stakers qui prouvent leur stake à l'aide de preuves à divulgation nulle de connaissance, sans révéler qui ils sont ni combien ils détiennent. Un bloc arrive toutes les 2 minutes et rapporte 8 NAV à son staker."
+            },
+            "tokens": {
+              "title": "Jetons et NFT confidentiels",
+              "desc": "Les jetons et les NFT sont intégrés au protocole et bénéficient de la même confidentialité que NAV, avec des montants masqués et des métadonnées on-chain."
+            },
+            "burn": {
+              "title": "Les frais sont brûlés",
+              "desc": "Les frais de transaction sont détruits au lieu d'être reversés, ce qui compense une partie des NAV nouvellement émis. L'offre n'a pas de plafond fixe."
+            }
+          }
+        },
+        "BTC": {
+          "intro": "Bitcoin est la première cryptomonnaie, lancée en 2009 par Satoshi Nakamoto, un pseudonyme. C'est une monnaie de pair à pair sans émetteur central : un réseau mondial de mineurs et de nœuds s'accorde sur un registre unique, et personne ne peut en changer les règles seul. BTC est sa monnaie native, utilisée pour payer les frais et récompenser les mineurs qui sécurisent le réseau.",
+          "features": {
+            "scarcity": {
+              "title": "Offre fixe",
+              "desc": "Il n'y aura jamais plus de 21 millions de BTC. La récompense d'un nouveau bloc est divisée par deux environ tous les quatre ans et s'élève à 3,125 BTC depuis avril 2024."
+            },
+            "security": {
+              "title": "Sécurisé par la preuve de travail",
+              "desc": "Les mineurs rivalisent de puissance de calcul SHA-256 pour ajouter un bloc environ toutes les 10 minutes. Aucune autre blockchain n'est sécurisée par une telle puissance de calcul."
+            },
+            "permissionless": {
+              "title": "Ouvert et résistant à la censure",
+              "desc": "N'importe qui peut détenir, envoyer et recevoir des BTC avec une simple clé privée. Aucune entreprise ni aucun État ne peut geler un solde ou annuler un paiement."
+            },
+            "layers": {
+              "title": "Des paiements au-delà de la chaîne de base",
+              "desc": "Le Lightning Network règle instantanément les petits paiements au-dessus de Bitcoin, et la mise à niveau Taproot a rendu les conditions de dépense avancées moins coûteuses et plus confidentielles."
+            }
+          }
+        },
+        "ETH": {
+          "intro": "Ethereum, lancé en 2015, est la première et la plus grande blockchain de smart contracts. Les développeurs y déploient des programmes que tout le monde peut utiliser, ce qui en a fait le berceau de la finance décentralisée, des stablecoins et des NFT. ETH est sa monnaie native. Elle paie les frais de gas de chaque transaction et est mise en staking par les validateurs qui sécurisent le réseau.",
+          "features": {
+            "contracts": {
+              "title": "Smart contracts",
+              "desc": "Les programmes s'exécutent sur l'Ethereum Virtual Machine exactement tels qu'ils ont été écrits, sans opérateur. L'EVM est devenue la norme que suivent la plupart des autres chaînes."
+            },
+            "staking": {
+              "title": "Preuve d'enjeu",
+              "desc": "Depuis le Merge de septembre 2022, les validateurs qui mettent en staking 32 ETH ou plus proposent un bloc toutes les 12 secondes, avec une infime fraction de l'énergie qu'exigeait le minage."
+            },
+            "burn": {
+              "title": "Frais brûlés",
+              "desc": "Les frais de base de chaque transaction sont brûlés. Il n'y a pas de plafond fixe, mais lorsque le réseau est très sollicité, il peut se brûler plus d'ETH qu'il n'en est émis."
+            },
+            "layer2": {
+              "title": "Réseaux de couche 2",
+              "desc": "Des rollups comme Arbitrum, Base et Optimism traitent les transactions à faible coût et les règlent sur Ethereum, en s'appuyant sur sa sécurité."
+            }
+          }
+        },
+        "SOL": {
+          "intro": "Solana, lancée en 2020, est une blockchain de couche 1 conçue pour la vitesse. Elle exécute les smart contracts sur une seule chaîne à haut débit qui maintient des frais très bas, ce qui l'a rendue populaire pour le trading, les paiements et les applications grand public. SOL est sa monnaie native. Elle paie les frais de transaction et est mise en staking pour sécuriser le réseau.",
+          "features": {
+            "speed": {
+              "title": "Haut débit",
+              "desc": "Un bloc est produit environ toutes les 0,4 seconde, et les transactions qui ne touchent pas aux mêmes comptes sont exécutées en parallèle."
+            },
+            "fees": {
+              "title": "Frais très bas",
+              "desc": "Une transaction type coûte une fraction de centime, et la moitié des frais de base est brûlée."
+            },
+            "staking": {
+              "title": "Staking délégué",
+              "desc": "Les détenteurs délèguent leurs SOL à des validateurs et gagnent des récompenses tout en en restant propriétaires. Les nouveaux SOL sont émis à un taux qui baisse chaque année pour tendre vers 1,5 %. Il n'y a pas de plafond fixe."
+            },
+            "ecosystem": {
+              "title": "Vaste écosystème",
+              "desc": "Stablecoins, exchanges décentralisés, NFT et applications de paiement fonctionnent sur une même chaîne partagée, que plusieurs clients validateurs indépendants font tourner."
+            }
+          }
+        },
+        "ZEC": {
+          "intro": "Zcash, lancée en 2016, est une cryptomonnaie axée sur la confidentialité, issue du code de Bitcoin. Elle conserve le plafond de 21 millions et le calendrier de halving de Bitcoin, et y ajoute des transactions protégées qui masquent l'expéditeur, le destinataire et le montant grâce à des preuves à divulgation nulle de connaissance. ZEC est sa monnaie native.",
+          "features": {
+            "shielded": {
+              "title": "Transactions protégées",
+              "desc": "Les preuves zk-SNARK permettent au réseau de vérifier un paiement sans savoir qui a payé qui, ni combien. Un paiement protégé peut aussi contenir un mémo chiffré."
+            },
+            "disclosure": {
+              "title": "Une confidentialité que vous maîtrisez",
+              "desc": "Les adresses transparentes fonctionnent comme celles de Bitcoin, les adresses protégées sont privées, et une clé de visualisation vous permet de montrer votre historique à un auditeur sans céder le contrôle de vos fonds."
+            },
+            "scarcity": {
+              "title": "Offre fixe",
+              "desc": "Il n'existera jamais plus de 21 millions de ZEC, et l'émission est divisée par deux environ tous les quatre ans, comme pour Bitcoin."
+            },
+            "mining": {
+              "title": "Preuve de travail, blocs rapides",
+              "desc": "Les mineurs sécurisent la chaîne avec l'algorithme Equihash. Depuis la mise à niveau NU7 de novembre 2026, le temps de bloc visé est de 25 secondes, et 60 % des frais de transaction alimentent une réserve qui financera les futures récompenses de bloc."
+            }
+          }
+        },
+        "AVAX": {
+          "intro": "Avalanche, lancée en 2020, est une plateforme de smart contracts construite autour d'une famille de protocoles de consensus rapides. Sa C-Chain exécute des applications compatibles avec Ethereum, et chacun peut lancer son propre réseau de couche 1 distinct sur la plateforme. AVAX est sa monnaie native. Elle paie les frais, est mise en staking par les validateurs et son offre est plafonnée à 720 millions.",
+          "features": {
+            "finality": {
+              "title": "Finalité quasi instantanée",
+              "desc": "Le consensus Avalanche finalise une transaction en quelques secondes, et une fois finale, elle ne peut plus être réorganisée."
+            },
+            "evm": {
+              "title": "Compatible avec Ethereum",
+              "desc": "La C-Chain exécute l'Ethereum Virtual Machine : les portefeuilles, les outils et les smart contracts d'Ethereum y fonctionnent sans modification."
+            },
+            "l1s": {
+              "title": "Réseaux de couche 1 sur mesure",
+              "desc": "Les projets peuvent lancer leur propre Avalanche L1 (auparavant appelé subnet), avec ses validateurs, ses règles et son jeton de gas, et échanger des messages avec les autres chaînes."
+            },
+            "tokenomics": {
+              "title": "Offre plafonnée, frais brûlés",
+              "desc": "L'offre ne pourra jamais dépasser 720 millions d'AVAX, tous les frais de transaction sont brûlés, et les stakers gagnent des récompenses sans risquer de voir leur stake amputé."
+            }
+          }
+        },
+        "HYPE": {
+          "intro": "Hyperliquid est une blockchain de couche 1 écrite de zéro pour le trading. Ses carnets d'ordres spot et de contrats perpétuels fonctionnent entièrement on-chain, à des vitesses proches de celles d'un exchange centralisé, et c'est sur ce réseau que s'échangent les marchés de ce portefeuille. HYPE est sa monnaie native. Elle est mise en staking pour sécuriser la chaîne et paie le gas sur la HyperEVM.",
+          "features": {
+            "orderbook": {
+              "title": "Carnet d'ordres on-chain",
+              "desc": "Sur HyperCore, chaque ordre, annulation, échange et liquidation est réglé on-chain, avec une capacité d'environ 200 000 ordres par seconde."
+            },
+            "consensus": {
+              "title": "Consensus HyperBFT",
+              "desc": "Les validateurs mettent des HYPE en staking et finalisent chaque bloc dès sa production. Les détenteurs peuvent déléguer leurs HYPE à un validateur et gagner des récompenses de staking."
+            },
+            "evm": {
+              "title": "HyperEVM",
+              "desc": "Un environnement de smart contracts compatible avec Ethereum, sur la même chaîne, où les applications peuvent s'appuyer directement sur la liquidité de HyperCore. HYPE en est le jeton de gas."
+            },
+            "buyback": {
+              "title": "Les frais rachètent des HYPE",
+              "desc": "La quasi-totalité des frais de trading sert à acheter des HYPE sur le marché libre via l'Assistance Fund, et mettre des HYPE en staking réduit vos propres frais de trading."
+            }
+          }
+        }
+      }
     },
     "liveMidHint": "Prix médian en direct, une bougie par seconde, construit sur cet appareil depuis l'ouverture du graphique.",
     "venueSpot": "Hyperliquid Spot"
@@ -1320,6 +1480,9 @@
     "markets": "Marchés spot",
     "vol": "Vol.",
     "addPair": "Ajouter une paire",
+    "floatingPrices": "Prix flottants",
+    "floatingPricesHint": "Choisissez les paires à afficher dans la fenêtre flottante.",
+    "floatingPricesOpen": "Ouvrir la fenêtre flottante",
     "addPairTitle": "Marchés",
     "addAsset": "Ajouter un actif",
     "noNfts": "Aucun NFT pour l'instant",

@@ -110,6 +110,8 @@
     "merchantRequiredConfirmationsDesc": "Anında kabul sınırının üzerindeki bir ödemenin ödendi sayılması için kaç blok onaylanması gerektiği. Daha fazla onay, blok zinciri yeniden düzenlenmesine karşı daha güvenlidir ama müşteriyi kasada daha uzun bekletir.",
     "dexMode": "DEX / EVM Modu",
     "dexModeDesc": "Bu cüzdanın kurtarma ifadesinden türetilen opsiyonel bir BSC (EVM) hesabı ekler, PancakeSwap üzerinde swap yapmak için. Kapalıyken hiçbir ağ isteği yapılmaz.",
+    "pipAutoEnter": "Çıkışta yüzen fiyatlar",
+    "pipAutoEnterDesc": "Bir piyasa ekranındayken uygulamadan çıktığınızda, uygulama canlı fiyatları gösteren yüzen bir pencereye küçülür.",
     "hlMainnetOnly": "Hyperliquid (köprü, swap ve NAV alım satımı) yalnızca mainnet'te kullanılabilir. Bu cüzdan başka bir ağda.",
     "tradeMode": "Trade",
     "tradeModeDesc": "Navio'nun kendi şifreli p2p ağı üzerinden eşler arası RFQ alım satımı — yukarıdaki DEX/EVM'den ayrı. Alım satım köprüsünü taşıyan bir sunucu gerektirir. Varsayılan olarak kapalıdır — açılmadan hiçbir ağ isteği yapılmaz.",
@@ -965,7 +967,165 @@
       "loadError": "Token bilgileri yüklenemedi.",
       "issued": "Hyperliquid'de ihraç edilen",
       "issuerReserve": "İhraççının elinde",
-      "issuedPct": "Arzın %{pct}'i Hyperliquid'de ihraç edildi"
+      "issuedPct": "Arzın %{pct}'i Hyperliquid'de ihraç edildi",
+      "aboutTitle": "{name} hakkında",
+      "layer1": "Katman 1",
+      "nativeCoin": "{symbol}, kendi blok zincirinin yerel coinidir",
+      "featuresTitle": "{name} neler sunuyor",
+      "launched": "Ağın başlangıcı",
+      "consensus": "Mutabakat",
+      "blockTime": "Blok süresi",
+      "nativeSupplyCap": "Arz sınırı",
+      "noCap": "Sınır yok",
+      "about": {
+        "NAV": {
+          "intro": "Navio, Navcoin'in devamı olarak Bitcoin Core kod tabanı üzerine kurulmuş, gizliliği ön planda tutan bir katman 1 blok zinciridir. Her işlem varsayılan olarak gizlidir: tutarlar, bakiyeler ve taraflar saklı kalır, yine de herkes zincirin geçerli olduğunu doğrulayabilir. NAV bu ağın yerel coinidir. Ücretler NAV ile ödenir, ağ staking yoluyla NAV ile korunur ve bu piyasada işlem gören NAV'ın karşılığı da odur.",
+          "features": {
+            "privacy": {
+              "title": "Varsayılan olarak gizli",
+              "desc": "BLSCT protokolü her işlemin tutarını, göndericisini ve alıcısını gizler. Gizliliği isteğe bağlı bir karıştırıcı ya da yan zincir değil, ağın kendi kuralları sağlar."
+            },
+            "staking": {
+              "title": "Proof of Private Stake",
+              "desc": "Blokları, kim olduklarını ve ne kadar tuttuklarını açıklamadan stake'lerini sıfır bilgi ispatlarıyla kanıtlayan staker'lar üretir. Her 2 dakikada bir blok gelir ve staker'ına 8 NAV kazandırır."
+            },
+            "tokens": {
+              "title": "Gizli tokenlar ve NFT'ler",
+              "desc": "Tokenlar ve NFT'ler protokolün bir parçasıdır; gizli tutarlar ve zincir üstü meta verilerle NAV ile aynı gizlilikten yararlanır."
+            },
+            "burn": {
+              "title": "Ücretler yakılır",
+              "desc": "İşlem ücretleri kimseye ödenmez, yok edilir; bu da yeni çıkarılan NAV'ın bir kısmını dengeler. Sabit bir arz sınırı yoktur."
+            }
+          }
+        },
+        "BTC": {
+          "intro": "Bitcoin, Satoshi Nakamoto takma adını kullanan kişi tarafından 2009'da başlatılan ilk kripto paradır. Merkezi bir ihraççısı olmayan, eşler arası bir paradır: dünya çapında bir madenci ve düğüm ağı tek bir defter üzerinde anlaşır ve kimse kuralları tek başına değiştiremez. BTC bu ağın yerel coinidir; ücretleri ödemek ve ağı koruyan madencileri ödüllendirmek için kullanılır.",
+          "features": {
+            "scarcity": {
+              "title": "Sabit arz",
+              "desc": "Hiçbir zaman 21 milyondan fazla BTC olmayacak. Yeni blok ödülü yaklaşık dört yılda bir yarılanır ve Nisan 2024'ten beri 3,125 BTC'dir."
+            },
+            "security": {
+              "title": "İş ispatıyla korunur",
+              "desc": "Madenciler yaklaşık her 10 dakikada bir blok eklemek için SHA-256 işlem gücüyle yarışır. Başka hiçbir blok zinciri bu kadar işlem gücüyle korunmaz."
+            },
+            "permissionless": {
+              "title": "Açık ve sansüre dirençli",
+              "desc": "Yalnızca bir özel anahtarla herkes BTC tutabilir, gönderebilir ve alabilir. Hiçbir şirket ya da devlet bir bakiyeyi donduramaz veya bir ödemeyi geri alamaz."
+            },
+            "layers": {
+              "title": "Ana zincirin ötesinde ödemeler",
+              "desc": "Lightning Network küçük ödemeleri Bitcoin'in üzerinde anında sonuçlandırır; Taproot yükseltmesi ise daha gelişmiş harcama koşullarını daha ucuz ve daha gizli hale getirdi."
+            }
+          }
+        },
+        "ETH": {
+          "intro": "2015'te başlatılan Ethereum, ilk ve en büyük akıllı sözleşme blok zinciridir. Geliştiriciler üzerine herkesin kullanabileceği programlar yerleştirir; bu sayede merkeziyetsiz finansın, stablecoin'lerin ve NFT'lerin yuvası oldu. ETH bu ağın yerel coinidir. Her işlemin gas ücreti ETH ile ödenir ve ağı koruyan doğrulayıcılar ETH stake eder.",
+          "features": {
+            "contracts": {
+              "title": "Akıllı sözleşmeler",
+              "desc": "Programlar Ethereum Virtual Machine üzerinde, bir işletmeci olmadan, tam yazıldığı gibi çalışır. EVM, diğer zincirlerin çoğunun izlediği standart haline geldi."
+            },
+            "staking": {
+              "title": "Hisse ispatı",
+              "desc": "Eylül 2022'deki Merge'den beri 32 ETH veya daha fazlasını stake eden doğrulayıcılar her 12 saniyede bir blok önerir; bunun için madenciliğin gerektirdiği enerjinin çok küçük bir kısmı yeter."
+            },
+            "burn": {
+              "title": "Ücret yakımı",
+              "desc": "Her işlemin taban ücreti yakılır. Sabit bir sınır yoktur, ancak ağ yoğunken çıkarılandan daha fazla ETH yakılabilir."
+            },
+            "layer2": {
+              "title": "Katman 2 ağları",
+              "desc": "Arbitrum, Base ve Optimism gibi rollup'lar işlemleri ucuza işler ve Ethereum'un güvenliğine dayanarak onun üzerinde sonuçlandırır."
+            }
+          }
+        },
+        "SOL": {
+          "intro": "2020'de başlatılan Solana, hız için tasarlanmış bir katman 1 blok zinciridir. Akıllı sözleşmeleri, ücretleri çok düşük tutan, yüksek işlem kapasiteli tek bir zincirde çalıştırır; bu da onu alım satım, ödemeler ve tüketici uygulamaları için popüler kıldı. SOL bu ağın yerel coinidir. İşlem ücretleri SOL ile ödenir ve ağı korumak için SOL stake edilir.",
+          "features": {
+            "speed": {
+              "title": "Yüksek işlem kapasitesi",
+              "desc": "Bloklar yaklaşık her 0,4 saniyede bir üretilir ve aynı hesaplara dokunmayan işlemler paralel olarak yürütülür."
+            },
+            "fees": {
+              "title": "Çok düşük ücretler",
+              "desc": "Tipik bir işlem bir sentin küçük bir kısmına mal olur ve taban ücretin yarısı yakılır."
+            },
+            "staking": {
+              "title": "Delege edilen staking",
+              "desc": "Sahipler SOL'larını doğrulayıcılara delege eder ve mülkiyeti ellerinde tutarak ödül kazanır. Yeni SOL, her yıl %1,5'e doğru düşen bir oranla çıkarılır. Sabit bir sınır yoktur."
+            },
+            "ecosystem": {
+              "title": "Geniş ekosistem",
+              "desc": "Stablecoin'ler, merkeziyetsiz borsalar, NFT'ler ve ödeme uygulamaları tek bir ortak zincirde çalışır; zinciri birkaç bağımsız doğrulayıcı istemcisi ayakta tutar."
+            }
+          }
+        },
+        "ZEC": {
+          "intro": "2016'da başlatılan Zcash, Bitcoin'in kodundan doğan, gizlilik odaklı bir kripto paradır. Bitcoin'in 21 milyonluk sınırını ve yarılanma takvimini korur; buna, sıfır bilgi ispatlarıyla göndericiyi, alıcıyı ve tutarı gizleyen korumalı işlemleri ekler. ZEC bu ağın yerel coinidir.",
+          "features": {
+            "shielded": {
+              "title": "Korumalı işlemler",
+              "desc": "zk-SNARK ispatları sayesinde ağ, kimin kime ne kadar ödediğini öğrenmeden bir ödemeyi doğrulayabilir. Korumalı bir ödeme şifreli bir not da taşıyabilir."
+            },
+            "disclosure": {
+              "title": "Kontrolü sizde olan gizlilik",
+              "desc": "Şeffaf adresler Bitcoin'dekiler gibi çalışır, korumalı adresler gizlidir; görüntüleme anahtarı ise fonların kontrolünü bırakmadan geçmişinizi bir denetçiye göstermenizi sağlar."
+            },
+            "scarcity": {
+              "title": "Sabit arz",
+              "desc": "Hiçbir zaman 21 milyondan fazla ZEC olmayacak ve tıpkı Bitcoin'deki gibi yeni arz yaklaşık dört yılda bir yarılanır."
+            },
+            "mining": {
+              "title": "İş ispatı, hızlı bloklar",
+              "desc": "Madenciler zinciri Equihash algoritmasıyla korur. Kasım 2026'daki NU7 yükseltmesinden beri hedef blok süresi 25 saniyedir ve işlem ücretlerinin %60'ı gelecekteki blok ödüllerini finanse edecek bir rezerve gider."
+            }
+          }
+        },
+        "AVAX": {
+          "intro": "2020'de başlatılan Avalanche, hızlı mutabakat protokollerinden oluşan bir aile üzerine kurulu bir akıllı sözleşme platformudur. C-Chain'i Ethereum uyumlu uygulamaları çalıştırır ve herkes platformun üzerinde kendi ayrı katman 1 ağını başlatabilir. AVAX bu ağın yerel coinidir. Ücretler AVAX ile ödenir, doğrulayıcılar AVAX stake eder ve arzı 720 milyonla sınırlıdır.",
+          "features": {
+            "finality": {
+              "title": "Neredeyse anında kesinlik",
+              "desc": "Avalanche mutabakatı bir işlemi birkaç saniye içinde kesinleştirir; kesinleşen işlem artık yeniden düzenlenemez."
+            },
+            "evm": {
+              "title": "Ethereum uyumlu",
+              "desc": "C-Chain, Ethereum Virtual Machine'i çalıştırır; böylece Ethereum cüzdanları, araçları ve akıllı sözleşmeleri hiçbir değişiklik gerekmeden çalışır."
+            },
+            "l1s": {
+              "title": "Özel katman 1 ağları",
+              "desc": "Projeler kendi doğrulayıcıları, kuralları ve gas tokenı olan kendi Avalanche L1'ini (eski adıyla subnet) başlatabilir ve diğer zincirlerle mesaj alışverişi yapabilir."
+            },
+            "tokenomics": {
+              "title": "Sınırlı arz, yakılan ücretler",
+              "desc": "Arz hiçbir zaman 720 milyon AVAX'ı aşamaz, her işlem ücreti yakılır ve staker'lar stake'lerinin kesilmesi riski olmadan ödül kazanır."
+            }
+          }
+        },
+        "HYPE": {
+          "intro": "Hyperliquid, alım satım için sıfırdan yazılmış bir katman 1 blok zinciridir. Spot ve sürekli vadeli emir defterleri, merkezi bir borsaya yakın hızlarda tamamen zincir üstünde çalışır; bu cüzdandaki piyasalar da bu ağda işlem görür. HYPE bu ağın yerel coinidir. Zinciri korumak için stake edilir ve HyperEVM'de gas ücreti HYPE ile ödenir.",
+          "features": {
+            "orderbook": {
+              "title": "Zincir üstü emir defteri",
+              "desc": "HyperCore'da her emir, iptal, işlem ve likidasyon zincir üstünde sonuçlandırılır; kapasite saniyede yaklaşık 200.000 emirdir."
+            },
+            "consensus": {
+              "title": "HyperBFT mutabakatı",
+              "desc": "Doğrulayıcılar HYPE stake eder ve her bloğu üretilir üretilmez kesinleştirir. Sahipler HYPE'larını bir doğrulayıcıya delege edip staking ödülü kazanabilir."
+            },
+            "evm": {
+              "title": "HyperEVM",
+              "desc": "Aynı zincir üzerinde, uygulamaların doğrudan HyperCore'un likiditesi üzerine inşa edilebildiği, Ethereum uyumlu bir akıllı sözleşme ortamı. Gas tokenı HYPE'tır."
+            },
+            "buyback": {
+              "title": "Ücretlerle HYPE geri alınır",
+              "desc": "Alım satım ücretlerinin neredeyse tamamı, Assistance Fund aracılığıyla açık piyasadan HYPE almak için kullanılır; HYPE stake etmek de kendi alım satım ücretlerinizi düşürür."
+            }
+          }
+        }
+      }
     },
     "liveMidHint": "Canlı orta fiyat; saniyede bir mum, grafik açıldığından beri bu cihazda oluşturulur.",
     "venueSpot": "Hyperliquid Spot"
@@ -1320,6 +1480,9 @@
     "markets": "Spot Piyasalar",
     "vol": "Hacim",
     "addPair": "Çift ekle",
+    "floatingPrices": "Yüzen fiyatlar",
+    "floatingPricesHint": "Yüzen pencerede gösterilecek pariteleri seçin.",
+    "floatingPricesOpen": "Yüzen pencereyi aç",
     "addPairTitle": "Piyasalar",
     "addAsset": "Varlık ekle",
     "noNfts": "Henüz NFT yok",

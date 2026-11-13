@@ -32,11 +32,17 @@ export const settings = reactive({
   showFiatValue:   localStorage.getItem('showFiatValue')   !== 'false',
   // On by default: a short chime with each new-transaction toast.
   txSound:         localStorage.getItem('txSound')         !== 'false',
+  // On by default: on Android 12+, leaving the app from a prices screen
+  // shrinks it into the floating price window (lib/pip.js, App.vue).
+  pipAutoEnter:    localStorage.getItem('pipAutoEnter')    !== 'false',
   // Ana sayfadaki senkronizasyon göstergesi: 'bar' (en üstte ince, tam
   // genişlik çubuk — varsayılan) veya 'circle' (eski dairesel gösterge).
   // Ana sayfadaki "Piyasalar" listesinde gösterilen Hyperliquid spot
   // çiftleri (lib/hyperliquid/market.js'deki HL_SPOT_MARKETS anahtarları).
   homePairs:       readStringList('homePairs', Object.keys(HL_SPOT_MARKETS)),
+  // Pairs shown in Android's floating price window (lib/pip.js), in the
+  // order the user picked them. Independent of homePairs.
+  pipPairs:        readStringList('pipPairs', Object.keys(HL_SPOT_MARKETS)),
   // Ana sayfadaki "Varlıklar" listesinde her zaman gösterilen Hyperliquid
   // tokenları (HL_TOKENS sembolleri). Bakiyesi olan tokenlar bu listede
   // olmasa da gösterilir — bkz. WalletBalance.vue.
@@ -166,8 +172,16 @@ watch(() => settings.txSound, (val) => {
   localStorage.setItem('txSound', val)
 })
 
+watch(() => settings.pipAutoEnter, (val) => {
+  localStorage.setItem('pipAutoEnter', val)
+})
+
 watch(() => settings.homePairs, (val) => {
   localStorage.setItem('homePairs', JSON.stringify(val))
+}, { deep: true })
+
+watch(() => settings.pipPairs, (val) => {
+  localStorage.setItem('pipPairs', JSON.stringify(val))
 }, { deep: true })
 
 watch(() => settings.homeAssets, (val) => {

@@ -19,6 +19,8 @@
     <PwaInstallPrompt v-if="!isExtension" />
     <LockScreen v-if="isLocked" />
     <SpendConfirm />
+    <!-- Shrunk into Android's floating window: prices only, over everything else -->
+    <PipTicker v-if="pipActive" />
 
     <!-- Android back button exit confirmation -->
     <div
@@ -75,6 +77,9 @@ import { autoLockThresholdMs, unlockMaxAgeMs } from './stores/settings'
 import { recallPassword } from './lib/unlockCache'
 import { isLocked, lockWallet, getNavioClient, walletName } from './stores/navio'
 import LockScreen from './components/LockScreen.vue'
+import PipTicker from './components/PipTicker.vue'
+import { pipActive, pipSupported, pipMarketsOnScreen, setPipAutoEnter } from './lib/pip'
+import { HL_SPOT_MARKETS } from './lib/hyperliquid/market'
 import SpendConfirm from './components/SpendConfirm.vue'
 import BottomNavbar from './components/BottomNavbar.vue'
 import ProcessTray from './components/process/ProcessTray.vue'
@@ -94,6 +99,17 @@ const route = useRoute()
 const router = useRouter()
 const scrollContainer = ref(null)
 const showExitConfirm = ref(false)
+
+// Android 12+: leaving the app from a screen that is about prices (a
+// markets list, or a market itself) floats the price window by itself.
+// Not from anywhere else — nobody sending NAV wants the wallet to shrink —
+// and not over the lock screen. Settings has a switch to turn it off.
+const pipAutoRows = computed(() => {
+  if (!pipSupported.value || !settings.pipAutoEnter || !hlEnabled.value || isLocked.value) return 0
+  const onPrices = pipMarketsOnScreen.value > 0 || route.path.startsWith('/market/hl/')
+  return onPrices ? settings.pipPairs.filter((p) => HL_SPOT_MARKETS[p]).length : 0
+})
+watch(pipAutoRows, (rows) => setPipAutoEnter(rows), { immediate: true })
 
 const showNavbar = computed(() => {
   return route.meta.showNavbar === true

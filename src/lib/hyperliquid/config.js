@@ -60,3 +60,24 @@ export const HL_TOKEN_LINKS = {
   ZEC: { website: "https://z.cash", x: "https://x.com/zcash", github: "https://github.com/zcash/zcash", issuer: "unit" },
   AVAX: { website: "https://avax.network", x: "https://x.com/avax", github: "https://github.com/ava-labs", issuer: "unit" },
 };
+
+/**
+ * The native chain behind each HL_TOKENS symbol, for the "About" card on
+ * the token details screen. Only layer-1 coins get an entry (`layer1`);
+ * the intro and feature texts live in the locales under
+ * market.token.about.<SYMBOL>, and `features` lists which of them to show,
+ * in order. `blockTimeSec` and `supplyCap` are the native chain's own
+ * (not the Hyperliquid token's): omit one to hide its row, `supplyCap:
+ * null` means uncapped. Facts were checked against each project's docs in
+ * November 2026 — recheck after a network upgrade (Zcash's 25 s blocks
+ * are NU7's).
+ */
+export const HL_TOKEN_ABOUT = {
+  NAV: { layer1: true, launched: 2026, consensus: "Proof of Private Stake", blockTimeSec: 120, supplyCap: null, features: ["privacy", "staking", "tokens", "burn"] },
+  BTC: { layer1: true, launched: 2009, consensus: "Proof of Work · SHA-256", blockTimeSec: 600, supplyCap: 21_000_000, features: ["scarcity", "security", "permissionless", "layers"] },
+  ETH: { layer1: true, launched: 2015, consensus: "Proof of Stake", blockTimeSec: 12, supplyCap: null, features: ["contracts", "staking", "burn", "layer2"] },
+  SOL: { layer1: true, launched: 2020, consensus: "Proof of Stake", blockTimeSec: 0.4, supplyCap: null, features: ["speed", "fees", "staking", "ecosystem"] },
+  ZEC: { layer1: true, launched: 2016, consensus: "Proof of Work · Equihash", blockTimeSec: 25, supplyCap: 21_000_000, features: ["shielded", "disclosure", "scarcity", "mining"] },
+  AVAX: { layer1: true, launched: 2020, consensus: "Proof of Stake · Snowman", supplyCap: 720_000_000, features: ["finality", "evm", "l1s", "tokenomics"] },
+  HYPE: { layer1: true, launched: 2023, consensus: "Proof of Stake · HyperBFT", features: ["orderbook", "consensus", "evm", "buyback"] },
+};

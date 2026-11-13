@@ -110,6 +110,8 @@
     "merchantRequiredConfirmationsDesc": "超过即时接受限额的付款需要多少个区块确认后才算已支付。确认数越多，越能防范区块链重组，但顾客在结账时需要等待更久。",
     "dexMode": "DEX / EVM 模式",
     "dexModeDesc": "添加一个由此钱包恢复短语派生的可选 BSC（EVM）账户，用于在 PancakeSwap 上兑换。关闭时不会发起任何网络请求。",
+    "pipAutoEnter": "离开时悬浮显示价格",
+    "pipAutoEnterDesc": "从行情页面离开应用时，应用会缩小为显示实时价格的悬浮窗口。",
     "hlMainnetOnly": "Hyperliquid（跨链桥、兑换和 NAV 交易）仅在主网可用。此钱包位于其他网络。",
     "tradeMode": "交易",
     "tradeModeDesc": "通过 Navio 自有的加密 p2p 总线进行点对点 RFQ 交易——与上面的 DEX/EVM 相互独立。需要支持交易桥的服务器。默认关闭——启用前不会发起任何网络请求。",
@@ -965,7 +967,165 @@
       "loadError": "无法加载代币详情。",
       "issued": "已在 Hyperliquid 发行",
       "issuerReserve": "发行方持有",
-      "issuedPct": "供应量的 {pct}% 已在 Hyperliquid 发行"
+      "issuedPct": "供应量的 {pct}% 已在 Hyperliquid 发行",
+      "aboutTitle": "关于 {name}",
+      "layer1": "Layer 1",
+      "nativeCoin": "{symbol} 是其自有区块链的原生币",
+      "featuresTitle": "{name} 的特点",
+      "launched": "网络上线",
+      "consensus": "共识机制",
+      "blockTime": "出块时间",
+      "nativeSupplyCap": "供应上限",
+      "noCap": "无上限",
+      "about": {
+        "NAV": {
+          "intro": "Navio 是一条隐私优先的 Layer 1 区块链，基于 Bitcoin Core 代码库构建，是 Navcoin 的继任者。每笔交易默认保密：金额、余额和交易各方均不公开，但任何人仍可验证链的有效性。NAV 是它的原生币，用于支付手续费、通过质押保护网络，并为本市场交易的 NAV 提供支撑。",
+          "features": {
+            "privacy": {
+              "title": "默认隐私",
+              "desc": "BLSCT 协议会隐藏每笔交易的金额、发送方和接收方。隐私由网络自身的规则强制保障，而不是依靠可选的混币器或侧链。"
+            },
+            "staking": {
+              "title": "Proof of Private Stake",
+              "desc": "区块由质押者生成，他们用零知识证明来证明自己的质押，无需透露身份或持有数量。每 2 分钟产生一个区块，质押者可获得 8 NAV。"
+            },
+            "tokens": {
+              "title": "保密代币与 NFT",
+              "desc": "代币和 NFT 内置于协议之中，享有与 NAV 相同的隐私保护，包括隐藏数量和链上元数据。"
+            },
+            "burn": {
+              "title": "手续费销毁",
+              "desc": "交易手续费会被销毁而不是发放给任何人，从而抵消一部分新发行的 NAV。供应量没有固定上限。"
+            }
+          }
+        },
+        "BTC": {
+          "intro": "Bitcoin 是首个加密货币，由化名中本聪的人于 2009 年推出。它是没有中央发行方的点对点货币：遍布全球的矿工和节点网络就同一本账本达成共识，没有人能够单方面更改规则。BTC 是它的原生币，用于支付手续费并奖励保护网络的矿工。",
+          "features": {
+            "scarcity": {
+              "title": "固定供应量",
+              "desc": "BTC 的总量永远不会超过 2100 万枚。新区块的奖励大约每四年减半，自 2024 年 4 月起为 3.125 BTC。"
+            },
+            "security": {
+              "title": "由工作量证明保障安全",
+              "desc": "矿工以 SHA-256 算力竞争，大约每 10 分钟添加一个区块。没有其他区块链拥有如此庞大的算力保护。"
+            },
+            "permissionless": {
+              "title": "开放且抗审查",
+              "desc": "只需一把私钥，任何人都可以持有、发送和接收 BTC。任何公司或政府都无法冻结余额或撤销付款。"
+            },
+            "layers": {
+              "title": "主链之外的支付",
+              "desc": "Lightning Network 在 Bitcoin 之上即时结算小额支付，Taproot 升级则让更复杂的花费条件变得更便宜、更隐私。"
+            }
+          }
+        },
+        "ETH": {
+          "intro": "Ethereum 于 2015 年上线，是首个也是规模最大的智能合约区块链。开发者可以在其上部署任何人都能使用的程序，这使它成为去中心化金融、稳定币和 NFT 的大本营。ETH 是它的原生币，用于支付每笔交易的 Gas 费，并由保护网络的验证者质押。",
+          "features": {
+            "contracts": {
+              "title": "智能合约",
+              "desc": "程序在 Ethereum Virtual Machine 上严格按照代码运行，无需任何运营方。EVM 已成为大多数其他链遵循的标准。"
+            },
+            "staking": {
+              "title": "权益证明",
+              "desc": "自 2022 年 9 月的 Merge 以来，质押 32 ETH 或以上的验证者每 12 秒提议一个区块，能耗仅为挖矿时期的极小一部分。"
+            },
+            "burn": {
+              "title": "手续费销毁",
+              "desc": "每笔交易的基础费用都会被销毁。供应量没有固定上限，但在网络繁忙时，销毁的 ETH 可能多于新发行的数量。"
+            },
+            "layer2": {
+              "title": "Layer 2 网络",
+              "desc": "Arbitrum、Base 和 Optimism 等 Rollup 以低成本处理交易，并在 Ethereum 上结算，依托其安全性。"
+            }
+          }
+        },
+        "SOL": {
+          "intro": "Solana 于 2020 年上线，是一条为速度而设计的 Layer 1 区块链。它在一条高吞吐量的单链上运行智能合约，手续费极低，因而在交易、支付和消费级应用中广受欢迎。SOL 是它的原生币，用于支付交易手续费，并通过质押来保护网络。",
+          "features": {
+            "speed": {
+              "title": "高吞吐量",
+              "desc": "大约每 0.4 秒产生一个区块，不涉及相同账户的交易可以并行执行。"
+            },
+            "fees": {
+              "title": "极低的手续费",
+              "desc": "一笔普通交易的费用不到一美分，其中基础费用的一半会被销毁。"
+            },
+            "staking": {
+              "title": "委托质押",
+              "desc": "持有者将 SOL 委托给验证者即可赚取奖励，同时保留所有权。SOL 的新增发行率逐年下降，最终趋向 1.5%。供应量没有固定上限。"
+            },
+            "ecosystem": {
+              "title": "丰富的生态",
+              "desc": "稳定币、去中心化交易所、NFT 和支付应用都运行在同一条共享链上，并由多个独立的验证者客户端共同维持运行。"
+            }
+          }
+        },
+        "ZEC": {
+          "intro": "Zcash 于 2016 年上线，是一种源自 Bitcoin 代码、注重隐私的加密货币。它沿用了 Bitcoin 的 2100 万枚上限和减半机制，并增加了屏蔽交易，利用零知识证明隐藏发送方、接收方和金额。ZEC 是它的原生币。",
+          "features": {
+            "shielded": {
+              "title": "屏蔽交易",
+              "desc": "借助 zk-SNARK 证明，网络无需知道谁向谁支付了多少即可验证一笔付款。屏蔽交易还可以附带加密备注。"
+            },
+            "disclosure": {
+              "title": "隐私由你掌控",
+              "desc": "透明地址的用法与 Bitcoin 地址相同，屏蔽地址则是私密的；通过查看密钥，你可以向审计方出示交易记录，而无需交出资金控制权。"
+            },
+            "scarcity": {
+              "title": "固定供应量",
+              "desc": "ZEC 的总量不会超过 2100 万枚，发行量与 Bitcoin 一样大约每四年减半。"
+            },
+            "mining": {
+              "title": "工作量证明，快速出块",
+              "desc": "矿工使用 Equihash 算法保护区块链。自 2026 年 11 月的 NU7 升级起，目标出块时间为 25 秒，60% 的交易手续费进入储备金，用于为未来的区块奖励提供资金。"
+            }
+          }
+        },
+        "AVAX": {
+          "intro": "Avalanche 于 2020 年上线，是一个围绕一系列高速共识协议构建的智能合约平台。它的 C-Chain 可运行兼容 Ethereum 的应用，任何人都可以在该平台之上推出自己独立的 Layer 1 网络。AVAX 是它的原生币，用于支付手续费，并由验证者质押，供应上限为 7.2 亿枚。",
+          "features": {
+            "finality": {
+              "title": "近乎即时的最终性",
+              "desc": "Avalanche 共识可在几秒内让交易达到最终确认，一经确认便无法被重组。"
+            },
+            "evm": {
+              "title": "兼容 Ethereum",
+              "desc": "C-Chain 运行 Ethereum Virtual Machine，因此 Ethereum 的钱包、工具和智能合约无需修改即可使用。"
+            },
+            "l1s": {
+              "title": "自定义 Layer 1 网络",
+              "desc": "项目方可以推出自己的 Avalanche L1（原称子网），自行设定验证者、规则和 Gas 代币，并与其他链互通消息。"
+            },
+            "tokenomics": {
+              "title": "供应有上限，手续费销毁",
+              "desc": "供应量永远不会超过 7.2 亿 AVAX，所有交易手续费均被销毁，质押者赚取奖励时也不必承担质押被罚没的风险。"
+            }
+          }
+        },
+        "HYPE": {
+          "intro": "Hyperliquid 是一条专为交易而从零打造的 Layer 1 区块链。它的现货和永续合约订单簿完全在链上运行，速度接近中心化交易所，本钱包中的市场正是在这个网络上交易。HYPE 是它的原生币，通过质押来保护区块链，并用于支付 HyperEVM 上的 Gas 费。",
+          "features": {
+            "orderbook": {
+              "title": "链上订单簿",
+              "desc": "在 HyperCore 上，每一笔下单、撤单、成交和清算都在链上结算，每秒可处理约 20 万笔订单。"
+            },
+            "consensus": {
+              "title": "HyperBFT 共识",
+              "desc": "验证者质押 HYPE，并在每个区块产生后立即将其最终确认。持有者可以把 HYPE 委托给验证者，赚取质押奖励。"
+            },
+            "evm": {
+              "title": "HyperEVM",
+              "desc": "同一条链上兼容 Ethereum 的智能合约环境，应用可以直接基于 HyperCore 的流动性进行构建。HYPE 是它的 Gas 代币。"
+            },
+            "buyback": {
+              "title": "手续费回购 HYPE",
+              "desc": "几乎所有交易手续费都通过 Assistance Fund 在公开市场上回购 HYPE，质押 HYPE 还能降低你自己的交易手续费。"
+            }
+          }
+        }
+      }
     },
     "liveMidHint": "实时中间价，每秒一根K线，自图表打开起在本设备生成。",
     "venueSpot": "Hyperliquid 现货"
@@ -1320,6 +1480,9 @@
     "markets": "现货市场",
     "vol": "成交量",
     "addPair": "添加交易对",
+    "floatingPrices": "悬浮价格",
+    "floatingPricesHint": "选择要在悬浮窗口中显示的交易对。",
+    "floatingPricesOpen": "打开悬浮窗口",
     "addPairTitle": "市场",
     "addAsset": "添加资产",
     "noNfts": "暂无 NFT",

@@ -110,6 +110,8 @@
     "merchantRequiredConfirmationsDesc": "How many blocks must confirm a payment above the instant-accept limit before it counts as paid. More confirmations are safer against a blockchain reorganization, but make the customer wait longer at checkout.",
     "dexMode": "DEX / EVM Mode",
     "dexModeDesc": "Adds an optional BSC (EVM) account derived from this wallet's recovery phrase, for swapping on PancakeSwap. No network calls while turned off.",
+    "pipAutoEnter": "Floating prices on leaving",
+    "pipAutoEnterDesc": "When you leave the app from a markets screen, it shrinks into a floating window with live prices.",
     "hlMainnetOnly": "Hyperliquid (bridge, swap and NAV trading) is available on mainnet only. This wallet is on another network.",
     "tradeMode": "Trade",
     "tradeModeDesc": "Peer-to-peer RFQ trading over Navio's own encrypted p2p bus — separate from DEX/EVM above. Requires a server carrying the trading bridge. Off by default — no network calls until enabled.",
@@ -965,7 +967,165 @@
       "loadError": "Couldn't load the token details.",
       "issued": "Issued on Hyperliquid",
       "issuerReserve": "Held by the issuer",
-      "issuedPct": "{pct}% of the supply has been issued on Hyperliquid"
+      "issuedPct": "{pct}% of the supply has been issued on Hyperliquid",
+      "aboutTitle": "About {name}",
+      "layer1": "Layer 1",
+      "nativeCoin": "{symbol} is the native coin of its own blockchain",
+      "featuresTitle": "What {name} offers",
+      "launched": "Network launch",
+      "consensus": "Consensus",
+      "blockTime": "Block time",
+      "nativeSupplyCap": "Supply cap",
+      "noCap": "No cap",
+      "about": {
+        "NAV": {
+          "intro": "Navio is a privacy-first layer-1 blockchain, built on the Bitcoin Core codebase as the successor to Navcoin. Every transaction is confidential by default: amounts, balances and the parties involved stay hidden, while anyone can still verify that the chain is valid. NAV is its native coin. It pays the fees, secures the network through staking, and backs the NAV traded on this market.",
+          "features": {
+            "privacy": {
+              "title": "Private by default",
+              "desc": "The BLSCT protocol hides the amount, sender and recipient of every transaction. Privacy is enforced by the network's own rules, not by an optional mixer or sidechain."
+            },
+            "staking": {
+              "title": "Proof of Private Stake",
+              "desc": "Blocks are produced by stakers who prove their stake with zero-knowledge proofs, without revealing who they are or how much they hold. A block arrives every 2 minutes and pays its staker 8 NAV."
+            },
+            "tokens": {
+              "title": "Confidential tokens and NFTs",
+              "desc": "Tokens and NFTs are built into the protocol and get the same privacy as NAV, with hidden amounts and on-chain metadata."
+            },
+            "burn": {
+              "title": "Fees are burned",
+              "desc": "Transaction fees are destroyed instead of being paid out, which offsets part of the newly issued NAV. There is no fixed supply cap."
+            }
+          }
+        },
+        "BTC": {
+          "intro": "Bitcoin is the first cryptocurrency, launched in 2009 by the pseudonymous Satoshi Nakamoto. It is peer-to-peer money with no central issuer: a worldwide network of miners and nodes agrees on a single ledger, and nobody can change the rules alone. BTC is its native coin, used to pay fees and to reward the miners who secure the network.",
+          "features": {
+            "scarcity": {
+              "title": "Fixed supply",
+              "desc": "There will never be more than 21 million BTC. The reward for a new block halves about every four years and has been 3.125 BTC since April 2024."
+            },
+            "security": {
+              "title": "Secured by proof of work",
+              "desc": "Miners compete with SHA-256 computing power to add a block about every 10 minutes. No other blockchain is secured by as much computing power."
+            },
+            "permissionless": {
+              "title": "Open and censorship-resistant",
+              "desc": "Anyone can hold, send and receive BTC with nothing more than a private key. No company or government can freeze a balance or reverse a payment."
+            },
+            "layers": {
+              "title": "Payments beyond the base chain",
+              "desc": "The Lightning Network settles small payments instantly on top of Bitcoin, and the Taproot upgrade made more advanced spending conditions cheaper and more private."
+            }
+          }
+        },
+        "ETH": {
+          "intro": "Ethereum, launched in 2015, is the first and largest smart contract blockchain. Developers deploy programs on it that anyone can use, which made it the home of decentralized finance, stablecoins and NFTs. ETH is its native coin. It pays the gas fee of every transaction and is staked by the validators who secure the network.",
+          "features": {
+            "contracts": {
+              "title": "Smart contracts",
+              "desc": "Programs run on the Ethereum Virtual Machine exactly as written, without an operator. The EVM became the standard that most other chains follow."
+            },
+            "staking": {
+              "title": "Proof of stake",
+              "desc": "Since the Merge in September 2022, validators who stake 32 ETH or more propose a block every 12 seconds, using a small fraction of the energy that mining needed."
+            },
+            "burn": {
+              "title": "Fee burning",
+              "desc": "The base fee of every transaction is burned. There is no fixed cap, but when the network is busy more ETH can be burned than is issued."
+            },
+            "layer2": {
+              "title": "Layer-2 networks",
+              "desc": "Rollups such as Arbitrum, Base and Optimism process transactions cheaply and settle them on Ethereum, relying on its security."
+            }
+          }
+        },
+        "SOL": {
+          "intro": "Solana, launched in 2020, is a layer-1 blockchain designed for speed. It runs smart contracts on a single high-throughput chain that keeps fees very low, which made it popular for trading, payments and consumer apps. SOL is its native coin. It pays transaction fees and is staked to secure the network.",
+          "features": {
+            "speed": {
+              "title": "High throughput",
+              "desc": "Blocks are produced about every 0.4 seconds, and transactions that don't touch the same accounts are executed in parallel."
+            },
+            "fees": {
+              "title": "Very low fees",
+              "desc": "A typical transaction costs a fraction of a cent, and half of the base fee is burned."
+            },
+            "staking": {
+              "title": "Delegated staking",
+              "desc": "Holders delegate SOL to validators and earn rewards while keeping ownership. New SOL is issued at a rate that falls every year toward 1.5%. There is no fixed cap."
+            },
+            "ecosystem": {
+              "title": "Broad ecosystem",
+              "desc": "Stablecoins, decentralized exchanges, NFTs and payment apps run on one shared chain, and several independent validator clients keep it running."
+            }
+          }
+        },
+        "ZEC": {
+          "intro": "Zcash, launched in 2016, is a privacy-focused cryptocurrency that grew out of Bitcoin's code. It keeps Bitcoin's 21 million cap and halving schedule, and adds shielded transactions that hide the sender, the recipient and the amount using zero-knowledge proofs. ZEC is its native coin.",
+          "features": {
+            "shielded": {
+              "title": "Shielded transactions",
+              "desc": "zk-SNARK proofs let the network verify a payment without learning who paid whom or how much. A shielded payment can also carry an encrypted memo."
+            },
+            "disclosure": {
+              "title": "Privacy you control",
+              "desc": "Transparent addresses work like Bitcoin's, shielded ones are private, and a viewing key lets you show your history to an auditor without giving up control of the funds."
+            },
+            "scarcity": {
+              "title": "Fixed supply",
+              "desc": "No more than 21 million ZEC will ever exist, and issuance halves about every four years, as on Bitcoin."
+            },
+            "mining": {
+              "title": "Proof of work, fast blocks",
+              "desc": "Miners secure the chain with the Equihash algorithm. Since the NU7 upgrade in November 2026 the target block time is 25 seconds, and 60% of transaction fees go to a reserve that will fund future block rewards."
+            }
+          }
+        },
+        "AVAX": {
+          "intro": "Avalanche, launched in 2020, is a smart contract platform built around a family of fast consensus protocols. Its C-Chain runs Ethereum-compatible applications, and anyone can launch a separate layer-1 network of their own on top of the platform. AVAX is its native coin. It pays fees, is staked by validators, and is capped at 720 million.",
+          "features": {
+            "finality": {
+              "title": "Near-instant finality",
+              "desc": "Avalanche consensus finalizes a transaction within a couple of seconds, and once it is final it cannot be reorganized."
+            },
+            "evm": {
+              "title": "Ethereum compatible",
+              "desc": "The C-Chain runs the Ethereum Virtual Machine, so Ethereum wallets, tools and smart contracts work without changes."
+            },
+            "l1s": {
+              "title": "Custom layer-1 networks",
+              "desc": "Projects can launch their own Avalanche L1 (formerly called a subnet) with their own validators, rules and gas token, and exchange messages with the other chains."
+            },
+            "tokenomics": {
+              "title": "Capped supply, burned fees",
+              "desc": "Supply can never exceed 720 million AVAX, every transaction fee is burned, and stakers earn rewards without the risk of having their stake slashed."
+            }
+          }
+        },
+        "HYPE": {
+          "intro": "Hyperliquid is a layer-1 blockchain written from scratch for trading. Its spot and perpetual order books run entirely on-chain, at speeds close to a centralized exchange, and this is the network where the markets in this wallet trade. HYPE is its native coin. It is staked to secure the chain and pays for gas on the HyperEVM.",
+          "features": {
+            "orderbook": {
+              "title": "On-chain order book",
+              "desc": "On HyperCore every order, cancellation, trade and liquidation is settled on-chain, with capacity for about 200,000 orders per second."
+            },
+            "consensus": {
+              "title": "HyperBFT consensus",
+              "desc": "Validators stake HYPE and finalize every block as soon as it is produced. Holders can delegate their HYPE to a validator and earn staking rewards."
+            },
+            "evm": {
+              "title": "HyperEVM",
+              "desc": "An Ethereum-compatible smart contract environment on the same chain, where applications can build directly on HyperCore's liquidity. HYPE is its gas token."
+            },
+            "buyback": {
+              "title": "Fees buy back HYPE",
+              "desc": "Nearly all trading fees are used to buy HYPE on the open market through the Assistance Fund, and staking HYPE lowers your own trading fees."
+            }
+          }
+        }
+      }
     },
     "liveMidHint": "Live mid price, one candle a second, built on this device since the chart opened.",
     "venueSpot": "Hyperliquid Spot"
@@ -1320,6 +1480,9 @@
     "markets": "Spot Markets",
     "vol": "Vol",
     "addPair": "Add pair",
+    "floatingPrices": "Floating prices",
+    "floatingPricesHint": "Choose the pairs to show in the floating window.",
+    "floatingPricesOpen": "Open floating window",
     "addPairTitle": "Markets",
     "addAsset": "Add asset",
     "noNfts": "No NFTs yet",

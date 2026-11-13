@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.1.7-alpha
+
+### Added
+- **Floating prices on Android** (Spot Markets → *Floating prices*, Android 8+): the app shrinks into a small picture-in-picture window that stays on top of other apps and shows the pairs you pick (NAV/USDC …) with their live price and 24h change. No balances are shown, so it is safe over other apps and over a locked wallet; tapping the window opens the wallet again. The pairs are chosen in the sheet behind the button and are independent of the Spot Markets list. One to three pairs are stacked in a compact, squarish window (pair and change above the price); four or more get one line each, and the text scales with whatever size the window is given
+- Android 12+: leaving the app from a prices screen (the Spot Markets tab, a market, token details) opens the floating window by itself. Never from other screens or while the wallet is locked. Settings → DEX mode → **Floating prices on leaving** turns it off (on by default)
+- Token details: an **About** card for layer-1 coins (NAV, BTC, ETH, SOL, ZEC, AVAX, HYPE): an introduction to the project, the native chain's launch year, consensus, block time and supply cap, and four things the native coin offers (for NAV: privacy by default with BLSCT, Proof of Private Stake, confidential tokens and NFTs, burned fees). In all ten languages. The figures are the native chain's own, not the Hyperliquid token's, and were checked against each project's documentation in November 2026
+
+### Known limitations
+- The floating window's size is chosen by Android from its aspect ratio; the app cannot set it. On Android 12+ it can be pinched smaller
+- The Android side of floating prices (`PipPlugin`, the manifest's `supportsPictureInPicture`) lives in the `android/` project, which is not tracked in this repository
+- The About texts carry figures that change with network upgrades (block rewards, block times, issuance) and need a manual update when they do
+
 ## 0.1.6-alpha
 
 ### Added
