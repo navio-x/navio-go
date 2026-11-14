@@ -309,6 +309,7 @@
 </template>
 
 <script setup>
+import { useBackClose } from '@/composables/useBackClose'
 import { ref, reactive, computed, onMounted, onUnmounted, watch } from "vue";
 import { useRouter } from "vue-router";
 import { Plus, MessageCircle, Copy, Check, Search, Pencil, Trash2, Users, QrCode, UserPlus, X, MoreVertical } from "lucide-vue-next";
@@ -503,4 +504,8 @@ async function copyMyAddress() {
   copied.value = true;
   setTimeout(() => (copied.value = false), 1500);
 }
+
+// Hardware back closes what is open here instead of leaving the page.
+useBackClose(() => !!deleteTarget.value, () => { deleteTarget.value = null })
+useBackClose(showQr, () => { showQr.value = false })
 </script>

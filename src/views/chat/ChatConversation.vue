@@ -122,6 +122,7 @@
 </template>
 
 <script setup>
+import { useBackClose } from '@/composables/useBackClose'
 import { ref, computed, onMounted, watch, nextTick } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { ChevronLeft, Trash2, SendHorizontal, MessageCircle, Clock, Check, CheckCheck, AlertCircle } from "lucide-vue-next";
@@ -218,4 +219,7 @@ async function clearHistory() {
   showClearConfirm.value = false;
   await loadMessages();
 }
+
+// Hardware back closes what is open here instead of leaving the page.
+useBackClose(showClearConfirm, () => { showClearConfirm.value = false })
 </script>

@@ -22,6 +22,34 @@ export function progressOf(op) {
   return { done: visible.filter((v) => v.state === "done").length, total: visible.length };
 }
 
+/**
+ * How far an operation is, 0..1, for a progress bar. Finer than
+ * `progressOf`: a send that is waiting for the network counts its
+ * confirmations, so the bar of a one-step deposit moves during the wait
+ * instead of standing at zero until the credit arrives.
+ */
+export function fractionOf(op) {
+  const visible = visibleSteps(op);
+  if (!visible.length) return 0;
+  const sum = visible.reduce((acc, v) => acc + stepFraction(v), 0);
+  return Math.min(1, sum / visible.length);
+}
+
+// Share of a step that sending it is worth; the wait that follows fills the
+// rest, short of 1 until the other side has really credited.
+const SENT_SHARE = 0.15;
+const CONFIRMED_SHARE = 0.9;
+
+function stepFraction({ step, wait, state }) {
+  if (state === "done") return 1;
+  if (step.status !== "done") return 0;
+  // Sent, waiting for the network.
+  const required = wait?.confirmations;
+  if (!(required > 0) || wait?.confirmed == null) return SENT_SHARE;
+  const confirmed = Math.min(1, Math.max(0, wait.confirmed / required));
+  return SENT_SHARE + (CONFIRMED_SHARE - SENT_SHARE) * confirmed;
+}
+
 /** The step currently being worked on (first not done), or null. */
 export const currentStep = (op) => op.steps.find((s) => s.status !== "done") ?? null;
 

@@ -198,7 +198,17 @@ const AXIS_W = 56
 
 const market = ref(null)
 const marketNotFound = ref(false)
-const rangeId = ref('1W')
+// The time range last chosen for this pair is remembered on the device, so
+// NAV/USDC can stay on 1D while BTC/USDC reopens on 1s.
+const rangeKey = `hlChartRange:${route.params.pair}`
+function savedRangeId() {
+  try {
+    const saved = localStorage.getItem(rangeKey)
+    if (RANGES.some((r) => r.id === saved)) return saved
+  } catch {}
+  return '1W'
+}
+const rangeId = ref(savedRangeId())
 const range = computed(() => RANGES.find((r) => r.id === rangeId.value))
 const candles = ref([]) // [{ t, o, h, l, c }] oldest first
 const candleMs = ref(range.value.intervalMs) // width of the candles on screen ("all" may fold to weeks)
@@ -410,7 +420,8 @@ function closeSocket() {
   liveConnected.value = false
 }
 
-watch(rangeId, () => {
+watch(rangeId, (id) => {
+  try { localStorage.setItem(rangeKey, id) } catch {}
   candles.value = []
   trailingSlots.value = 0
   hoverIndex.value = null

@@ -2151,6 +2151,20 @@
       "burnDone": "Gönderildi. NAV birkaç dakika içinde cüzdanınıza ulaşır.",
       "payoutDone": "{amount} NAV cüzdanınıza ulaştı."
     },
+    "confirmInfo": {
+      "button": "Onay sayısı nasıl belirlenir",
+      "title": "Köprü onayları",
+      "intro": "Köprü, yatırılan tutara bağlı sayıda onay bekler. Tutar büyüdükçe bekleme uzar.",
+      "amount": "Tutar",
+      "confirmations": "Onay",
+      "time": "Yaklaşık",
+      "below": "{max} NAV'dan az",
+      "range": "{min} – {max} NAV",
+      "above": "{min} NAV ve üzeri",
+      "minutes": "{n} dk",
+      "yours": "Bu gönderim",
+      "chain": "Onaylar Navio zinciri üzerinde, blok başına bir tane sayılır (blok başına yaklaşık {minutes} dk). Hyperliquid ayrıca onay beklemez: sayı dolunca köprü tutarı alım satım hesabınıza aktarır."
+    },
     "leave": "Bu ekrandan ayrılabilirsiniz. Navio Go açıkken izlemeye devam eder, yeniden başlatıldığında kaldığı yerden sürdürür.",
     "view": "İlerlemeyi gör",
     "viewAll": "Tüm işlemler",

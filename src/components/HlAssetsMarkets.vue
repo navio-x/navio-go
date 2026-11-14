@@ -286,6 +286,7 @@
 </template>
 
 <script setup>
+import { useBackClose } from '@/composables/useBackClose'
 import { computed, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { settings } from '@/stores/settings'
@@ -489,4 +490,9 @@ watch(
 )
 
 defineExpose({ refresh: () => hl.refresh() })
+
+// Hardware back closes what is open here instead of leaving the page.
+useBackClose(showAssetPicker, () => { showAssetPicker.value = false })
+useBackClose(showPipPicker, () => { showPipPicker.value = false })
+useBackClose(showPairPicker, () => { showPairPicker.value = false })
 </script>

@@ -276,6 +276,7 @@
 </template>
 
 <script setup>
+import { useBackClose } from '@/composables/useBackClose'
 import { confirmSpend } from '@/lib/spendConfirm'
 import { ref, computed, watch, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
@@ -517,4 +518,7 @@ function formatAmount(value) {
   if (!Number.isFinite(n) || !n) return '0'
   return n.toLocaleString(undefined, { maximumFractionDigits: Math.abs(n) < 1 ? 8 : 6 })
 }
+
+// Hardware back closes what is open here instead of leaving the page.
+useBackClose(showConfirm, () => { showConfirm.value = false })
 </script>

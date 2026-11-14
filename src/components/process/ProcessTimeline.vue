@@ -22,7 +22,20 @@
       </span>
       <div class="min-w-0 flex-1">
         <p class="text-sm leading-6" :class="labelClass(item.state)">{{ item.label }}</p>
-        <p v-if="item.detail && item.state !== 'upcoming'" class="text-xs leading-snug" :class="detailClass(item.state)">{{ item.detail }}</p>
+        <div v-if="item.detail && item.state !== 'upcoming'" class="flex items-start gap-1" :class="detailClass(item.state)">
+          <p class="min-w-0 text-xs leading-snug">{{ item.detail }}</p>
+          <!-- Why this many confirmations: the bridge's ladder by deposit size -->
+          <button
+            v-if="hasLadder(item)"
+            type="button"
+            class="shrink-0 -mt-1 -mr-1 p-1 rounded-full hover:bg-black/5 dark:hover:bg-white/10"
+            :aria-label="$t('process.confirmInfo.button')"
+            :title="$t('process.confirmInfo.button')"
+            @click="ladderFor = item.wait.confirmations"
+          >
+            <Info class="w-4 h-4" />
+          </button>
+        </div>
         <!-- The transaction behind the step, one tap away on the web -->
         <a
           v-for="link in item.links"
@@ -40,14 +53,16 @@
       <span v-if="item.state === 'waiting'" class="shrink-0 text-[11px] font-semibold uppercase tracking-wide text-amber-600 dark:text-amber-400">{{ $t('process.status.running') }}</span>
     </li>
   </ol>
+  <ConfirmationLadderSheet :open="ladderFor != null" :required="ladderFor ?? 0" @close="ladderFor = null" />
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { Check, Loader2, Clock, AlertTriangle, Hand, Pause, ExternalLink } from 'lucide-vue-next'
+import { Check, Loader2, Clock, AlertTriangle, Hand, Pause, ExternalLink, Info } from 'lucide-vue-next'
 import { visibleSteps, describeStep, explorerLinks } from '@/lib/intent/present'
 import { navioTxOfStep } from '@/stores/operations'
+import ConfirmationLadderSheet from './ConfirmationLadderSheet.vue'
 
 const props = defineProps({ op: { type: Object, required: true } })
 const { t } = useI18n()
@@ -55,6 +70,11 @@ const { t } = useI18n()
 const items = computed(() =>
   visibleSteps(props.op).map((v) => ({ ...v, ...describeStep(v, props.op, t), links: explorerLinks(v.step, navioTxOfStep) }))
 )
+
+// Confirmations of the deposit whose ladder sheet is open, or null.
+const ladderFor = ref(null)
+const hasLadder = (item) =>
+  item.step.type === 'deposit' && item.wait?.confirmations > 0 && item.state !== 'done' && item.state !== 'failed'
 
 function markerClass(state) {
   return {

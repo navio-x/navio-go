@@ -669,6 +669,7 @@
 </template>
 
 <script setup>
+import { useBackClose } from '@/composables/useBackClose'
 import { confirmSpend } from "@/lib/spendConfirm";
 import { ref, computed, onMounted, onUnmounted } from "vue";
 import {
@@ -1047,4 +1048,11 @@ async function submitCreate() {
     creating.value = false;
   }
 }
+
+// Hardware back closes what is open here instead of leaving the page.
+useBackClose(() => !!mintTarget.value, () => { if (!minting.value) mintTarget.value = null })
+useBackClose(() => !!mintNftTarget.value, () => { if (!nftMinting.value) mintNftTarget.value = null })
+useBackClose(() => !!sendTokenTarget.value, () => { if (!sendingToken.value) sendTokenTarget.value = null })
+useBackClose(() => !!sendNftTarget.value, () => { if (!sendingNft.value) sendNftTarget.value = null })
+useBackClose(showCreate, () => { if (!creating.value) showCreate.value = false })
 </script>

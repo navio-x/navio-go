@@ -211,6 +211,7 @@
 </template>
 
 <script setup>
+import { useBackClose } from '@/composables/useBackClose'
 import { ref, computed, onMounted, onUnmounted } from "vue";
 import { useI18n } from "vue-i18n";
 import { useRouter } from "vue-router";
@@ -500,4 +501,8 @@ onUnmounted(() => {
   stopPaymentWatch?.();
   releaseKeepAwake();
 });
+
+// Hardware back closes what is open here instead of leaving the page.
+useBackClose(() => screen.value === 'active' && !!request.value, () => { cancelRequest() })
+useBackClose(() => (screen.value === 'success' || screen.value === 'late') && !!request.value, () => { newSale() })
 </script>

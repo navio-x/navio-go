@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { visibleSteps, progressOf, statusLine, describeStep, historyRowOf, technicalDetails, explorerLinks, outcomeOf, transitItems } from "../present";
+import { visibleSteps, progressOf, fractionOf, statusLine, describeStep, historyRowOf, technicalDetails, explorerLinks, outcomeOf, transitItems } from "../present";
 
 const t = (key, p = {}) => `${key}${Object.keys(p).length ? ":" + Object.values(p).join("/") : ""}`;
 const op = (status, steps, extra = {}) => ({
@@ -33,6 +33,25 @@ describe("present", () => {
     expect(statusLine(op("running", steps(2)), t)).toContain("process.stepDetail.depositConfirming");
     expect(statusLine(op("running", steps(3)), t)).toContain("process.stepDetail.depositCrediting");
     expect(statusLine(op("running", steps(undefined)), t)).toContain("process.stepDetail.depositWaiting");
+  });
+
+  it("moves the progress bar with the confirmations of a waiting send", () => {
+    const steps = (confirmed, waitStatus = "active") => [
+      { type: "deposit", kind: "send", status: waitStatus === "pending" ? "pending" : "done", amount: 11500 },
+      { type: "waitCredit", kind: "wait", status: waitStatus, confirmations: 24, confirmed, minutes: 48 },
+    ];
+    expect(fractionOf(op("running", steps(undefined, "pending")))).toBe(0);
+    const sent = fractionOf(op("running", steps(undefined)));
+    const half = fractionOf(op("running", steps(12)));
+    const full = fractionOf(op("running", steps(24)));
+    expect(sent).toBeGreaterThan(0);
+    expect(fractionOf(op("running", steps(0)))).toBe(sent);
+    expect(half).toBeGreaterThan(sent);
+    expect(full).toBeGreaterThan(half);
+    // Confirmed on Navio is not arrived: the bar only fills on the credit.
+    expect(full).toBeLessThan(1);
+    expect(fractionOf(op("running", steps(30)))).toBe(full);
+    expect(fractionOf(op("done", steps(24, "done")))).toBe(1);
   });
 
   it("links a step's transaction to the explorer of the chain it is on", () => {

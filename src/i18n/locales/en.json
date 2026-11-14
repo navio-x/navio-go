@@ -2151,6 +2151,20 @@
       "burnDone": "Submitted. The NAV arrives in your wallet in a few minutes.",
       "payoutDone": "{amount} NAV arrived in your wallet."
     },
+    "confirmInfo": {
+      "button": "How the confirmation count is set",
+      "title": "Bridge confirmations",
+      "intro": "The bridge waits for a number of confirmations that depends on the size of the deposit. Larger deposits wait longer.",
+      "amount": "Deposit",
+      "confirmations": "Confirmations",
+      "time": "About",
+      "below": "Under {max} NAV",
+      "range": "{min} – {max} NAV",
+      "above": "{min} NAV or more",
+      "minutes": "{n} min",
+      "yours": "This deposit",
+      "chain": "Confirmations are counted on the Navio chain, one per block (about {minutes} min each). Hyperliquid adds no confirmations of its own: once they are reached, the bridge credits your trading account."
+    },
     "leave": "You can leave this screen. Navio Go keeps tracking it while it is open, and picks up where it left off after a restart.",
     "view": "View progress",
     "viewAll": "All activity",

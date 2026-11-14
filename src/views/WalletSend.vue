@@ -243,6 +243,7 @@
 </template>
 
 <script setup>
+import { useBackClose } from '@/composables/useBackClose'
 import { confirmSpend } from "@/lib/spendConfirm";
 import { ref, computed, onMounted, onUnmounted } from "vue";
 import { useRouter } from "vue-router";
@@ -492,4 +493,7 @@ const closeResult = () => {
   showOptions.value = false;
   subtractFeeFromAmount.value = false;
 };
+
+// Hardware back closes what is open here instead of leaving the page.
+useBackClose(() => !!posReview.value, () => { onPosReject() })
 </script>

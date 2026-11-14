@@ -161,6 +161,7 @@
 </template>
 
 <script setup>
+import { useBackClose } from '@/composables/useBackClose'
 import { ref, computed, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { ChevronLeft, Trash2, Check } from "lucide-vue-next";
@@ -268,4 +269,7 @@ async function doDelete() {
   showDeleteConfirm.value = false;
   router.replace("/chat");
 }
+
+// Hardware back closes what is open here instead of leaving the page.
+useBackClose(showDeleteConfirm, () => { showDeleteConfirm.value = false })
 </script>

@@ -62,6 +62,7 @@
 </template>
 
 <script setup>
+import { handleBack } from '@/lib/backHandlers'
 import { computed, onMounted, onUnmounted, ref, watch, nextTick } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { App as CapApp } from '@capacitor/app'
@@ -201,6 +202,8 @@ onMounted(async () => {
       showExitConfirm.value = false
       return
     }
+    // An open menu or sheet closes first; the page under it stays.
+    if (handleBack()) return
     if (EXIT_ROUTES.includes(route.path)) {
       showExitConfirm.value = true
     } else {

@@ -233,6 +233,7 @@
 </template>
 
 <script setup>
+import { useBackClose } from '@/composables/useBackClose'
 import { ref, computed, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { getNavioClient, walletBackedUp, loadMnemonicWordsForVerify } from '@/stores/navio'
@@ -326,6 +327,9 @@ onUnmounted(() => {
   revealedSeed.value = false
   clearSecretCopy()
 })
+
+// Hardware back closes what is open here instead of leaving the page.
+useBackClose(showSecurityModal, () => { cancelModal() })
 </script>
 
 <style scoped>

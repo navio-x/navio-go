@@ -2151,6 +2151,20 @@
       "burnDone": "제출됨. NAV가 몇 분 안에 지갑에 도착합니다.",
       "payoutDone": "{amount} NAV가 지갑에 도착했습니다."
     },
+    "confirmInfo": {
+      "button": "확인 수가 정해지는 방식",
+      "title": "브리지 확인",
+      "intro": "브리지는 입금액에 따라 정해진 수의 확인을 기다립니다. 입금액이 클수록 더 오래 기다립니다.",
+      "amount": "입금액",
+      "confirmations": "확인",
+      "time": "예상 시간",
+      "below": "{max} NAV 미만",
+      "range": "{min} – {max} NAV",
+      "above": "{min} NAV 이상",
+      "minutes": "{n}분",
+      "yours": "이번 입금",
+      "chain": "확인은 Navio 체인에서 블록당 하나씩 계산됩니다(블록당 약 {minutes}분). Hyperliquid에서는 추가 확인이 없습니다. 필요한 수에 도달하면 브리지가 거래 계정에 반영합니다."
+    },
     "leave": "이 화면을 떠나도 됩니다. Navio Go는 열려 있는 동안 계속 추적하고, 다시 시작한 뒤에도 중단한 곳부터 이어갑니다.",
     "view": "진행 상황 보기",
     "viewAll": "모든 활동",

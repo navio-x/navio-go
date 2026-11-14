@@ -33,12 +33,17 @@
 
 <script setup>
 import { X } from 'lucide-vue-next'
+import { useBackClose } from '@/composables/useBackClose'
 
-defineProps({
+const props = defineProps({
   open: { type: Boolean, default: false },
   title: { type: String, default: '' },
   // While a transaction is being submitted the sheet can't be dismissed.
   locked: { type: Boolean, default: false },
 })
-defineEmits(['close'])
+const emit = defineEmits(['close'])
+
+// Hardware back closes the sheet (or does nothing while it is locked)
+// instead of leaving the page under it.
+useBackClose(() => props.open, () => { if (!props.locked) emit('close') })
 </script>

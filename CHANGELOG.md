@@ -1,5 +1,27 @@
 # Changelog
 
+## 0.1.9-alpha
+
+### Added
+- **Bridge confirmations**: while a deposit waits for its confirmations, an ⓘ beside "7/24 confirmations" — on the operation's page and on its card on the balance page — opens a table of how many confirmations the bridge waits for by deposit size (under 1,000 NAV: 3 · up to 10,000: 6 · up to 100,000: 24 · above: 48), with the tier of this deposit marked. It also says that they are counted on the Navio chain, one per block, and that Hyperliquid adds none of its own
+- Advanced trading: a summary row above the order panel with the last price, the 24h change and the **24h volume** in the quote token
+- Price chart: the time range last chosen is remembered for each pair on the device; a pair opened for the first time still starts on 1W
+
+### Fixed
+- **Android back button with something open**: with the More menu, a bottom sheet or a dialog open, the hardware back button left the page underneath instead of closing it. The first press now closes what is open — every menu, sheet and dialog of the app — and does what its own Cancel / Close button does; while that button is disabled (a send or a mint in progress) back does nothing
+- The progress bar of an operation card stood still at zero for the whole wait of a deposit, because it only counted finished steps. It now moves with the confirmations and fills when the credit has arrived
+- Advanced trading: the 24h change was cut off beside the header buttons ("+0.1…"). It has its own row now, in a coloured badge; a change that rounds to 0.00% is shown neutral
+
+### Changed
+- Point of sale: while a payment request is on screen, the back button cancels the request, the same as its Cancel button, instead of leaving the page
+- Spending confirmation: the back button declines the request
+
+### Known limitations
+- The confirmation tiers are the ones built into the app. They are not read from the bridge and were not confirmed against a published source or by measurement; if the bridge changes its thresholds, the table and the "x/24" count are wrong until the app is updated
+- The back-button change was not tried on a device; it is covered by a test of the mechanism only
+- The new summary row on the trading page was not checked on screen
+- The new texts in languages other than English and Turkish were not reviewed by a native speaker
+
 ## 0.1.8-alpha
 
 ### Fixed

@@ -117,6 +117,7 @@
 </template>
 
 <script setup>
+import { useBackClose } from '@/composables/useBackClose'
 import { ref, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { ChevronLeft } from 'lucide-vue-next'
@@ -170,4 +171,7 @@ onMounted(() => {
 onUnmounted(() => {
   if (!autoReplyEnabled.value) stopPendingSubscription()
 })
+
+// Hardware back closes what is open here instead of leaving the page.
+useBackClose(showAutoReplyConfirm, () => { showAutoReplyConfirm.value = false })
 </script>

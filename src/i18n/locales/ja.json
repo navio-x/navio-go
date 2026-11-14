@@ -2151,6 +2151,20 @@
       "burnDone": "送信済み。NAVは数分でウォレットに届きます。",
       "payoutDone": "{amount} NAVがウォレットに届きました。"
     },
+    "confirmInfo": {
+      "button": "確認数の決まり方",
+      "title": "ブリッジの確認数",
+      "intro": "ブリッジは入金額に応じた数の確認を待ちます。入金額が大きいほど長く待ちます。",
+      "amount": "入金額",
+      "confirmations": "確認数",
+      "time": "目安",
+      "below": "{max} NAV未満",
+      "range": "{min} – {max} NAV",
+      "above": "{min} NAV以上",
+      "minutes": "{n}分",
+      "yours": "この入金",
+      "chain": "確認はNavioチェーン上で、1ブロックにつき1つ数えられます（1ブロック約{minutes}分）。Hyperliquid側で追加の確認はありません。必要数に達すると、ブリッジが取引アカウントに反映します。"
+    },
     "leave": "この画面を離れても大丈夫です。Navio Goは開いている間追跡を続け、再起動後も中断した所から再開します。",
     "view": "進捗を見る",
     "viewAll": "すべてのアクティビティ",

@@ -176,6 +176,7 @@
 </template>
 
 <script setup>
+import { useBackClose } from '@/composables/useBackClose'
 import { passwordProblem as checkPassword } from "@/lib/passwordPolicy";
 import { ref, computed } from "vue";
 import { useRouter } from "vue-router";
@@ -255,4 +256,7 @@ function retryImport() {
   connectionError.value = null;
   doImport();
 }
+
+// Hardware back closes what is open here instead of leaving the page.
+useBackClose(() => !!connectionError.value, () => { connectionError.value = null })
 </script>

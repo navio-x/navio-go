@@ -9,15 +9,8 @@
       </button>
       <div class="flex-1 min-w-0">
         <h1 class="text-lg font-bold leading-tight text-gray-900 dark:text-white truncate">{{ headerLabel }}</h1>
-        <!-- Venue, small and muted, with the 24h change beside it -->
-        <p v-if="market" class="text-[11px] leading-tight tabular-nums text-gray-400 dark:text-gray-500 truncate">
-          {{ $t('market.venueSpot') }}
-          <template v-if="change24h != null">
-            ·
-            <span class="font-medium" :class="change24h >= 0 ? 'text-buy' : 'text-sell'">{{ change24h > 0 ? '+' : '' }}{{ change24h.toFixed(2) }}%</span>
-            {{ $t('market.change24h') }}
-          </template>
-        </p>
+        <!-- Venue, small and muted; the 24h figures have their own row below -->
+        <p v-if="market" class="text-[11px] leading-tight text-gray-400 dark:text-gray-500 truncate">{{ $t('market.venueSpot') }}</p>
       </div>
       <button
         v-if="market"
@@ -62,6 +55,22 @@
     </div>
 
     <div v-else class="px-5 pb-6 space-y-4">
+      <!-- 24h summary: last price and change on the left, volume on the right.
+           Its own row so nothing is cut off beside the header buttons. -->
+      <div v-if="ticker" class="flex items-end justify-between gap-4 px-1">
+        <div class="min-w-0">
+          <p class="text-2xl font-bold leading-tight tabular-nums truncate" :class="changeTone.text">{{ ticker.price != null ? formatPrice(ticker.price) : '—' }}</p>
+          <p v-if="change24h != null" class="mt-1 flex items-center gap-1.5 text-xs text-gray-400 dark:text-gray-500">
+            <span class="px-1.5 py-0.5 rounded-md font-semibold tabular-nums text-white" :class="changeTone.pill">{{ change24h > 0 ? '+' : '' }}{{ change24h.toFixed(2) }}%</span>
+            {{ $t('market.change24h') }}
+          </p>
+        </div>
+        <div v-if="ticker.volume24h != null" class="shrink-0 text-right">
+          <p class="text-[11px] leading-tight text-gray-400 dark:text-gray-500">{{ $t('market.token.volume24h') }}</p>
+          <p class="text-sm font-semibold tabular-nums text-gray-900 dark:text-white">{{ formatVolume(ticker.volume24h) }} {{ market.quoteSymbol }}</p>
+        </div>
+      </div>
+
       <!-- Trade panel — Binance-style: order entry on the left, compact
            order book on the right (5 asks / mid / 5 bids, or 10 levels of a
            single side — see bookView). -->
@@ -443,6 +452,7 @@
 </template>
 
 <script setup>
+import { useBackClose } from '@/composables/useBackClose'
 import { ref, computed, watch, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
@@ -494,11 +504,21 @@ watch(() => openOrders.lastEvent.value, (ev) => {
   if (ev) hl.refresh()
 })
 
-// 24h change shown under the pair name — same REST ticker the home screen's
-// market list uses.
+// Last price, 24h change and 24h volume shown above the trade panel — the
+// same ticker the home screen's market list uses.
 const tickerIndices = computed(() => (market.value ? [market.value.pairIndex] : []))
 const { tickers } = useHyperliquidSpotTickers(tickerIndices)
-const change24h = computed(() => tickers.value[market.value?.pairIndex]?.change24h ?? null)
+const ticker = computed(() => tickers.value[market.value?.pairIndex] ?? null)
+const change24h = computed(() => ticker.value?.change24h ?? null)
+// Rounded the way it is shown, so "+0.00%" is neutral rather than green.
+const changeTone = computed(() => {
+  const shown = Number((change24h.value ?? 0).toFixed(2))
+  if (shown > 0) return { text: 'text-buy', pill: 'bg-buy' }
+  if (shown < 0) return { text: 'text-sell', pill: 'bg-sell' }
+  return { text: 'text-gray-900 dark:text-white', pill: 'bg-gray-400 dark:bg-gh-600' }
+})
+// 24h volume is notional, in the quote token: "12.3K".
+const formatVolume = (v) => v.toLocaleString(undefined, { notation: 'compact', maximumFractionDigits: 2 })
 
 const headerLabel = computed(() => {
   if (!market.value) return t('dex.hyperliquid.title')
@@ -774,6 +794,10 @@ onMounted(async () => {
     }
   }
 })
+
+// Hardware back closes what is open here instead of leaving the page.
+useBackClose(showConfirm, () => { showConfirm.value = false })
+useBackClose(() => cancelConfirmOid.value !== null, () => { cancelConfirmOid.value = null })
 </script>
 
 <style scoped>

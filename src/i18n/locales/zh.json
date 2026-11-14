@@ -2151,6 +2151,20 @@
       "burnDone": "已提交。NAV 将在几分钟内到达你的钱包。",
       "payoutDone": "{amount} NAV 已到达您的钱包。"
     },
+    "confirmInfo": {
+      "button": "确认数如何确定",
+      "title": "跨链桥确认数",
+      "intro": "跨链桥等待的确认数取决于存入金额。金额越大，等待越久。",
+      "amount": "存入金额",
+      "confirmations": "确认数",
+      "time": "大约",
+      "below": "少于 {max} NAV",
+      "range": "{min} – {max} NAV",
+      "above": "{min} NAV 及以上",
+      "minutes": "{n} 分钟",
+      "yours": "本次存入",
+      "chain": "确认在 Navio 链上计数，每个区块一次（每个区块约 {minutes} 分钟）。Hyperliquid 不再另行确认：达到所需数量后，跨链桥会将金额记入你的交易账户。"
+    },
     "leave": "你可以离开此屏幕。Navio Go 在打开期间会持续跟踪，重启后也会从中断处继续。",
     "view": "查看进度",
     "viewAll": "全部活动",

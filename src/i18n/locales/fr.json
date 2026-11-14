@@ -2151,6 +2151,20 @@
       "burnDone": "Envoyé. Les NAV arrivent dans votre portefeuille dans quelques minutes.",
       "payoutDone": "{amount} NAV sont arrivés dans votre portefeuille."
     },
+    "confirmInfo": {
+      "button": "Comment le nombre de confirmations est fixé",
+      "title": "Confirmations du pont",
+      "intro": "Le pont attend un nombre de confirmations qui dépend du montant du dépôt. Les dépôts plus importants attendent plus longtemps.",
+      "amount": "Dépôt",
+      "confirmations": "Confirmations",
+      "time": "Environ",
+      "below": "Moins de {max} NAV",
+      "range": "{min} – {max} NAV",
+      "above": "{min} NAV ou plus",
+      "minutes": "{n} min",
+      "yours": "Ce dépôt",
+      "chain": "Les confirmations sont comptées sur la chaîne Navio, une par bloc (environ {minutes} min chacun). Hyperliquid n'ajoute aucune confirmation : une fois le nombre atteint, le pont crédite votre compte de trading."
+    },
     "leave": "Vous pouvez quitter cet écran. Navio Go continue de suivre l'opération tant qu'il est ouvert et reprend là où il s'était arrêté après un redémarrage.",
     "view": "Voir la progression",
     "viewAll": "Toute l'activité",

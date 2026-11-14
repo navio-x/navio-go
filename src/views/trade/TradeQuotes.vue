@@ -195,6 +195,7 @@
 </template>
 
 <script setup>
+import { useBackClose } from '@/composables/useBackClose'
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ChevronLeft, Loader2, AlertCircle, Copy } from 'lucide-vue-next'
@@ -321,4 +322,7 @@ async function confirmAccept() {
 function copyId(id) {
   copy(id)
 }
+
+// Hardware back closes what is open here instead of leaving the page.
+useBackClose(() => !!selectedQuote.value, () => { if (!accepting.value) closeModal(!!result.value) })
 </script>

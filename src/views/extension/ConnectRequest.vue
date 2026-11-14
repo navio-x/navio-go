@@ -1,4 +1,5 @@
 <script setup>
+import { useBackClose } from '@/composables/useBackClose'
 import { passwordWaitMs, recordPasswordFailure, recordPasswordSuccess, waitSeconds } from "@/lib/passwordThrottle";
 import { ref, nextTick, watch, onMounted } from "vue";
 import { useRoute } from "vue-router";
@@ -121,6 +122,9 @@ async function reject() {
   });
   window.close();
 }
+
+// Hardware back closes what is open here instead of leaving the page.
+useBackClose(() => !!walletToUnlock.value, () => { cancelUnlock() })
 </script>
 
 <template>

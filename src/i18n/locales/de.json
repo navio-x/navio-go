@@ -2151,6 +2151,20 @@
       "burnDone": "Abgeschickt. Das NAV kommt in ein paar Minuten in deiner Wallet an.",
       "payoutDone": "{amount} NAV sind in deiner Wallet angekommen."
     },
+    "confirmInfo": {
+      "button": "Wie die Zahl der Bestätigungen festgelegt wird",
+      "title": "Bridge-Bestätigungen",
+      "intro": "Die Bridge wartet auf eine Anzahl von Bestätigungen, die von der Höhe der Einzahlung abhängt. Größere Einzahlungen warten länger.",
+      "amount": "Einzahlung",
+      "confirmations": "Bestätigungen",
+      "time": "Etwa",
+      "below": "Unter {max} NAV",
+      "range": "{min} – {max} NAV",
+      "above": "Ab {min} NAV",
+      "minutes": "{n} Min.",
+      "yours": "Diese Einzahlung",
+      "chain": "Bestätigungen werden auf der Navio-Chain gezählt, eine pro Block (etwa {minutes} Min. pro Block). Hyperliquid verlangt keine eigenen Bestätigungen: Sobald sie erreicht sind, schreibt die Bridge den Betrag deinem Handelskonto gut."
+    },
     "leave": "Du kannst diesen Bildschirm verlassen. Navio Go verfolgt den Vorgang weiter, solange es geöffnet ist, und macht nach einem Neustart dort weiter, wo es aufgehört hat.",
     "view": "Fortschritt ansehen",
     "viewAll": "Gesamte Aktivität",

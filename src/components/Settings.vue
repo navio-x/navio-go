@@ -834,6 +834,7 @@
 </template>
 
 <script setup>
+import { useBackClose } from '@/composables/useBackClose'
 import { ref, watch, onMounted, computed } from 'vue'
 import { wallpapers } from '@/assets/wallpapers'
 import { useI18n } from 'vue-i18n'
@@ -1023,4 +1024,9 @@ const clearStorage = async () => {
 
   router.replace('/welcome')
 }
+
+// Hardware back closes what is open here instead of leaving the page.
+useBackClose(showBiometricModal, () => { if (!biometricBusy.value) closeBiometricModal() })
+useBackClose(showConfirm, () => { showConfirm.value = false })
+useBackClose(showMerchantDisableConfirm, () => { showMerchantDisableConfirm.value = false })
 </script>

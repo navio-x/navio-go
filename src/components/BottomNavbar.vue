@@ -104,6 +104,7 @@
 </template>
 
 <script setup>
+import { useBackClose } from '@/composables/useBackClose'
 import { ref, computed, watch, onMounted, onUnmounted, nextTick } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { Wallet, ArrowDownLeft, ArrowUpRight, Layers, History, Settings, Briefcase, Store, Repeat, ArrowLeftRight, MessageCircle, MoreHorizontal, CandlestickChart, Activity } from 'lucide-vue-next'
@@ -122,6 +123,8 @@ const router = useRouter()
 const navRef = ref(null)
 const buttonRefs = ref([])
 const showMore = ref(false)
+// Hardware back closes the sheet instead of leaving the page under it.
+useBackClose(showMore, () => { showMore.value = false })
 
 // The bar holds the high-frequency actions — home, receive, send, swap,
 // history — plus one "More" slot. Everything else — including future

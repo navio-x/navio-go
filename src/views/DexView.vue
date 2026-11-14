@@ -599,6 +599,7 @@
 </template>
 
 <script setup>
+import { useBackClose } from '@/composables/useBackClose'
 import { confirmSpend } from '@/lib/spendConfirm'
 import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
 import { useI18n } from 'vue-i18n'
@@ -1166,4 +1167,9 @@ watch(() => settings.evmNetwork, () => {
   swap.reset()
   toAssetKey.value = ''
 })
+
+// Hardware back closes what is open here instead of leaving the page.
+useBackClose(showHighImpactConfirm, () => { showHighImpactConfirm.value = false })
+useBackClose(() => !!tokenInfoModal.value, () => { if (confirmRemoveToken.value) confirmRemoveToken.value = false; else closeTokenInfo() })
+useBackClose(showAddToken, () => { closeAddToken() })
 </script>

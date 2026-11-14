@@ -80,6 +80,7 @@
 </template>
 
 <script setup>
+import { useBackClose } from '@/composables/useBackClose'
 import { passwordWaitMs, recordPasswordFailure, recordPasswordSuccess, waitSeconds } from '../lib/passwordThrottle'
 import { ref, computed, watch, nextTick } from 'vue'
 import { useI18n } from 'vue-i18n'
@@ -161,4 +162,7 @@ function cancel() {
   password.value = ''
   settleSpendConfirm(false)
 }
+
+// Hardware back closes what is open here instead of leaving the page.
+useBackClose(() => !!req.value, () => { if (!busy.value) cancel() })
 </script>

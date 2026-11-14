@@ -64,6 +64,7 @@ class="px-4 py-2 text-sm rounded-lg bg-blue-600 hover:bg-blue-700 text-white"
 </template>
 
 <script setup>
+import { useBackClose } from '@/composables/useBackClose'
 import { ref } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { useI18n } from "vue-i18n";
@@ -109,4 +110,7 @@ function next() {
   clearMnemonicWords();
   router.push(fromBackup ? "/wallet/backup" : "/wallet/balance");
 }
+
+// Hardware back closes what is open here instead of leaving the page.
+useBackClose(showSkipModal, () => { showSkipModal.value = false })
 </script>

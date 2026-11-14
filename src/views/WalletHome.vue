@@ -355,6 +355,7 @@
 </template>
 
 <script setup>
+import { useBackClose } from '@/composables/useBackClose'
 import { passwordWaitMs, recordPasswordFailure, recordPasswordSuccess, waitSeconds } from "@/lib/passwordThrottle";
 import { ref, onMounted, watch, nextTick } from "vue";
 import { useRouter } from "vue-router";
@@ -590,4 +591,9 @@ async function doDelete() {
   wallets.value = getAllWallets();
   walletToDelete.value = null;
 }
+
+// Hardware back closes what is open here instead of leaving the page.
+useBackClose(() => !!walletToUnlock.value, () => { cancelUnlock() })
+useBackClose(() => !!walletToDelete.value, () => { walletToDelete.value = null })
+useBackClose(() => !!connectionError.value, () => { connectionError.value = null })
 </script>
