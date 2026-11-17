@@ -1,21 +1,14 @@
 <template>
   <!-- A wallet is being opened automatically (auto-open last wallet, or an
        extension session): show a full-screen loader instead of flashing the
-       wallet list the user isn't going to use. -->
-  <div
-    v-if="autoOpening"
-    class="fixed inset-0 z-40 flex flex-col items-center justify-center gap-4 bg-white text-gray-900 dark:bg-gh-900 dark:text-white"
-    role="status"
-  >
-    <svg class="w-8 h-8 animate-spin text-blue-600 dark:text-blue-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-      <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
-      <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
-    </svg>
-    <div class="text-center space-y-0.5">
-      <p v-if="autoOpenName" class="text-sm font-semibold">{{ autoOpenName }}</p>
-      <p class="text-xs text-gray-400 dark:text-gray-500">{{ $t('walletList.loading') }}</p>
-    </div>
-  </div>
+       wallet list the user isn't going to use. It is the same screen the SDK
+       init route showed, and the unlock form below takes it over in place. -->
+  <StartupScreen
+    v-if="showLoader"
+    busy
+    :title="autoOpenName"
+    :subtitle="$t('walletList.loading')"
+  />
 
   <div v-else class="p-5 space-y-5 bg-white text-gray-900 dark:bg-gh-900 dark:text-white transition-colors duration-300">
 
@@ -157,16 +150,26 @@
       </li>
     </ul>
 
-    <!-- Unlock password modal -->
-    <div
+    <!-- Unlock password: a modal over the list when a wallet was picked by
+         hand; when auto-open stopped for the password, the loader screen
+         itself instead (spinner → lock, form below), with no list showing. -->
+    <component
+      :is="inlineUnlock ? StartupScreen : 'div'"
       v-if="walletToUnlock"
-      class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-6"
+      v-bind="inlineUnlock
+        ? { title: walletToUnlock.name, subtitle: $t('walletList.unlockTitle') }
+        : { class: 'fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-6' }"
     >
-      <div class="bg-white dark:bg-gh-900 border border-gray-100 dark:border-gh-800 rounded-2xl p-6 w-full max-w-sm space-y-4 shadow-2xl">
-        <h3 class="text-base font-bold">{{ $t('walletList.unlockTitle') }}</h3>
-        <p class="text-sm text-gray-500 dark:text-gray-400">
-          {{ $t('walletList.unlockDesc', { name: walletToUnlock.name }) }}
-        </p>
+      <div
+        class="space-y-4"
+        :class="inlineUnlock ? '' : 'bg-white dark:bg-gh-900 border border-gray-100 dark:border-gh-800 rounded-2xl p-6 w-full max-w-sm shadow-2xl'"
+      >
+        <template v-if="!inlineUnlock">
+          <h3 class="text-base font-bold">{{ $t('walletList.unlockTitle') }}</h3>
+          <p class="text-sm text-gray-500 dark:text-gray-400">
+            {{ $t('walletList.unlockDesc', { name: walletToUnlock.name }) }}
+          </p>
+        </template>
         <div class="relative">
           <input
             ref="passwordInputEl"
@@ -267,7 +270,7 @@
           </button>
         </div>
       </div>
-    </div>
+    </component>
 
     <!-- Delete confirmation modal -->
     <div
@@ -357,10 +360,12 @@
 <script setup>
 import { useBackClose } from '@/composables/useBackClose'
 import { passwordWaitMs, recordPasswordFailure, recordPasswordSuccess, waitSeconds } from "@/lib/passwordThrottle";
-import { ref, onMounted, watch, nextTick } from "vue";
+import { ref, computed, onMounted, watch, nextTick } from "vue";
 import { useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
 import { Eye, EyeOff, Fingerprint } from "lucide-vue-next";
+import StartupScreen from "@/components/StartupScreen.vue";
+import { nextPaint } from "@/lib/nextPaint";
 import { getAllWallets, deleteWalletFull } from "@/stores/wallet_management";
 import { loadWallet, getNavioClient, LAST_WALLET_KEY } from "@/stores/navio";
 import { settings, unlockMaxAgeMs } from "@/stores/settings";
@@ -404,11 +409,19 @@ function findAutoOpenWallet() {
 // can't know until its session read returns, so it starts on the loader too.
 const autoOpenName = ref(findAutoOpenWallet()?.name ?? "");
 const autoOpening  = ref(!!autoOpenName.value || isExtensionContext());
+// Auto-open stopped for a password: the unlock form takes over the loader
+// screen rather than dropping to the list with a modal on top. Cleared when
+// the user cancels to the list; after a successful unlock it keeps the
+// loader up (walletToUnlock is gone by then) until the route changes.
+const inlineUnlock = ref(false);
+const showLoader   = computed(() => autoOpening.value || (inlineUnlock.value && !walletToUnlock.value));
 
 onMounted(async () => {
   // Stay on the loader only if we're actually navigating into the wallet;
   // anything else (password needed, error, nothing to open) needs the list.
-  if ((await autoOpen()) !== "ok") {
+  const status = await autoOpen();
+  if (status !== "ok") {
+    inlineUnlock.value = status === "password_required";
     autoOpening.value = false;
     // The unlock dialog (if that's why we stopped) only exists now that the
     // loader is gone, so its own focus-on-open watcher ran too early.
@@ -510,6 +523,7 @@ async function doUnlock() {
 }
 
 function cancelUnlock() {
+  inlineUnlock.value   = false;
   walletToUnlock.value = null;
   passwordInput.value  = "";
   passwordError.value  = "";
@@ -523,6 +537,8 @@ async function _doLoad(wallet, password, { silent = false, cached = false } = {}
     loadingId.value = wallet.id;
     passwordError.value = "";
     const walletNetwork = wallet.network ?? "testnet";
+    // Let the spinner reach the screen before the SDK ties up the thread.
+    await nextPaint();
     await loadWallet({
       wallet_id: wallet.name,
       network:   walletNetwork,

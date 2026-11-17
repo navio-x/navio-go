@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.1.10-alpha
+
+### Added
+- Advanced trading: tapping a price on the **opposite side** of the order book — an ask while buying, a bid while selling — also fills the amount with everything resting up to that price, which is what a limit order there takes right away. It is capped at what the available balance covers and rounded down to the market's lot size. A price on your own side fills only the price and leaves the amount as typed
+
+### Changed
+- **Opening the app is one screen**: the start screen, the wallet loader and the password form now share one layout. The wallet's name stays in place, the spinner turns into the lock in the same circle and the password form appears below it, instead of three different pages one after another. The wallet list with the password dialog on top only appears when you pick a wallet by hand; *Cancel* on the start-up password form goes to the list
+- The loading spinner is drawn before wallet loading and unlocking begin, so it is on screen before the work starts
+
+### Known limitations
+- **The spinner still stops and starts while a wallet is opened or unlocked on Android.** Measured on a phone: while the wallet library does its heavy work (deriving the wallet's sub-addresses, and deriving the key from the password) the Android WebView draws no frames at all, so no animation can move. Fixing it needs that work moved off the main thread in navio-sdk
+- The one-screen start-up was checked in a desktop browser with a test wallet, not on a phone; the order book amount fill was not tried on screen
+
 ## 0.1.9-alpha
 
 ### Added

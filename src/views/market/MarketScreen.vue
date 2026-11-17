@@ -216,7 +216,8 @@
           </button>
         </div>
 
-        <!-- RIGHT: compact order book. Tapping a level fills the limit price. -->
+        <!-- RIGHT: compact order book. Tapping a level fills the limit price,
+             and on the opposite side also the size up to it (pickLevel). -->
         <div class="min-w-0 flex flex-col">
           <div class="pb-1 grid grid-cols-2 text-[10px] font-medium text-gray-400 dark:text-gray-500">
             <span>{{ $t('market.price') }}</span>
@@ -231,7 +232,7 @@
             <button
               v-for="lvl in shownAsks"
               :key="'ask-' + lvl.px"
-              @click="pickLevel(lvl)"
+              @click="pickLevel(lvl, 'ask')"
               class="relative w-full py-[3px] grid grid-cols-2 text-[11px] tabular-nums text-left"
             >
               <div class="absolute inset-y-0 right-0 bg-sell/15 dark:bg-sell/25" :style="{ width: depthPct(lvl) }" />
@@ -250,7 +251,7 @@
             <button
               v-for="lvl in shownBids"
               :key="'bid-' + lvl.px"
-              @click="pickLevel(lvl)"
+              @click="pickLevel(lvl, 'bid')"
               class="relative w-full py-[3px] grid grid-cols-2 text-[11px] tabular-nums text-left"
             >
               <div class="absolute inset-y-0 right-0 bg-buy/15 dark:bg-buy/25" :style="{ width: depthPct(lvl) }" />
@@ -655,9 +656,19 @@ const maxSize = computed(() => {
   return Number(quoteBalance.value.available) / price
 })
 
-function pickLevel(level) {
+// Tapping a level on the opposite side (an ask while buying, a bid while
+// selling) also fills the size: a limit order at that price takes every level
+// up to it, so the cumulative size is what fills right away — capped at what
+// the balance covers (once a balance is known). A level on our own side would just rest in the book,
+// so there the size is left as typed.
+function pickLevel(level, levelSide) {
   orderType.value = 'limit'
   priceInput.value = String(level.px)
+  const takes = (orderSide.value === 'buy') === (levelSide === 'ask')
+  if (!takes) return
+  const depth = Number(level.total)
+  if (!(depth > 0)) return
+  sizeInput.value = floorSize(maxSize.value > 0 ? Math.min(depth, maxSize.value) : depth)
 }
 
 // Slider: share of maxSize. Derived from sizeInput rather than stored, so

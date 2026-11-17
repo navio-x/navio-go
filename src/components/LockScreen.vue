@@ -84,6 +84,7 @@ import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { Lock, Eye, EyeOff, Fingerprint } from 'lucide-vue-next'
+import { nextPaint } from '../lib/nextPaint'
 import { walletName, unlockWallet, logoutWallet } from '../stores/navio'
 import { settings, unlockMaxAgeMs } from '../stores/settings'
 import { rememberPassword } from '../lib/unlockCache'
@@ -142,6 +143,7 @@ async function unlock() {
   busy.value = true
   error.value = ''
   try {
+    await nextPaint()
     const ok = await unlockWallet(password.value)
     if (!ok) {
       const w = recordPasswordFailure(walletName.value)
