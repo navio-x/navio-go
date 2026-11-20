@@ -10,6 +10,8 @@ import { useHyperliquidBalances } from "@/composables/useHyperliquidBalances";
 import { readNavEvmBalance } from "@/lib/hyperliquid/bridge/contract";
 import { NAV_DECIMALS } from "@/lib/hyperliquid/bridge/config";
 import { HL_LOGOS, HL_NAMES } from "@/lib/hyperliquid/config";
+import { HL_SPOT_MARKETS } from "@/lib/hyperliquid/market";
+import { useHyperliquidSpotTickers } from "@/composables/useHyperliquidSpotTickers";
 
 const ORDER = ["NAV", "USDC", "HYPE", "BTC", "ETH", "SOL", "ZEC", "AVAX"];
 const EVM_POLL_MS = 30_000;
@@ -20,8 +22,12 @@ const EVM_POLL_MS = 30_000;
  * two — `nav` carries the breakdown for anyone who wants to look. With
  * Hyperliquid unavailable (dexMode off, or not on mainnet) this is just the
  * wallet and makes no request.
+ *
+ * `livePrices`: price held assets from the exchange's ticker socket (about
+ * one push a second) instead of the 30–60s REST snapshots, so the total
+ * moves with the market. Opens a websocket, so only the home screen asks.
  */
-export function usePortfolio() {
+export function usePortfolio({ livePrices = false } = {}) {
   const hlAddress = computed(() => (hlEnabled.value ? evmAddress.value : ""));
   const hl = useHyperliquidBalances(hlAddress);
 
@@ -78,6 +84,36 @@ export function usePortfolio() {
 
   const rowOf = (symbol) => hl.balances.value.find((b) => b.symbol === symbol) ?? null;
 
+  // Live <symbol>/USDC prices for what the user holds (NAV always). Pair
+  // indices are resolved from spotMeta once per symbol — never hardcoded.
+  const pairIndexBySymbol = ref({});
+  const liveSymbols = computed(() => {
+    if (!livePrices || !hlEnabled.value) return [];
+    const held = hl.balances.value.filter((r) => Number(r.total) > 0).map((r) => r.symbol);
+    return [...new Set(["NAV", ...held])].filter((s) => HL_SPOT_MARKETS[`${s}-USDC`]);
+  });
+  watch(liveSymbols, (list) => {
+    for (const symbol of list) {
+      if (symbol in pairIndexBySymbol.value) continue;
+      pairIndexBySymbol.value = { ...pairIndexBySymbol.value, [symbol]: null };
+      HL_SPOT_MARKETS[`${symbol}-USDC`].resolver()
+        .then((m) => { pairIndexBySymbol.value = { ...pairIndexBySymbol.value, [symbol]: m?.pairIndex ?? null }; })
+        .catch((e) => {
+          console.error(`[portfolio] ${symbol}/USDC market resolve failed:`, e?.message);
+          // Forget it so the next change of holdings tries again.
+          const { [symbol]: _, ...rest } = pairIndexBySymbol.value;
+          pairIndexBySymbol.value = rest;
+        });
+    }
+  }, { immediate: true });
+  const tickerIndices = computed(() =>
+    liveSymbols.value.map((s) => pairIndexBySymbol.value[s]).filter((i) => i != null));
+  const { tickers } = livePrices ? useHyperliquidSpotTickers(tickerIndices) : { tickers: ref({}) };
+  const livePriceOf = (symbol) => {
+    const idx = pairIndexBySymbol.value[symbol];
+    return idx != null ? tickers.value[idx]?.price ?? null : null;
+  };
+
   const nav = computed(() => {
     const row = hlAddress.value ? rowOf("NAV") : null;
     const wallet = Number(balance.value) || 0;
@@ -98,8 +134,10 @@ export function usePortfolio() {
     };
   });
 
-  // The wallet's own price feed first; the exchange's mid price as a fallback.
-  const navUsd = computed(() => navPrice.usd ?? rowOf("NAV")?.priceUsd ?? null);
+  // Live: the exchange's ticking mid price, where NAV actually trades.
+  // Otherwise the wallet's own price feed first, the exchange's snapshot mid
+  // price as a fallback.
+  const navUsd = computed(() => livePriceOf("NAV") ?? navPrice.usd ?? rowOf("NAV")?.priceUsd ?? null);
 
   const assets = computed(() => {
     const list = [{
@@ -117,12 +155,13 @@ export function usePortfolio() {
       if (row.symbol === "NAV") continue;
       // Shown if the user added it or it holds a balance — funds are never hidden.
       if (!settings.homeAssets.includes(row.symbol) && !(Number(row.total) > 0)) continue;
+      const priceUsd = livePriceOf(row.symbol) ?? row.priceUsd;
       list.push({
         symbol: row.symbol,
         name: HL_NAMES[row.symbol] ?? row.symbol,
         logo: HL_LOGOS[row.symbol],
         amount: Number(row.total),
-        usd: row.priceUsd != null ? Number(row.total) * row.priceUsd : null,
+        usd: priceUsd != null ? Number(row.total) * priceUsd : null,
         route: `/hl/asset/${row.symbol}`,
       });
     }

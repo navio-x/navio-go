@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.1.11-alpha
+
+### Changed
+- **Total balance moves with the market**: on the balance page the total, and the value of each asset row, now follow Hyperliquid's live prices (about one update a second) instead of refreshing every 30–60 seconds. Prices come over the same live feed as the market screens, for NAV and every asset you hold; while that feed is not connected the previous prices are used
+- On the balance page NAV is now priced at its live Hyperliquid NAV/USDC mid price, where it trades, ahead of the blocks.nav.io price. The 24h change under the total still comes from blocks.nav.io
+
+### Known limitations
+- Not tried on screen yet; checked with the test suite and a build
+
 ## 0.1.10-alpha
 
 ### Added

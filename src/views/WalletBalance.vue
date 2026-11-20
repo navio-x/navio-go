@@ -282,7 +282,7 @@
 
   const network = sessionStorage.getItem('network') ?? 'mainnet'
   const router = useRouter()
-  const portfolio = usePortfolio()
+  const portfolio = usePortfolio({ livePrices: true })
 
   // Closes this wallet (same as Settings → Log out) and returns to the
   // create/select screen.
